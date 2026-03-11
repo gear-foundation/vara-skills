@@ -1,0 +1,14 @@
+running 2 tests
+test tests::happy_path ... ok
+test tests::fails_on_missing_reply ... FAILED
+
+failures:
+
+---- tests::fails_on_missing_reply stdout ----
+thread 'tests::fails_on_missing_reply' panicked at app/tests/gtest.rs:42:5:
+assertion failed: expected reply event
+
+failures:
+    tests::fails_on_missing_reply
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out

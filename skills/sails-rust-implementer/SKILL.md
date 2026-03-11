@@ -11,13 +11,11 @@ Implement approved tasks in Sails-first Rust workspaces without freelancing new 
 
 ## Start Here
 
-Read `../../references/sails-cheatsheet.md` and `../../references/vara-domain-overview.md`.
+Read `../../references/sails-cheatsheet.md`, `../../references/vara-domain-overview.md`, `../../references/gear-messaging-and-replies.md`, and `../../references/gear-gas-reservations-and-waitlist.md`.
 
 Consume the approved `spec`, `architecture`, and `tasks` artifacts before changing code.
 
-**REQUIRED SUB-SKILLS:** Use `sails-idiomatic-dev`, `gear-messaging-model`, and `gear-gas-and-value-accounting`.
-
-Use `sails-ethexe-program-dev` only when the target crate explicitly builds an ethexe path.
+If the target crate explicitly builds an `ethexe` path, stop and hand back to a dedicated ethexe workflow instead of extending this standard Sails pack.
 
 ## Workflow
 

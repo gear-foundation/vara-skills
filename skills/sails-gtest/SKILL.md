@@ -14,21 +14,17 @@ Run the Sails-first test loop with generated clients and explicit `gtest` eviden
 - `../../assets/gtest-report-template.md`
 - `../../references/gtest-cheatsheet.md`
 - `../../references/sails-cheatsheet.md`
+- `../../references/sails-gtest-and-local-validation.md`
+- `../../references/gear-gas-reservations-and-waitlist.md`
 
 Write the result to `docs/plans/YYYY-MM-DD-<topic>-gtest.md`.
-
-## Specialist Skills To Delegate
-
-- `gtest-core-workflows`
-- `gear-test-sails-program`
-- `gear-gas-and-value-accounting`
 
 ## Expected Loop
 
 1. Confirm the implementation target is ready for verification.
 2. Use generated clients or `GtestEnv` instead of hand-built payloads where the workspace supports them.
-3. Advance blocks explicitly when replies or deferred effects depend on progression.
-4. Assert behavior, replies, or events in the test result, not just compilation.
+3. Pick the right `BlockRunMode` and advance blocks explicitly when replies or deferred effects depend on progression.
+4. Assert behavior, replies, events, or accounting in the test result, not just compilation.
 5. Record failure mode, fix, and passing command output in the gtest note.
 6. Route to `../sails-local-smoke/SKILL.md` only after the suite is green.
 

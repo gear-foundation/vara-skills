@@ -13,6 +13,8 @@ metadata:
 
 This wrapper exposes the same provisional `vara-skills` pack to OpenClaw.
 
+The pack is self-contained inside this repo: load the local handbook and local skills instead of depending on sibling repositories.
+
 ## Start Here
 
 Load the repo router at `../SKILL.md`, then begin with `ship-sails-app`.
@@ -21,6 +23,7 @@ Load the repo router at `../SKILL.md`, then begin with `ship-sails-app`.
 
 - New app: `../skills/sails-new-app/SKILL.md`
 - Existing feature work: `../skills/sails-feature-workflow/SKILL.md`
+- Message flow or reply behavior: `../skills/gear-message-execution/SKILL.md`
 - Service or program design: `../skills/sails-architecture/SKILL.md`
 - IDL or generated client issues: `../skills/sails-idl-client/SKILL.md`
 - `gtest` authoring or debugging: `../skills/sails-gtest/SKILL.md`

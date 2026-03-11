@@ -10,11 +10,19 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "install-codex-skills.sh"
 EXPECTED_SKILLS = (
-    "idea-to-spec",
     "gear-architecture-planner",
-    "task-decomposer",
-    "sails-rust-implementer",
+    "gear-message-execution",
     "gtest-tdd-loop",
+    "idea-to-spec",
+    "sails-architecture",
+    "sails-feature-workflow",
+    "sails-gtest",
+    "sails-idl-client",
+    "sails-local-smoke",
+    "sails-new-app",
+    "sails-rust-implementer",
+    "ship-sails-app",
+    "task-decomposer",
 )
 
 

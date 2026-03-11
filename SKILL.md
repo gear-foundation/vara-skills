@@ -9,6 +9,8 @@ This repository is the portable router for the provisional `vara-skills` pack.
 
 Use `skills/ship-sails-app/SKILL.md` first when the task is about building or extending a standard Gear/Vara Sails application.
 
+The repo is intended to be self-contained: use local `references/` handbook files before depending on sibling repositories or machine-local skill directories.
+
 ## What This Router Covers
 
 - `Codex`: install the local skill directories with `bash scripts/install-codex-skills.sh`
@@ -20,6 +22,7 @@ Use `skills/ship-sails-app/SKILL.md` first when the task is about building or ex
 - Start a new Sails workspace: `skills/sails-new-app/SKILL.md`
 - Add or change a feature in an existing Sails repo: `skills/sails-feature-workflow/SKILL.md`
 - Rework service or program boundaries: `skills/sails-architecture/SKILL.md`
+- Debug message flow, replies, delays, or reservations: `skills/gear-message-execution/SKILL.md`
 - Fix `build.rs`, IDL, or generated clients: `skills/sails-idl-client/SKILL.md`
 - Write or debug `gtest`: `skills/sails-gtest/SKILL.md`
 - Run typed local-node smoke after green `gtest`: `skills/sails-local-smoke/SKILL.md`

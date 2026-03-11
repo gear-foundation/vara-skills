@@ -22,3 +22,8 @@
 - Specs should name actors, messages, replies, events, invariants, and recovery paths.
 - Architecture notes should explain ownership, message flow, and off-chain observation points.
 - Implementation skills should default to Gear/Vara semantics before considering Vara.eth extensions.
+
+## See Also
+- `references/gear-execution-model.md`
+- `references/gear-messaging-and-replies.md`
+- `references/gear-gas-reservations-and-waitlist.md`

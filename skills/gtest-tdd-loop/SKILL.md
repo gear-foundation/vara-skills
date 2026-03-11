@@ -11,15 +11,13 @@ Drive local verification through a red-green loop and summarize failures in a ma
 
 ## Start Here
 
-Read `../../references/gtest-cheatsheet.md`.
+Read `../../references/gtest-cheatsheet.md`, `../../references/sails-gtest-and-local-validation.md`, and `../../references/gear-gas-reservations-and-waitlist.md`.
 
 Use `../../assets/gtest-report-template.md` as the output shape.
 
 Write the result to `docs/plans/YYYY-MM-DD-<topic>-gtest.md`.
 
 Use `../../scripts/run_gtest.sh` to execute the loop and `../../scripts/parse_test_output.py` to summarize failures.
-
-**REQUIRED SUB-SKILLS:** Use `gtest-core-workflows` and `gear-test-sails-program`.
 
 ## Workflow
 

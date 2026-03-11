@@ -24,3 +24,7 @@
 - The task plan must call out required gtest coverage.
 - The implementer should not claim completion without a green local gtest loop.
 - The gtest loop skill should summarize failures in a form that is patchable by an agent.
+
+## See Also
+- `references/sails-gtest-and-local-validation.md`
+- `references/gear-gas-reservations-and-waitlist.md`

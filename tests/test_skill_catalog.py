@@ -8,6 +8,12 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 VALIDATOR = ROOT / "scripts" / "validate-skill.py"
 STARTER_SKILLS = {
+    "gear-message-execution": [
+        "SKILL.md",
+        "assets",
+        "references",
+        "scripts",
+    ],
     "ship-sails-app": [
         "SKILL.md",
         "assets",
@@ -67,6 +73,10 @@ def validate(skill_dir: Path) -> None:
     assert result.returncode == 0, result.stderr
 
 
+def read(relative: str) -> str:
+    return (ROOT / relative).read_text(encoding="utf-8")
+
+
 def main() -> int:
     require(VALIDATOR)
     require(ROOT / "SKILL.md")
@@ -78,35 +88,144 @@ def main() -> int:
             require(skill_dir / relative)
         validate(skill_dir)
 
-    router = (ROOT / "SKILL.md").read_text(encoding="utf-8")
+    router = read("SKILL.md")
     assert "ship-sails-app" in router
     assert "Codex" in router and "Claude" in router and "OpenClaw" in router
 
-    new_app = (ROOT / "skills" / "sails-new-app" / "SKILL.md").read_text(encoding="utf-8")
+    ship = read("skills/ship-sails-app/SKILL.md")
+    ship_lower = ship.lower()
+    assert "ss58" in ship_lower and "0x" in ship_lower
+    assert "delayed" in ship_lower and "blocks" in ship_lower and "itself" in ship_lower
+    assert "voucher" in ship_lower and "signless" in ship_lower
+    assert "build.rs" in ship and "cargo build" in ship_lower
+    assert "../../references/gear-execution-model.md" in ship
+    assert "../../references/gear-messaging-and-replies.md" in ship
+    assert "../../references/gear-gas-reservations-and-waitlist.md" in ship
+    assert "../../references/sails-program-and-service-architecture.md" in ship
+    assert "../../references/sails-idl-client-pipeline.md" in ship
+    assert "../../references/sails-gtest-and-local-validation.md" in ship
+    assert "gear-message-execution" in ship
+    assert "sails-program-architecture-patterns" not in ship
+    assert "gear-messaging-model" not in ship
+
+    new_app = read("skills/sails-new-app/SKILL.md")
     assert "Sails" in new_app
+    assert ".idl" in new_app and ".opt.wasm" in new_app
+    assert "build.rs" in new_app and "cargo build" in new_app.lower()
+    assert "../../references/sails-idl-client-pipeline.md" in new_app
+    assert "../../references/sails-program-and-service-architecture.md" in new_app
+    assert "sails-new-program" not in new_app
+    assert "sails-idl-and-client-pipeline" not in new_app
 
-    feature = (
-        ROOT / "skills" / "sails-feature-workflow" / "SKILL.md"
-    ).read_text(encoding="utf-8")
+    feature = read("skills/sails-feature-workflow/SKILL.md")
+    feature_lower = feature.lower()
     assert "gtest" in feature.lower()
+    assert "voucher" in feature_lower and "signless" in feature_lower
+    assert "generated client" in feature_lower or "typed client" in feature_lower
+    assert "../../references/gear-execution-model.md" in feature
+    assert "../../references/gear-messaging-and-replies.md" in feature
+    assert "../../references/sails-gtest-and-local-validation.md" in feature
 
-    architecture = (
-        ROOT / "skills" / "sails-architecture" / "SKILL.md"
-    ).read_text(encoding="utf-8")
-    assert "sails-program-architecture-patterns" in architecture
+    architecture = read("skills/sails-architecture/SKILL.md")
+    architecture_lower = architecture.lower()
+    assert "waitlist" in architecture_lower and "rent" in architecture_lower
+    assert "cannot be prolonged" in architecture_lower or "maximum duration" in architecture_lower
+    assert "reservation" in architecture_lower and "delayed" in architecture_lower
+    assert "../../references/sails-program-and-service-architecture.md" in architecture
+    assert "../../references/gear-messaging-and-replies.md" in architecture
+    assert "../../references/gear-gas-reservations-and-waitlist.md" in architecture
+    assert "sails-program-architecture-patterns" not in architecture
+    assert "gear-messaging-model" not in architecture
 
-    idl_client = (
-        ROOT / "skills" / "sails-idl-client" / "SKILL.md"
-    ).read_text(encoding="utf-8")
-    assert "sails-idl-and-client-pipeline" in idl_client
+    idl_client = read("skills/sails-idl-client/SKILL.md")
+    idl_client_lower = idl_client.lower()
+    assert "sails-js" in idl_client_lower and "parseidl" in idl_client_lower
+    assert "gearapi" in idl_client_lower and "lib.ts" in idl_client
+    assert "build.rs" in idl_client
+    assert "clientbuilder" in idl_client_lower or "build_client" in idl_client_lower
+    assert "../../references/sails-idl-client-pipeline.md" in idl_client
+    assert "sails-idl-and-client-pipeline" not in idl_client
 
-    gtest_loop = (ROOT / "skills" / "sails-gtest" / "SKILL.md").read_text(encoding="utf-8")
-    assert "gtest-core-workflows" in gtest_loop
+    gtest_loop = read("skills/sails-gtest/SKILL.md")
+    assert "../../references/sails-gtest-and-local-validation.md" in gtest_loop
+    assert "../../references/gear-gas-reservations-and-waitlist.md" in gtest_loop
+    assert "gtest-core-workflows" not in gtest_loop
 
-    smoke = (ROOT / "skills" / "sails-local-smoke" / "SKILL.md").read_text(encoding="utf-8")
-    assert "gear-run-local-node" in smoke or "sails-live-node-smoke" in smoke
+    smoke = read("skills/sails-local-smoke/SKILL.md")
+    smoke_lower = smoke.lower()
+    assert "ss58" in smoke_lower
+    assert "do not invent" in smoke_lower and "program id" in smoke_lower
+    assert "seed phrase" in smoke_lower or "private key" in smoke_lower
+    assert "../../references/sails-gtest-and-local-validation.md" in smoke
+    assert "../../references/sails-idl-client-pipeline.md" in smoke
+    assert "gear-run-local-node" not in smoke
+    assert "sails-live-node-smoke" not in smoke
+    assert "gear-query-program-state" not in smoke
 
-    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    execution = read("skills/gear-message-execution/SKILL.md")
+    execution_lower = execution.lower()
+    assert "reply" in execution_lower and "timeout" in execution_lower
+    assert "reservation" in execution_lower and "waitlist" in execution_lower
+    assert "../../references/gear-execution-model.md" in execution
+    assert "../../references/gear-messaging-and-replies.md" in execution
+    assert "../../references/gear-gas-reservations-and-waitlist.md" in execution
+
+    gear_execution = read("references/gear-execution-model.md")
+    gear_execution_lower = gear_execution.lower()
+    assert "block" in gear_execution_lower and "rollback" in gear_execution_lower
+    assert "message queue" in gear_execution_lower or "queue" in gear_execution_lower
+
+    gear_messaging = read("references/gear-messaging-and-replies.md")
+    gear_messaging_lower = gear_messaging.lower()
+    assert "for_reply" in gear_messaging
+    assert "reply hook" in gear_messaging_lower
+    assert "delayed" in gear_messaging_lower and "commit" in gear_messaging_lower
+
+    gas_waitlist = read("references/gear-gas-reservations-and-waitlist.md")
+    gas_waitlist_lower = gas_waitlist.lower()
+    assert "reservation" in gas_waitlist_lower and "waitlist" in gas_waitlist_lower
+    assert "rent" in gas_waitlist_lower or "expiry" in gas_waitlist_lower
+
+    sails_arch_ref = read("references/sails-program-and-service-architecture.md")
+    sails_arch_ref_lower = sails_arch_ref.lower()
+    assert "#[program]" in sails_arch_ref and "#[service]" in sails_arch_ref
+    assert "await" in sails_arch_ref_lower and "revalidate" in sails_arch_ref_lower
+
+    idl_pipeline = read("references/sails-idl-client-pipeline.md")
+    idl_pipeline_lower = idl_pipeline.lower()
+    assert "build.rs" in idl_pipeline
+    assert "build_client" in idl_pipeline_lower or "clientbuilder" in idl_pipeline_lower
+    assert ".idl" in idl_pipeline
+
+    validation_ref = read("references/sails-gtest-and-local-validation.md")
+    validation_ref_lower = validation_ref.lower()
+    assert "gtestenv" in validation_ref_lower
+    assert "blockrunmode" in validation_ref_lower
+    assert "program id" in validation_ref_lower
+    assert "local node" in validation_ref_lower
+
+    planner = read("skills/gear-architecture-planner/SKILL.md")
+    assert "../../references/sails-program-and-service-architecture.md" in planner
+    assert "../../references/gear-messaging-and-replies.md" in planner
+    assert "../../references/sails-idl-client-pipeline.md" in planner
+    assert "sails-program-architecture-patterns" not in planner
+    assert "gear-messaging-model" not in planner
+    assert "sails-idl-and-client-pipeline" not in planner
+
+    implementer = read("skills/sails-rust-implementer/SKILL.md")
+    assert "../../references/gear-messaging-and-replies.md" in implementer
+    assert "../../references/gear-gas-reservations-and-waitlist.md" in implementer
+    assert "sails-idiomatic-dev" not in implementer
+    assert "gear-messaging-model" not in implementer
+    assert "gear-gas-and-value-accounting" not in implementer
+
+    gtest_tdd = read("skills/gtest-tdd-loop/SKILL.md")
+    assert "../../references/sails-gtest-and-local-validation.md" in gtest_tdd
+    assert "../../references/gear-gas-reservations-and-waitlist.md" in gtest_tdd
+    assert "gtest-core-workflows" not in gtest_tdd
+    assert "gear-test-sails-program" not in gtest_tdd
+
+    readme = read("README.md")
     assert "gpt-5.4" in readme, "README.md should name the first evaluation target"
     assert "ship-sails-app" in readme and "sails-local-smoke" in readme
     assert "sails-new-app" in readme and "sails-feature-workflow" in readme
@@ -115,6 +234,8 @@ def main() -> int:
     assert "2026-03-11-gpt54-suite-report.md" in readme
     assert "sails-default-path" in readme and "no-low-level-bypass" in readme
     assert "artifact" in readme.lower()
+    assert "self-contained" in readme.lower()
+    assert "gear-message-execution" in readme
 
     print("starter skills ok")
     return 0

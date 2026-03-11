@@ -2,12 +2,13 @@
 
 Provisional product repository for a `vara-skills` Sails-builder pack.
 
-The current repo is the source-of-truth workspace for a portable, markdown-first skill pack targeting Codex, Claude, and OpenClaw. The public website comes later, after the first measured skill set is finalized.
+The current repo is the source-of-truth workspace for a portable, self-contained, markdown-first skill pack targeting Codex, Claude, and OpenClaw. The public website comes later, after the first measured skill set is finalized.
 
 The pack is being narrowed toward standard Gear/Vara Sails app builders:
 
 - starting a new Sails app
 - building features in an existing Sails app
+- reasoning about Gear message flow and execution behavior
 - getting architecture, IDL/client wiring, `gtest`, and local-node validation right
 
 The current public catalog is provisional and is expected to change as the eval suite identifies which candidate skills actually create uplift.
@@ -17,10 +18,22 @@ The current public catalog is provisional and is expected to change as the eval 
 - `ship-sails-app`
 - `sails-new-app`
 - `sails-feature-workflow`
+- `gear-message-execution`
 - `sails-architecture`
 - `sails-idl-client`
 - `sails-gtest`
 - `sails-local-smoke`
+
+## Self-Contained Handbook
+
+The pack is intended to self-describe the standard Gear/Vara Sails builder path from this repo alone. The shared handbook in `references/` covers:
+
+- Gear execution model
+- Gear messaging, replies, timeouts, and delayed work
+- gas reservations and Waitlist constraints
+- Sails program and service architecture
+- IDL and generated client pipelines
+- `gtest` and typed local-node validation
 
 ## Milestone-One Evaluation
 
@@ -52,7 +65,7 @@ The supporting benchmark summary lives in the sibling `vara-skills-evals` repo a
 
 ## Shared Layers
 
-- `references/` contains agent-facing summaries of core Vara, Sails, gtest, and Vara.eth extension concepts.
+- `references/` contains the self-contained agent-facing handbook for Gear execution, Sails workflows, and supporting Vara notes.
 - `assets/` contains canonical output shapes for spec, architecture, task-plan, and gtest artifacts.
 - `scripts/` contains deterministic helper commands for install, validation, gtest execution, and parser output.
 - `docs/plans/` captures approved design and implementation artifacts for the pack.

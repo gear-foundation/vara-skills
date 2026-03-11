@@ -21,3 +21,7 @@
 - Specs should talk in terms of service routes, commands, queries, and events.
 - Architecture plans should keep `#[program]` thin and push logic into services.
 - Implementation guidance should prefer Sails-first patterns over raw payload handling.
+
+## See Also
+- `references/sails-program-and-service-architecture.md`
+- `references/sails-idl-client-pipeline.md`

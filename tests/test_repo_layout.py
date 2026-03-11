@@ -17,6 +17,7 @@ def main() -> int:
     require(ROOT / "Makefile")
     require(ROOT / "docs" / "plans" / "2026-03-11-core-skills-design.md")
     require(ROOT / "docs" / "plans" / "2026-03-11-core-skills.md")
+    require(ROOT / "docs" / "plans" / "2026-03-11-redirect-validation.md")
     require(ROOT / "assets" / "spec-template.md")
     require(ROOT / "assets" / "architecture-template.md")
     require(ROOT / "assets" / "task-plan-template.md")
@@ -27,6 +28,7 @@ def main() -> int:
     require(ROOT / "references" / "varaeth-extension-notes.md")
     require(ROOT / "scripts" / "install-codex-skills.sh")
     require(ROOT / "scripts" / "validate-repo.sh")
+    require(ROOT / "tests" / "test_install_codex_skills.py")
     require(ROOT / "tests")
 
     readme = (ROOT / "README.md").read_text(encoding="utf-8")

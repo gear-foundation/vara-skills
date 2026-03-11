@@ -10,11 +10,19 @@ import sys
 
 FAILED_TEST_RE = re.compile(r"^test\s+(\S+)\s+\.\.\.\s+FAILED$", re.MULTILINE)
 PANIC_SUMMARY_RE = re.compile(r"panicked at .*:\n(?P<message>.+)", re.MULTILINE)
+ERROR_SUMMARY_RE = re.compile(r"^error:\s+(?P<message>.+)$", re.MULTILINE)
 
 
 def parse_log(text: str) -> dict[str, object]:
     failed_tests = FAILED_TEST_RE.findall(text)
     summary_match = PANIC_SUMMARY_RE.search(text)
+    error_match = ERROR_SUMMARY_RE.search(text)
+    if error_match:
+        return {
+            "status": "error",
+            "failed_tests": [],
+            "summary": error_match.group("message").strip(),
+        }
     if failed_tests:
         summary = summary_match.group("message").strip() if summary_match else "gtest failed"
         return {

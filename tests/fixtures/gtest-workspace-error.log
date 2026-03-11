@@ -1,0 +1,8 @@
+error: failed to load manifest for workspace member `/Users/ukintvs/Documents/projects/sails/benchmarks/alloc-stress`
+referenced by workspace at `/Users/ukintvs/Documents/projects/sails/Cargo.toml`
+
+Caused by:
+  failed to read `/Users/ukintvs/Documents/projects/sails/benchmarks/alloc-stress/Cargo.toml`
+
+Caused by:
+  No such file or directory (os error 2)

@@ -12,16 +12,43 @@ The pack is being narrowed toward standard Gear/Vara Sails app builders:
 
 The current public catalog is provisional and is expected to change as the eval suite identifies which candidate skills actually create uplift.
 
-## First Target Evaluation
+## Current Candidate Skills
+
+- `ship-sails-app`
+- `sails-new-app`
+- `sails-feature-workflow`
+- `sails-architecture`
+- `sails-idl-client`
+- `sails-gtest`
+- `sails-local-smoke`
+
+## Milestone-One Evaluation
 
 The first measured target is `gpt-5.4`.
 
-The initial `gpt-5.4` builder-task slice produced `5` clear uplifts, `2` ties, and `0` regressions:
+The first full `gpt-5.4` milestone-one suite now covers `12` cases across `knowledge`, `codegen`, `workflow`, and `safety`.
 
-- measured winners: `ship-sails-app`, `sails-architecture`, `sails-idl-client`, `sails-gtest`, `sails-local-smoke`
-- still provisional after the first slice: `sails-new-app`, `sails-feature-workflow`
+That suite produced `4` uplifts, `8` ties, and `0` regressions, with `2` artifact checks still recorded as `not-run` while compile-backed codegen execution remains scaffolded.
 
-The supporting benchmark summary lives in the sibling `vara-skills-evals` repo at `results/2026-03-11-initial-sails-builder-report.md`.
+Measured winners in this run:
+
+- `sails-default-path`
+- `gas-reservation`
+- `no-low-level-bypass`
+- `js-client-from-idl` (textual uplift only; artifact execution is still blocked)
+
+Still tied or unresolved in the current pack:
+
+- `rust-sails-compile`
+- `address-format-ss58`
+- `delayed-messages`
+- `idl-client-path`
+- `voucher-signless`
+- `waitlist-rent`
+- `no-key-address-hallucination`
+- `sails-feature-flow`
+
+The supporting benchmark summary lives in the sibling `vara-skills-evals` repo at `results/2026-03-11-gpt54-suite-report.md`.
 
 ## Shared Layers
 

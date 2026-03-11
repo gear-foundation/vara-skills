@@ -111,6 +111,10 @@ def main() -> int:
     assert "ship-sails-app" in readme and "sails-local-smoke" in readme
     assert "sails-new-app" in readme and "sails-feature-workflow" in readme
     assert "provisional" in readme.lower(), "README.md should keep the catalog provisional"
+    assert "12" in readme and "knowledge" in readme and "codegen" in readme
+    assert "2026-03-11-gpt54-suite-report.md" in readme
+    assert "sails-default-path" in readme and "no-low-level-bypass" in readme
+    assert "artifact" in readme.lower()
 
     print("starter skills ok")
     return 0

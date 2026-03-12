@@ -11,7 +11,7 @@ Implement approved tasks in Sails-first Rust workspaces without freelancing new 
 
 ## Start Here
 
-Read `../../references/sails-cheatsheet.md`, `../../references/vara-domain-overview.md`, `../../references/gear-messaging-and-replies.md`, and `../../references/gear-gas-reservations-and-waitlist.md`.
+Read `../../references/sails-cheatsheet.md`, `../../references/vara-domain-overview.md`, `../../references/gear-sails-production-patterns.md`, `../../references/gear-messaging-and-replies.md`, and `../../references/gear-gas-reservations-and-waitlist.md`.
 
 Consume the approved `spec`, `architecture`, and `tasks` artifacts before changing code.
 
@@ -31,6 +31,7 @@ If the target crate explicitly builds an `ethexe` path, stop and hand back to a 
 - Prefer Sails-level interfaces over raw payload work unless the task says otherwise.
 - Keep constructor shape and state ownership consistent with the approved architecture instead of inventing a new storage pattern mid-implementation.
 - Use generated clients or equivalent route-prefixed encoding for normal Sails calls; do not substitute bare raw structs for constructor or service payloads.
+- Preserve fail-fast command behavior; panic on fatal stateful command-path failures instead of introducing partial-commit recovery.
 - Use `exec::gas_available()` for remaining-gas checks in execution paths.
 - Treat value flow, replies, and async ordering as first-class behavior.
 - Stop and hand back to planning if implementation uncovers a real architecture gap.

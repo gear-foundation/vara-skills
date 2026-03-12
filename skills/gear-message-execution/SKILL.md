@@ -12,6 +12,7 @@ Provide a focused local path for reasoning about message flow and execution beha
 ## Inputs
 
 - `../../references/gear-execution-model.md`
+- `../../references/gear-sails-production-patterns.md`
 - `../../references/gear-messaging-and-replies.md`
 - `../../references/gear-gas-reservations-and-waitlist.md`
 

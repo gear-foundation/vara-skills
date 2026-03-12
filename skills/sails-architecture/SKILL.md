@@ -14,6 +14,7 @@ Turn an approved spec into a Sails-specific architecture artifact before impleme
 - `../../assets/architecture-template.md`
 - `../../references/vara-domain-overview.md`
 - `../../references/sails-cheatsheet.md`
+- `../../references/gear-sails-production-patterns.md`
 - `../../references/sails-program-and-service-architecture.md`
 - `../../references/gear-messaging-and-replies.md`
 - `../../references/gear-gas-reservations-and-waitlist.md`

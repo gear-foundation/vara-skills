@@ -158,6 +158,7 @@ def main() -> int:
     assert "reservation" in architecture_lower and "delayed" in architecture_lower
     assert "constructor" in architecture_lower and "state ownership" in architecture_lower
     assert "generated clients" in architecture_lower or "generated client" in architecture_lower
+    assert "../../references/gear-sails-production-patterns.md" in architecture
     assert "../../references/sails-program-and-service-architecture.md" in architecture
     assert "../../references/gear-messaging-and-replies.md" in architecture
     assert "../../references/gear-gas-reservations-and-waitlist.md" in architecture
@@ -195,6 +196,7 @@ def main() -> int:
     assert "reservation" in execution_lower and "waitlist" in execution_lower
     assert "exec::gas_available" in execution
     assert "route prefix" in execution_lower or "generated sails clients" in execution_lower
+    assert "../../references/gear-sails-production-patterns.md" in execution
     assert "../../references/gear-execution-model.md" in execution
     assert "../../references/gear-messaging-and-replies.md" in execution
     assert "../../references/gear-gas-reservations-and-waitlist.md" in execution
@@ -217,6 +219,42 @@ def main() -> int:
     gas_waitlist_lower = gas_waitlist.lower()
     assert "reservation" in gas_waitlist_lower and "waitlist" in gas_waitlist_lower
     assert "rent" in gas_waitlist_lower or "expiry" in gas_waitlist_lower
+
+    production_patterns = read("references/gear-sails-production-patterns.md")
+    production_patterns_lower = production_patterns.lower()
+    assert "awesome-sails" in production_patterns_lower
+    assert "sails" in production_patterns_lower
+    assert "dapps" in production_patterns_lower
+    assert "refcell" in production_patterns_lower
+    assert "storagerefcell" in production_patterns_lower
+    assert "seed()" in production_patterns
+    assert "blockrunmode" in production_patterns_lower
+    assert "reply_deposit" in production_patterns_lower
+    assert "reservationid" in production_patterns_lower
+    assert "program-owned state" in production_patterns_lower
+    assert "static hidden state" in production_patterns_lower or "static service state" in production_patterns_lower
+    assert "generated client" in production_patterns_lower
+    assert "fail-fast" in production_patterns_lower or "userspacepanic" in production_patterns_lower
+    assert production_patterns.count("```rust") >= 4
+    assert "outdated" in production_patterns_lower or "older" in production_patterns_lower
+    assert "do not copy" in production_patterns_lower or "should not override" in production_patterns_lower
+    assert "awesome-sails = {" in production_patterns
+    assert "default-features = false" in production_patterns
+    assert "vft-admin" in production_patterns_lower
+    assert "vft-extension" in production_patterns_lower
+    assert "vft-native-exchange" in production_patterns_lower
+    assert "access-control" in production_patterns_lower
+    assert "msg-tracker" in production_patterns_lower
+    assert "awesome-sails-utils" in production_patterns_lower
+    assert "checkedmath" in production_patterns_lower
+    assert "lebytes" in production_patterns_lower
+    assert "nonzero" in production_patterns_lower
+    assert "pausableref" in production_patterns_lower
+    assert "storagerefcell" in production_patterns_lower
+    assert "examples/demo/app/src" not in production_patterns
+    assert "examples/rmrk/" not in production_patterns
+    assert "dapps/contracts/" not in production_patterns
+    assert "awesome-sails/tests/" not in production_patterns
 
     sails_arch_ref = read("references/sails-program-and-service-architecture.md")
     sails_arch_ref_lower = sails_arch_ref.lower()
@@ -267,8 +305,13 @@ def main() -> int:
     assert "gr_wait" in gstd_reference
 
     implementer = read("skills/sails-rust-implementer/SKILL.md")
+    implementer_lower = implementer.lower()
+    assert "../../references/gear-sails-production-patterns.md" in implementer
     assert "../../references/gear-messaging-and-replies.md" in implementer
     assert "../../references/gear-gas-reservations-and-waitlist.md" in implementer
+    assert "state ownership" in implementer_lower
+    assert "generated clients" in implementer_lower or "generated client" in implementer_lower
+    assert "fail-fast" in implementer_lower or "panic" in implementer_lower
     assert "sails-idiomatic-dev" not in implementer
     assert "gear-messaging-model" not in implementer
     assert "gear-gas-and-value-accounting" not in implementer

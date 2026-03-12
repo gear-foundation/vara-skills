@@ -146,6 +146,7 @@ def main() -> int:
     assert "gtest" in feature.lower()
     assert "voucher" in feature_lower and "signless" in feature_lower
     assert "generated client" in feature_lower or "typed client" in feature_lower
+    assert "gear-gstd-api-map" in feature
     assert "../../references/gear-execution-model.md" in feature
     assert "../../references/gear-messaging-and-replies.md" in feature
     assert "../../references/sails-gtest-and-local-validation.md" in feature
@@ -248,9 +249,22 @@ def main() -> int:
     assert "../../references/sails-program-and-service-architecture.md" in planner
     assert "../../references/gear-messaging-and-replies.md" in planner
     assert "../../references/sails-idl-client-pipeline.md" in planner
+    assert "gear-gstd-api-map" in planner
     assert "sails-program-architecture-patterns" not in planner
     assert "gear-messaging-model" not in planner
     assert "sails-idl-and-client-pipeline" not in planner
+
+    gstd_capability = read("skills/gear-gstd-api-map/SKILL.md")
+    gstd_capability_lower = gstd_capability.lower()
+    assert "../../references/gear-gstd-api-and-syscalls.md" in gstd_capability
+    assert "gstd" in gstd_capability and "gcore" in gstd_capability and "gsys" in gstd_capability
+    assert "design" in gstd_capability_lower and "debug" in gstd_capability_lower
+
+    gstd_reference = read("references/gear-gstd-api-and-syscalls.md")
+    assert "gr_send" in gstd_reference
+    assert "gr_reply" in gstd_reference
+    assert "gr_reserve_gas" in gstd_reference
+    assert "gr_wait" in gstd_reference
 
     implementer = read("skills/sails-rust-implementer/SKILL.md")
     assert "../../references/gear-messaging-and-replies.md" in implementer
@@ -277,6 +291,7 @@ def main() -> int:
     assert "artifact" in readme.lower()
     assert "self-contained" in readme.lower()
     assert "gear-message-execution" in readme
+    assert "gear-gstd-api-map" in readme
 
     print("starter skills ok")
     return 0

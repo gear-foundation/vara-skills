@@ -29,6 +29,7 @@ Write the result to `docs/plans/YYYY-MM-DD-<topic>-architecture.md`.
 
 ## Route Deeper When Needed
 
+- If the architecture question is whether Gear or Sails exposes the right API family, review `../gear-gstd-api-map/SKILL.md` first.
 - If the architecture risk is mostly around replies, timeouts, delayed work, or reservations, review `../gear-message-execution/SKILL.md`.
 
 ## Review Checklist

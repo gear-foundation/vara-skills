@@ -13,12 +13,13 @@ Keep feature work inside an existing Sails repo on an explicit sequence instead 
 
 1. Clarify the feature in `docs/plans/YYYY-MM-DD-<topic>-spec.md` with `idea-to-spec` and `../../assets/spec-template.md`.
 2. Plan architecture or public interface in `...-architecture.md` with `../sails-architecture/SKILL.md` and `../../assets/architecture-template.md`.
-3. If the feature changes async behavior, replies, delays, reservations, or waitlist semantics, review `../gear-message-execution/SKILL.md` before coding.
-4. Break the work into tasks in `...-tasks.md` with `task-decomposer` and `../../assets/task-plan-template.md`.
-5. Implement the Rust changes through `sails-rust-implementer`.
-6. If the interface changed or the app needs integration work, refresh the `.idl` and generated client or typed client path through `../sails-idl-client/SKILL.md`.
-7. Run `gtest` through `../sails-gtest/SKILL.md`.
-8. Run smoke validation only after green `gtest`, using `../sails-local-smoke/SKILL.md`.
+3. If the feature needs API selection across `gstd`, review `../gear-gstd-api-map/SKILL.md` before coding.
+4. If the feature changes async behavior, replies, delays, reservations, or waitlist semantics, review `../gear-message-execution/SKILL.md` before coding.
+5. Break the work into tasks in `...-tasks.md` with `task-decomposer` and `../../assets/task-plan-template.md`.
+6. Implement the Rust changes through `sails-rust-implementer`.
+7. If the interface changed or the app needs integration work, refresh the `.idl` and generated client or typed client path through `../sails-idl-client/SKILL.md`.
+8. Run `gtest` through `../sails-gtest/SKILL.md`.
+9. Run smoke validation only after green `gtest`, using `../sails-local-smoke/SKILL.md`.
 
 ## Sponsored UX Cases
 

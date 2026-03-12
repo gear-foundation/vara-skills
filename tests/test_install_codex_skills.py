@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "install-codex-skills.sh"
 EXPECTED_SKILLS = (
     "gear-architecture-planner",
+    "gear-gstd-api-map",
     "gear-message-execution",
     "gtest-tdd-loop",
     "idea-to-spec",

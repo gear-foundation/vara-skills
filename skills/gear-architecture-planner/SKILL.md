@@ -13,6 +13,8 @@ Turn an approved spec into a concrete Gear/Sails architecture note.
 
 Read `../../references/vara-domain-overview.md`, `../../references/sails-cheatsheet.md`, `../../references/sails-program-and-service-architecture.md`, `../../references/gear-messaging-and-replies.md`, and `../../references/sails-idl-client-pipeline.md`.
 
+If the architecture choice depends on what Gear programs can express through `gstd`, review `../gear-gstd-api-map/SKILL.md` before locking the design.
+
 Use `../../assets/architecture-template.md` as the output shape.
 
 Write the result to `docs/plans/YYYY-MM-DD-<topic>-architecture.md`.

@@ -6,6 +6,7 @@ test-layout:
 test-skills:
 	python3 tests/test_skill_validation.py
 	python3 tests/test_skill_catalog.py
+	python3 tests/test_gstd_api_map_skill.py
 
 test-parser:
 	python3 tests/test_parse_test_output.py

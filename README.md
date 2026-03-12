@@ -82,6 +82,10 @@ Use `openclaw-skill/SKILL.md` as the wrapper entrypoint for the same pack.
 - `sails-gtest`
 - `sails-local-smoke`
 
+## Candidate Deep-Capability Skills
+
+- `gear-gstd-api-map` is an installable design-time API map for `gstd`, `gcore`, and `gsys`. Use it when architecture or feature work needs to choose the right standard Gear API before dropping into debugging detail. It remains outside the top-level default router while the pack stays provisional.
+
 ## Repo Structure
 
 - `SKILL.md` contains the top-level router.

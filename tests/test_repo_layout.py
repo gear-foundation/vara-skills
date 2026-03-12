@@ -23,6 +23,9 @@ def sanitized_files() -> list[Path]:
         ROOT / "SKILL.md",
         ROOT / "openclaw-skill" / "README.md",
         ROOT / "openclaw-skill" / "SKILL.md",
+        ROOT / "references" / "gear-gstd-api-and-syscalls.md",
+        ROOT / "skills" / "gear-gstd-api-map" / "SKILL.md",
+        ROOT / "skills" / "gear-gstd-api-map" / "assets" / "pressure-scenarios.md",
         ROOT / "tests" / "fixtures" / "gtest-workspace-error.log",
     ]
 
@@ -46,11 +49,13 @@ def main() -> int:
     require(ROOT / "references" / "gtest-cheatsheet.md")
     require(ROOT / "references" / "varaeth-extension-notes.md")
     require(ROOT / "references" / "gear-execution-model.md")
+    require(ROOT / "references" / "gear-gstd-api-and-syscalls.md")
     require(ROOT / "references" / "gear-messaging-and-replies.md")
     require(ROOT / "references" / "gear-gas-reservations-and-waitlist.md")
     require(ROOT / "references" / "sails-program-and-service-architecture.md")
     require(ROOT / "references" / "sails-idl-client-pipeline.md")
     require(ROOT / "references" / "sails-gtest-and-local-validation.md")
+    require(ROOT / "skills" / "gear-gstd-api-map" / "SKILL.md")
     require(ROOT / "skills" / "gear-message-execution" / "SKILL.md")
     require(ROOT / "scripts" / "install-codex-skills.sh")
     require(ROOT / "scripts" / "validate-repo.sh")

@@ -2,9 +2,8 @@
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "vara-skills",
   "owner": {
-    "name": "Vadim Smirnov",
-    "email": "ukint-vs@proton.me",
-    "url": "https://github.com/ukint-vs"
+    "name": "Gear Foundation",
+    "url": "https://github.com/gear-foundation"
   },
   "metadata": {
     "version": "0.1.0",
@@ -17,8 +16,7 @@
       "version": "0.1.0",
       "description": "Provisional standard Gear/Vara Sails builder skill pack for Claude, routed through ship-sails-app and measured by vara-skills-evals.",
       "author": {
-        "name": "Vadim Smirnov",
-        "email": "ukint-vs@proton.me"
+        "name": "Gear Foundation"
       }
     }
   ]

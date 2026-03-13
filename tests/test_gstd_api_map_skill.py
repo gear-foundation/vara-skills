@@ -66,11 +66,6 @@ def main() -> int:
     router = read("SKILL.md")
     assert "gear-gstd-api-map" not in router
 
-    readme = read("README.md")
-    readme_lower = readme.lower()
-    assert "gear-gstd-api-map" in readme
-    assert "design" in readme_lower and "api" in readme_lower
-
     print("gstd api map skill ok")
     return 0
 

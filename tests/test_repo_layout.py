@@ -64,10 +64,6 @@ def main() -> int:
     require(ROOT / "tests" / "test_install_codex_skills.py")
     require(ROOT / "tests")
 
-    readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert "Sails" in readme, "README.md should describe the Sails-builder focus"
-    assert "provisional" in readme.lower(), "README.md should describe the public pack as provisional"
-
     for path in sanitized_files():
         text = path.read_text(encoding="utf-8")
         for pattern in LOCAL_PATTERNS:

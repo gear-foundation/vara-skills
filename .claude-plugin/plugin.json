@@ -3,11 +3,10 @@
   "version": "0.1.0",
   "description": "Provisional standard Gear/Vara Sails builder skill pack for Claude, routed through ship-sails-app and measured by vara-skills-evals.",
   "author": {
-    "name": "Vadim Smirnov",
-    "email": "ukint-vs@proton.me"
+    "name": "Gear Foundation"
   },
-  "homepage": "https://github.com/ukint-vs/vara-skills",
-  "repository": "https://github.com/ukint-vs/vara-skills",
+  "homepage": "https://github.com/gear-foundation/vara-skills",
+  "repository": "https://github.com/gear-foundation/vara-skills",
   "keywords": [
     "vara",
     "gear",

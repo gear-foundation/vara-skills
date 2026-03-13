@@ -27,7 +27,7 @@ The pack is being narrowed toward standard Gear/Vara Sails app builders:
 Clone the repo and install the local skills:
 
 ```bash
-git clone git@github.com:ukint-vs/vara-skills.git
+git clone git@github.com:gear-foundation/vara-skills.git
 cd vara-skills
 bash scripts/install-codex-skills.sh
 ```
@@ -41,7 +41,7 @@ Claude Code can install this repo directly as a plugin. You do not need a separa
 Recommended install from GitHub:
 
 ```bash
-/plugin marketplace add https://github.com/ukint-vs/vara-skills
+/plugin marketplace add https://github.com/gear-foundation/vara-skills
 /plugin install vara-skills@vara-skills
 ```
 

@@ -19,6 +19,10 @@ def load_json(path: Path) -> dict[str, object]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def assert_nonempty_string(value: object, label: str) -> None:
+    assert isinstance(value, str) and value.strip(), label
+
+
 def main() -> int:
     plugin_path = ROOT / ".claude-plugin" / "plugin.json"
     marketplace_path = ROOT / ".claude-plugin" / "marketplace.json"
@@ -35,8 +39,13 @@ def main() -> int:
         assert plugin.get(field), f"plugin.json missing field: {field}"
     assert plugin["name"] == "vara-skills", "plugin.json should publish the pack as vara-skills"
     assert re.match(r"^\d+\.\d+\.\d+$", str(plugin["version"])), "plugin version must use semver"
-    assert plugin.get("homepage") == "https://github.com/ukint-vs/vara-skills"
-    assert plugin.get("repository") == "https://github.com/ukint-vs/vara-skills"
+    for field in ("homepage", "repository"):
+        value = plugin.get(field)
+        if value is not None:
+            assert_nonempty_string(value, f"plugin.json field should be a non-empty string when present: {field}")
+    plugin_author = plugin.get("author")
+    assert isinstance(plugin_author, dict), "plugin author should use object form"
+    assert_nonempty_string(plugin_author.get("name"), "plugin author should include a non-empty name")
     keywords = plugin.get("keywords", [])
     assert isinstance(keywords, list), "plugin keywords must be an array"
     assert "vara" in keywords and "sails" in keywords, "plugin keywords should expose Vara and Sails"
@@ -45,8 +54,9 @@ def main() -> int:
     assert marketplace.get("name") == "vara-skills", "marketplace should publish a public vara-skills name"
     owner = marketplace.get("owner")
     assert isinstance(owner, dict), "marketplace owner should use the object form expected by Claude Code"
-    assert owner.get("name") == "Vadim Smirnov"
-    assert owner.get("url") == "https://github.com/ukint-vs"
+    assert_nonempty_string(owner.get("name"), "marketplace owner should include a non-empty name")
+    if owner.get("url") is not None:
+        assert_nonempty_string(owner.get("url"), "marketplace owner URL should be a non-empty string when present")
     metadata = marketplace.get("metadata")
     assert isinstance(metadata, dict), "marketplace.json missing metadata block"
     assert metadata.get("version") == plugin["version"], "marketplace metadata version should match plugin version"
@@ -60,7 +70,7 @@ def main() -> int:
     assert first_plugin.get("description") == plugin["description"], "marketplace plugin description should match plugin.json"
     author = first_plugin.get("author")
     assert isinstance(author, dict), "marketplace plugin author should use object form"
-    assert author.get("name") == "Vadim Smirnov"
+    assert_nonempty_string(author.get("name"), "marketplace plugin author should include a non-empty name")
 
     openclaw_skill = openclaw_skill_path.read_text(encoding="utf-8")
     assert "ship-sails-app" in openclaw_skill, "OpenClaw wrapper should route through ship-sails-app"

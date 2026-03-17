@@ -12,7 +12,7 @@
   "plugins": [
     {
       "name": "vara-skills",
-      "source": ".",
+      "source": "https://github.com/gear-foundation/vara-skills",
       "version": "0.1.0",
       "description": "Provisional standard Gear/Vara Sails builder skill pack for Claude, routed through ship-sails-app and measured by vara-skills-evals.",
       "author": {

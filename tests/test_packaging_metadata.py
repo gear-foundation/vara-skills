@@ -69,7 +69,7 @@ def main() -> int:
     assert isinstance(plugins, list) and plugins, "marketplace.json must list at least one plugin"
     first_plugin = plugins[0]
     assert first_plugin.get("name") == "vara-skills", "marketplace should expose vara-skills"
-    assert first_plugin.get("source") == ".", "marketplace should point local testing at the repo root"
+    assert first_plugin.get("source") == "./", "marketplace should point local testing at the repo root"
     assert re.match(r"^\d+\.\d+\.\d+$", str(first_plugin.get("version", ""))), "marketplace plugin version must use semver"
     assert first_plugin.get("version") == metadata.get("version"), "marketplace plugin version should match metadata version"
     assert first_plugin.get("description") == plugin["description"], "marketplace plugin description should match plugin.json"

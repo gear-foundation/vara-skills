@@ -1,5 +1,4 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "vara-skills",
   "owner": {
     "name": "Gear Foundation"
@@ -11,7 +10,7 @@
   "plugins": [
     {
       "name": "vara-skills",
-      "source": ".",
+      "source": "./",
       "version": "1.0.0",
       "description": "Gear/Vara Sails builder skill pack for Claude Code — 17 skills for smart contract development on Vara Network.",
       "author": {

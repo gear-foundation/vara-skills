@@ -1,17 +1,11 @@
 {
   "name": "vara-skills",
-  "version": "0.1.0",
-  "description": "Provisional standard Gear/Vara Sails builder skill pack for Claude, routed through ship-sails-app and measured by vara-skills-evals.",
+  "description": "Gear/Vara Sails builder skill pack for Claude Code — 17 skills for smart contract development on Vara Network.",
   "author": {
     "name": "Gear Foundation"
   },
   "homepage": "https://github.com/gear-foundation/vara-skills",
   "repository": "https://github.com/gear-foundation/vara-skills",
-  "keywords": [
-    "vara",
-    "gear",
-    "sails",
-    "skills",
-    "claude"
-  ]
+  "license": "MIT",
+  "keywords": ["vara", "gear", "sails", "blockchain", "smart-contracts", "claude"]
 }

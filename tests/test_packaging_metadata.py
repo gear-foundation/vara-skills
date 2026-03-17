@@ -35,14 +35,17 @@ def main() -> int:
     require(openclaw_readme_path)
 
     plugin = load_json(plugin_path)
-    for field in ("name", "version", "description"):
+    for field in ("name", "description"):
         assert plugin.get(field), f"plugin.json missing field: {field}"
     assert plugin["name"] == "vara-skills", "plugin.json should publish the pack as vara-skills"
-    assert re.match(r"^\d+\.\d+\.\d+$", str(plugin["version"])), "plugin version must use semver"
+    # Version is managed solely in marketplace.json for relative-path plugins
+    # (per Claude Code docs: plugin.json version silently overrides marketplace version)
+    assert "version" not in plugin, "plugin.json should not set version for relative-path plugins (set in marketplace.json only)"
     for field in ("homepage", "repository"):
         value = plugin.get(field)
         if value is not None:
             assert_nonempty_string(value, f"plugin.json field should be a non-empty string when present: {field}")
+    assert_nonempty_string(plugin.get("license"), "plugin.json should include an SPDX license identifier")
     plugin_author = plugin.get("author")
     assert isinstance(plugin_author, dict), "plugin author should use object form"
     assert_nonempty_string(plugin_author.get("name"), "plugin author should include a non-empty name")
@@ -55,19 +58,22 @@ def main() -> int:
     owner = marketplace.get("owner")
     assert isinstance(owner, dict), "marketplace owner should use the object form expected by Claude Code"
     assert_nonempty_string(owner.get("name"), "marketplace owner should include a non-empty name")
-    if owner.get("url") is not None:
-        assert_nonempty_string(owner.get("url"), "marketplace owner URL should be a non-empty string when present")
+    # owner only supports name and email per Claude Code docs
+    for key in owner:
+        assert key in ("name", "email"), f"marketplace owner has unsupported field: {key}"
     metadata = marketplace.get("metadata")
     assert isinstance(metadata, dict), "marketplace.json missing metadata block"
-    assert metadata.get("version") == plugin["version"], "marketplace metadata version should match plugin version"
+    assert re.match(r"^\d+\.\d+\.\d+$", str(metadata.get("version", ""))), "marketplace metadata version must use semver"
     assert metadata.get("description"), "marketplace metadata should describe the pack"
     plugins = marketplace.get("plugins")
     assert isinstance(plugins, list) and plugins, "marketplace.json must list at least one plugin"
     first_plugin = plugins[0]
     assert first_plugin.get("name") == "vara-skills", "marketplace should expose vara-skills"
-    assert first_plugin.get("source") == ".", "marketplace should point local testing at the repo root"
-    assert first_plugin.get("version") == plugin["version"], "marketplace plugin version should match plugin.json"
+    assert first_plugin.get("source") == "./", "marketplace should point local testing at the repo root"
+    assert re.match(r"^\d+\.\d+\.\d+$", str(first_plugin.get("version", ""))), "marketplace plugin version must use semver"
+    assert first_plugin.get("version") == metadata.get("version"), "marketplace plugin version should match metadata version"
     assert first_plugin.get("description") == plugin["description"], "marketplace plugin description should match plugin.json"
+    assert_nonempty_string(first_plugin.get("license"), "marketplace plugin entry should include an SPDX license identifier")
     author = first_plugin.get("author")
     assert isinstance(author, dict), "marketplace plugin author should use object form"
     assert_nonempty_string(author.get("name"), "marketplace plugin author should include a non-empty name")

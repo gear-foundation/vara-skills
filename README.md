@@ -15,10 +15,13 @@ Each skill is a markdown file.
 The pack is being narrowed toward standard Gear/Vara Sails app builders:
 
 - preparing the local Rust and Gear toolchain
+- turning feature ideas into spec, architecture, and task artifacts
 - starting a new Sails app
 - building features in an existing Sails app
+- implementing approved Rust or Sails changes
 - reasoning about Gear message flow and execution behavior
-- getting architecture, IDL/client wiring, `gtest`, and local-node validation right
+- choosing the right `gstd` API when design depends on lower-level Gear behavior
+- getting architecture, IDL or client wiring, `gtest`, and local-node validation right
 
 ## Installation
 
@@ -70,22 +73,64 @@ Important difference from Codex and OpenClaw: the repo-root `SKILL.md` is the po
 
 Use `openclaw-skill/SKILL.md` as the wrapper entrypoint for the same pack.
 
-## Current Skill Pack
+## Skill Catalog
 
-- `sails-dev-env`
-- `ship-sails-app`
-- `sails-new-app`
-- `sails-feature-workflow`
-- `gear-message-execution`
-- `sails-architecture`
-- `sails-idl-client`
-- `sails-gtest`
-- `sails-local-smoke`
-- `awesome-sails-vft`
+### Router
 
-## Candidate Deep-Capability Skills
+- `ship-sails-app`: default entry skill for standard Gear/Vara Sails builder work. Routes the user to the next correct stage instead of jumping straight into code.
 
-- `gear-gstd-api-map` is an installable design-time API map for `gstd`, `gcore`, and `gsys`. Use it when architecture or feature work needs to choose the right standard Gear API before dropping into debugging detail. It remains outside the top-level default router while the pack stays provisional.
+### Planning And Architecture
+
+- `idea-to-spec`: turns a rough request into a concrete spec artifact with actors, state changes, messages, replies, events, invariants, and acceptance criteria.
+- `gear-architecture-planner`: maps an approved spec onto program boundaries, service boundaries, message flow, state ownership, and client or IDL implications.
+- `sails-architecture`: focuses on Sails-specific service and program boundaries, state patterns, routing, and architecture tradeoffs for standard Sails repos.
+- `task-decomposer`: breaks approved spec and architecture work into dependency-ordered implementation tasks with verification checkpoints.
+
+### Build And Implementation
+
+- `sails-dev-env`: prepares or repairs the local Rust, Wasm, `cargo-sails`, and `gear` toolchain for standard Sails work.
+- `sails-new-app`: greenfield workflow for creating a standard Sails workspace without skipping the planning artifacts.
+- `sails-feature-workflow`: stage-by-stage workflow for changing behavior in an existing Sails repo.
+- `sails-rust-implementer`: implements approved Rust or Sails tasks while preserving routing, IDL, and async contract behavior.
+- `sails-idl-client`: fixes or wires the IDL and generated client pipeline in app, client, or test crates.
+
+### Verification And Runtime Behavior
+
+- `sails-gtest`: standard Sails-first `gtest` verification flow using generated clients or `GtestEnv`.
+- `gtest-tdd-loop`: red-green loop for deterministic `gtest` work, using the repo scripts to capture failures and final green evidence.
+- `sails-local-smoke`: typed local-node validation after `gtest` is already green.
+- `gear-message-execution`: focused reasoning about replies, delays, waitlist behavior, reservations, rollback, and async execution order.
+
+### Deep Capability Helpers
+
+- `gear-gstd-api-map`: design-time API chooser for `gstd`, `gcore`, and `gsys` when a spec or architecture depends on exact Gear messaging or execution primitives.
+
+## Recommended Workflows
+
+### New app workflow
+
+- `ship-sails-app` -> `sails-dev-env` when the machine is not ready.
+- `ship-sails-app` -> `sails-new-app` to establish the greenfield path.
+- `idea-to-spec` -> `gear-architecture-planner` or `sails-architecture` -> `task-decomposer` to create the artifact chain in `docs/plans/`.
+- `sails-rust-implementer` for the approved code changes.
+- `sails-idl-client` if the generated interface path needs wiring or repair.
+- `sails-gtest` or `gtest-tdd-loop` for evidence-driven verification.
+- `sails-local-smoke` only after green `gtest`.
+
+### Existing feature workflow
+
+- `ship-sails-app` -> `sails-feature-workflow` as the main router for existing Sails repos.
+- `idea-to-spec` first, then `sails-architecture` for Sails-level structure.
+- Add `gear-gstd-api-map` when the feature depends on exact `gstd` API choice.
+- Add `gear-message-execution` when replies, delays, reservations, or timeout behavior are part of the change.
+- `task-decomposer` -> `sails-rust-implementer` -> `sails-idl-client` -> `sails-gtest` or `gtest-tdd-loop`.
+- `sails-local-smoke` only after the typed test loop is green.
+
+### Verification workflow
+
+- Use `sails-gtest` for the normal verification path.
+- Use `gtest-tdd-loop` when the task must start from a failing test and produce parser-backed evidence from the repo scripts.
+- Use `sails-local-smoke` only after `gtest`, not as a substitute for it.
 
 ## Repo Structure
 

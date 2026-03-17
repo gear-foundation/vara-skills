@@ -16,10 +16,11 @@ Keep feature work inside an existing Sails repo on an explicit sequence instead 
 3. If the feature needs API selection across `gstd`, review `../gear-gstd-api-map/SKILL.md` before coding.
 4. If the feature changes async behavior, replies, delays, reservations, or waitlist semantics, review `../gear-message-execution/SKILL.md` before coding.
 5. Break the work into tasks in `...-tasks.md` with `task-decomposer` and `../../assets/task-plan-template.md`.
-6. Implement the Rust changes through `sails-rust-implementer`.
-7. If the interface changed or the app needs integration work, refresh the `.idl` and generated client or typed client path through `../sails-idl-client/SKILL.md`.
-8. Run `gtest` through `../sails-gtest/SKILL.md`.
-9. Run smoke validation only after green `gtest`, using `../sails-local-smoke/SKILL.md`.
+6. If the feature introduces a fungible token, mint/burn roles, token-backed accounting, or native-value exchange, review `../awesome-sails-vft/SKILL.md` before coding.
+7. Implement the Rust changes through `sails-rust-implementer`.
+8. If the interface changed or the app needs integration work, refresh the `.idl` and generated client or typed client path through `../sails-idl-client/SKILL.md`.
+9. Run `gtest` through `../sails-gtest/SKILL.md`.
+10. Run smoke validation only after green `gtest`, using `../sails-local-smoke/SKILL.md`.
 
 ## Sponsored UX Cases
 

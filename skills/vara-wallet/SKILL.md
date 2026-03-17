@@ -52,7 +52,7 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 
 | Command | Purpose |
 |---------|---------|
-| `$VW node info` | Chain name, genesis, latest block |
+| `$VW node info` | Chain name, spec version, existential deposit |
 | `$VW balance [address]` | Account balance in VARA |
 | `$VW program info <id>` | Program status and codeId |
 | `$VW program list [--count N]` | List on-chain programs |
@@ -76,7 +76,7 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 | `$VW message send <dest> [--payload <hex>] [--value <v>]` | Send message to any actor (program, user, wallet) — also usable for VARA transfers with custom payload |
 | `$VW message reply <mid> [--payload <hex>]` | Reply to a message |
 | `$VW mailbox claim <messageId>` | Claim value from mailbox message |
-| `$VW call <pid> Service/Function --args '[...]' --value <v> --units vara\|raw --idl <path>` | Sails state-changing call |
+| `$VW call <pid> Service/Function --args '[...]' --value <v> --units vara\|raw --gas-limit <n> --idl <path>` | Sails state-changing call |
 | `$VW vft transfer <token> <to> <amount> --idl <path>` | Transfer fungible tokens |
 | `$VW vft approve <token> <spender> <amount> --idl <path>` | Approve token spender |
 | `$VW voucher issue <spender> <value>` | Issue gas voucher |

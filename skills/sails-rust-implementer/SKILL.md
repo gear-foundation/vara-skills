@@ -13,6 +13,8 @@ Implement approved tasks in Sails-first Rust workspaces without freelancing new 
 
 Read `../../references/sails-cheatsheet.md`, `../../references/sails-rs-imports.md`, `../../references/delayed-message-pattern.md`, `../../references/vara-domain-overview.md`, `../../references/gear-sails-production-patterns.md`, `../../references/gear-messaging-and-replies.md`, and `../../references/gear-gas-reservations-and-waitlist.md`.
 
+Read `../../references/awesome-sails-token-patterns.md` when the task adds a fungible token, token-backed accounting, or awesome-sails token services.
+
 Consume the approved `spec`, `architecture`, and `tasks` artifacts before changing code.
 
 If the target crate explicitly builds an `ethexe` path, stop and hand back to a dedicated ethexe workflow instead of extending this standard Sails pack.

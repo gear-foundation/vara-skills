@@ -62,6 +62,12 @@ STARTER_SKILLS = {
         "references",
         "scripts",
     ],
+    "awesome-sails-vft": [
+        "SKILL.md",
+        "assets",
+        "references",
+        "scripts",
+    ],
 }
 
 
@@ -306,6 +312,12 @@ def main() -> int:
     gtest_tdd = read("skills/gtest-tdd-loop/SKILL.md")
     assert "../../references/sails-gtest-and-local-validation.md" in gtest_tdd
     assert "../../references/gear-gas-reservations-and-waitlist.md" in gtest_tdd
+
+    token_skill = read("skills/awesome-sails-vft/SKILL.md")
+    assert "../../references/awesome-sails-token-patterns.md" in token_skill
+    assert "token-scope-checklist.md" in token_skill
+    assert "token-crate-chooser.md" in token_skill
+    assert "token-gtest-matrix.md" in token_skill
 
     print("starter skills ok")
     return 0

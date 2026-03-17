@@ -18,6 +18,7 @@ Turn an approved spec into a Sails-specific architecture artifact before impleme
 - `../../references/sails-program-and-service-architecture.md`
 - `../../references/gear-messaging-and-replies.md`
 - `../../references/gear-gas-reservations-and-waitlist.md`
+- `../../references/awesome-sails-token-patterns.md`
 
 Write the result to `docs/plans/YYYY-MM-DD-<topic>-architecture.md`.
 
@@ -32,6 +33,7 @@ Write the result to `docs/plans/YYYY-MM-DD-<topic>-architecture.md`.
 
 - If the architecture question is whether Gear or Sails exposes the right API family, review `../gear-gstd-api-map/SKILL.md` first.
 - If the architecture risk is mostly around replies, timeouts, delayed work, or reservations, review `../gear-message-execution/SKILL.md`.
+- If the architecture introduces a fungible token, token-backed accounting, or token-manager split, review `../../references/awesome-sails-token-patterns.md`.
 
 ## Review Checklist
 

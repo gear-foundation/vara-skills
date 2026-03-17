@@ -81,6 +81,7 @@ Use `openclaw-skill/SKILL.md` as the wrapper entrypoint for the same pack.
 - `sails-idl-client`
 - `sails-gtest`
 - `sails-local-smoke`
+- `awesome-sails-vft`
 
 ## Candidate Deep-Capability Skills
 

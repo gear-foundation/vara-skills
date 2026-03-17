@@ -205,7 +205,7 @@ $VW transfer $TO 1.5                        # 1.5 VARA
 $VW transfer $TO 15000000000 --units raw    # same in raw units
 ```
 
-Existential deposit is ~10 VARA on mainnet.
+Existential deposit is 1 VARA on both mainnet and testnet. Accounts with balance below this are reaped.
 
 ## Error Recovery
 

@@ -2,22 +2,27 @@
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "vara-skills",
   "owner": {
-    "name": "Gear Foundation",
-    "url": "https://github.com/gear-foundation"
+    "name": "Gear Foundation"
   },
   "metadata": {
-    "version": "0.1.0",
-    "description": "Provisional standard Gear/Vara Sails builder skill pack for Claude Code."
+    "version": "1.0.0",
+    "description": "Official Gear/Vara Sails builder skill pack marketplace for Claude Code."
   },
   "plugins": [
     {
       "name": "vara-skills",
-      "source": "https://github.com/gear-foundation/vara-skills",
-      "version": "0.1.0",
-      "description": "Provisional standard Gear/Vara Sails builder skill pack for Claude, routed through ship-sails-app and measured by vara-skills-evals.",
+      "source": ".",
+      "version": "1.0.0",
+      "description": "Gear/Vara Sails builder skill pack for Claude Code — 17 skills for smart contract development on Vara Network.",
       "author": {
         "name": "Gear Foundation"
-      }
+      },
+      "homepage": "https://github.com/gear-foundation/vara-skills",
+      "repository": "https://github.com/gear-foundation/vara-skills",
+      "license": "MIT",
+      "keywords": ["vara", "gear", "sails", "blockchain", "smart-contracts", "claude"],
+      "category": "blockchain",
+      "tags": ["vara", "gear", "sails", "blockchain", "smart-contracts", "wasm"]
     }
   ]
 }

@@ -15,11 +15,13 @@ sails-rs = "0.10.2"
 
 [build-dependencies]
 sails-rs = { version = "0.10.2", features = ["wasm-builder"] }
-sails-idl-gen = "0.10.2"
 
 [dev-dependencies]
 sails-rs = { version = "0.10.2", features = ["gtest"] }
 ```
+
+- Add `gclient` features or dependencies only when the crate also runs local-node smoke or off-chain integration tests.
+- Do not add `sails-idl-gen` to the default app/wasm baseline unless the repo intentionally uses a more manual IDL pipeline.
 
 ### Dedicated Client Crate
 
@@ -28,12 +30,11 @@ sails-rs = { version = "0.10.2", features = ["gtest"] }
 sails-rs = "0.10.2"
 
 [build-dependencies]
-sails-client-gen = "0.10.2"
-sails-idl-gen = "0.10.2"
+sails-rs = { version = "0.10.2", features = ["build"] }
 ```
 
-- `sails-rs 0.10.2` still exposes `features = ["build"]` as an alias, and some older repos still use it.
-- For new program or wasm crate guidance, prefer `features = ["wasm-builder"]` because that is what the official templates and README teach now.
+- In current official examples, dedicated Rust client crates commonly use sails-rs with features = ["build"].
+- Reach for direct sails-client-gen / sails-idl-gen only when the repo intentionally uses a manual generation pipeline.
 
 ## Common Imports
 
@@ -47,6 +48,13 @@ use sails_rs::gstd::{exec, msg};
 - Use `sails_rs::collections::*` when you want `no_std`-friendly collections through the framework path.
 - Import `exec` and `msg` from `sails_rs::gstd` for standard Gear or Vara Sails programs.
 
+## Builder Defaults
+
+- For an app / wasm crate, the default `build.rs` path is `sails_rs::build_wasm()`.
+- For a Rust client-generation crate, use `sails_rs::build_client::<Program>()`.
+- Use the Wasm path when the crate’s job is to build the on-chain artifact.
+- Use the client path when the crate’s job is to generate a typed Rust client from a program interface.
+
 ## Export And Event Rules
 
 - In `0.10.2`, treat `#[export]` as mandatory for every service method that should be publicly callable.
@@ -54,6 +62,7 @@ use sails_rs::gstd::{exec, msg};
 - Use `self.emit_event(...)`, not `notify_on(...)`.
 
 ```rust
+#[sails_rs::event]
 #[derive(Encode, Decode, TypeInfo)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]

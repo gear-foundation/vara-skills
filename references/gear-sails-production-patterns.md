@@ -343,7 +343,52 @@ Production defaults:
 - fail before mutating state
 - prefer reusable guard wrappers over repeated inline checks when the same rule protects multiple mutation paths
 
-## 8. Async Rules: Re-Read State After `.await`
+## 8. Define And Emit Typed Service Events
+
+In Sails, events are a first-class service pattern, not an afterthought.
+
+The stable default is:
+
+- define a typed event enum with #[event]
+- attach it to the service with #[service(events = Events)]
+- emit events from state-changing command paths with self.emit_event(...)
+
+This matches the framework model: events are declared per service, each enum variant represents a distinct event shape, and once a service declares events = ..., Sails generates the emit_event method for that service. These events are meant to notify off-chain consumers about state changes, and generated JS surfaces can expose them for subscription through the IDL-driven client layer.
+
+```rust
+#[sails_rs::event]
+#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
+pub enum Events {
+    Created(ActorId),
+    Removed(u64),
+}
+
+#[service(events = Events)]
+impl MyService {
+    #[export]
+    pub fn create(&mut self) {
+        self.emit_event(Events::Created(Syscall::message_source())).unwrap();
+    }
+}
+```
+Production rules:
+
+- define one service-level event enum per emitted event surface
+- emit events from successful state-changing command paths, not from read-only queries
+- treat event variants as part of the public integration contract
+- prefer structured fields over opaque blobs so indexers, frontends, and analytics code can evolve safely
+- emit after the authoritative state transition is accepted, not before
+- keep event naming domain-oriented and stable enough for downstream consumers
+
+Guardrails:
+
+- do not emit vague variants like Updated when the domain change should be explicit
+- do not treat event payload layout as disposable once off-chain consumers depend on it
+- do not emit success-style events on paths that may still fail or revert
+
+## 9. Async Rules: Re-Read State After `.await`
 
 Any shared mutable state read before `.await` may be stale after resume.
 
@@ -380,9 +425,42 @@ Production rules:
 - after `.await`, re-read or revalidate shared state before mutating it
 - if a command cannot tolerate drift, redesign it into smaller messages or stricter validation steps
 
-## 9. Use Fail-Fast Command Semantics
+## 10. Default To #[export(unwrap_result)] For Fatal Command Paths
 
-Across `sails`, `awesome-sails`, and `dapps`, the safer production stance is fail-fast for stateful commands.
+For stateful command handlers, the default Sails production style is to return Result<_, Error> from the service method and expose it with #[export(unwrap_result)].
+
+That keeps the command path explicit in Rust, while preserving fail-fast semantics at the exported boundary.
+
+```rust
+#[service]
+impl BattleService<'_> {
+    #[export(unwrap_result)]
+    pub fn cancel_tournament(&mut self) -> Result<(), Error> {
+        let event = self.cancel_tournament_impl()?;
+        self.emit_event(event).expect("Notification Error");
+        Ok(())
+    }
+}
+```
+
+Why this is the default:
+
+- the method body keeps normal Result-based control flow
+- domain failures stay typed and readable inside the implementation
+- the exported command still fails fast instead of leaving partially-updated state alive
+- the Sails boundary expresses the intended production semantics directly
+
+Recommended practice:
+
+- return Result from stateful command handlers when failure is part of the internal control flow
+- use #[export(unwrap_result)] when command failure should revert the current execution
+- expect UserspacePanic in tests for fatal exported command-path failures
+- keep compensation or partial-success behavior only when the spec explicitly models it
+
+
+## 11. Use Fail-Fast Command Semantics Allowed, But Not The Default
+
+Manual fail-fast conversion is still valid, but it should be treated as an explicit exception rather than the primary style.
 
 ```rust
 pub fn panicking<T, E: core::fmt::Debug, F: FnOnce() -> Result<T, E>>(f: F) -> T {
@@ -402,19 +480,21 @@ impl BattleService<'_> {
 }
 ```
 
-Recommended practice:
+This style is allowed when:
 
-- separate transport failure, timeout, and error reply
-- panic on stateful command failure unless the spec explicitly models compensation
-- expect `UserspacePanic` in tests for fatal command-path failures
+- the public method intentionally exposes no Result shape at all
+- the code must adapt older service structure without a wider refactor
+- a small compatibility layer is clearer than rewriting multiple internal helpers
 
-For reply-driven flows:
+Costs:
 
-- use generated clients when available
-- configure `reply_deposit` when the flow depends on reply hooks or awaited replies
-- treat low-level byte payloads as a diagnostic path, not the normal Sails route
+- the exported API hides the recoverable/internal error shape
+- it is less idiomatic than using Sails export behavior directly
+- agents may copy the helper mechanically even where #[export(unwrap_result)] is clearer
 
-## 10. Generated Clients First, Raw Bytes Only As Escape Hatch
+Default rule: prefer #[export(unwrap_result)] over hand-rolled panic wrappers unless the method shape has a strong reason not to return Result.
+
+## 12. Generated Clients First, Raw Bytes Only As Escape Hatch
 
 The stable default is IDL plus generated clients.
 
@@ -447,7 +527,7 @@ Use generated clients by default because they preserve:
 
 Hand-roll raw bytes only at low-level integration boundaries or when isolating codec/routing bugs.
 
-## 11. Delayed Work And `ReservationId` Need Explicit Design
+## 13. Delayed Work And `ReservationId` Need Explicit Design
 
 Delayed self-messages and reservations are for genuinely future-block workflows, not for vague “maybe later” logic.
 
@@ -504,7 +584,7 @@ If delayed work is essential, the architecture should name:
 - which gas source pays for it
 - how stale or duplicate messages are handled
 
-## 12. Test Like Production, Not Like A Synchronous Call Stack
+## 14. Test Like Production, Not Like A Synchronous Call Stack
 
 Use `GtestEnv` modes intentionally.
 

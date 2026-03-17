@@ -31,6 +31,17 @@ Pick `Next` or `Manual` for timing-sensitive flows, delayed work, reply absence,
 - Gas, value, or reservation-sensitive results when accounting matters
 - Real route or codec bugs with a low-level byte path only when generated clients are insufficient
 
+## Event Listener Pattern
+
+- If the service declares `#[service(events = ...)]`, prefer asserting events through the generated listener API.
+- A common flow is:
+  - obtain the service client
+  - create a listener from that service client
+  - start listening before the command that should emit the event
+  - call the command
+  - read the next event from the stream and assert its typed payload
+- Event assertions should be tied to the block that successfully executed the producing command.
+
 ## Sails-Specific Edge Cases
 
 - `ReplyIsMissing` often means the wrong `BlockRunMode` or missing block advancement.
@@ -47,6 +58,12 @@ Pick `Next` or `Manual` for timing-sensitive flows, delayed work, reply absence,
 4. Upload the tested Wasm, deploy with a unique salt, and record the real program id.
 5. Use the generated client for one command and one query path.
 6. Use local dev accounts such as `//Alice` and `//Bob` only for local smoke, and keep seed phrases or private keys out of committed docs.
+
+## Setup Ergonomics
+
+- `sails_rs::gtest::constants` such as `DEFAULT_USER_ALICE`, `DEFAULT_USERS_INITIAL_BALANCE`, and `UNITS` improve readability in ordinary happy-path tests.
+- Treat them as convenience fixtures, not as part of the behavioral contract under test.
+- Use explicit custom accounts or balances when the test depends on caller identity, funding asymmetry, or boundary conditions.
 
 ## Guardrails
 

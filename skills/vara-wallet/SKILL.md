@@ -15,9 +15,9 @@ CLI tool for AI agents to interact with Vara Network on-chain.
 Use this skill for **on-chain interaction** with Vara Network: deploying programs, calling Sails methods, managing wallets, transferring VARA, querying state, and monitoring events.
 
 Do NOT use this skill for:
-- Writing Sails Rust programs — use `../sails-feature-workflow/SKILL.md`
-- Running gtest — use `../sails-gtest/SKILL.md`
-- Setting up Rust/Gear toolchain — use `../sails-dev-env/SKILL.md`
+- Writing Sails Rust programs — use `vara-skills/skills/sails-feature-workflow/`
+- Running gtest — use `vara-skills/skills/sails-gtest/`
+- Setting up Rust/Gear toolchain — use `vara-skills/skills/sails-dev-env/`
 
 ## Setup
 
@@ -70,12 +70,13 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 | Command | Purpose |
 |---------|---------|
 | `$VW transfer <to> <amount>` | Transfer VARA tokens |
-| `$VW program upload <wasm> [--payload <hex>]` | Upload + init program |
-| `$VW program deploy <codeId> [--payload <hex>]` | Deploy from existing code |
+| `$VW program upload <wasm> [--payload <hex>] [--value <v>] [--units vara\|raw]` | Upload + init program |
+| `$VW program deploy <codeId> [--payload <hex>] [--value <v>] [--units vara\|raw]` | Deploy from existing code |
 | `$VW code upload <wasm>` | Upload code blob only |
-| `$VW message send <pid> [--payload <hex>]` | Send message to program |
+| `$VW message send <dest> [--payload <hex>] [--value <v>]` | Send message to any actor (program, user, wallet) — also usable for VARA transfers with custom payload |
 | `$VW message reply <mid> [--payload <hex>]` | Reply to a message |
-| `$VW call <pid> Service/Function --args '[...]' --idl <path>` | Sails state-changing call |
+| `$VW mailbox claim <messageId>` | Claim value from mailbox message |
+| `$VW call <pid> Service/Function --args '[...]' --value <v> --units vara\|raw --idl <path>` | Sails state-changing call |
 | `$VW vft transfer <token> <to> <amount> --idl <path>` | Transfer fungible tokens |
 | `$VW vft approve <token> <spender> <amount> --idl <path>` | Approve token spender |
 | `$VW voucher issue <spender> <value>` | Issue gas voucher |
@@ -205,7 +206,7 @@ $VW transfer $TO 1.5                        # 1.5 VARA
 $VW transfer $TO 15000000000 --units raw    # same in raw units
 ```
 
-Existential deposit is 1 VARA on both mainnet and testnet. Accounts with balance below this are reaped.
+Existential deposit is ~10 VARA on mainnet.
 
 ## Error Recovery
 

@@ -68,6 +68,12 @@ STARTER_SKILLS = {
         "references",
         "scripts",
     ],
+    "sails-frontend": [
+        "SKILL.md",
+        "assets",
+        "references",
+        "scripts",
+    ],
 }
 
 
@@ -160,6 +166,15 @@ def main() -> int:
     assert "build.rs" in idl_client
     assert "../../references/sails-idl-client-pipeline.md" in idl_client
 
+    frontend = read("skills/sails-frontend/SKILL.md")
+    frontend_lower = frontend.lower()
+    assert "useprogram" in frontend_lower
+    assert "usesendprogramtransaction" in frontend_lower
+    assert "useprepareprogramtransaction" in frontend_lower
+    assert "voucherid" in frontend_lower
+    assert "@gear-js/api" in frontend
+    assert "../../references/sails-frontend-and-gear-js.md" in frontend
+
     gtest_loop = read("skills/sails-gtest/SKILL.md")
     assert "../../references/sails-gtest-and-local-validation.md" in gtest_loop
     assert "../../references/gear-gas-reservations-and-waitlist.md" in gtest_loop
@@ -234,6 +249,15 @@ def main() -> int:
     assert ".idl" in idl_pipeline
     assert "wasm-builder" in idl_pipeline
     assert 'features = ["build"]' in idl_pipeline
+
+    frontend_ref = read("references/sails-frontend-and-gear-js.md")
+    frontend_ref_lower = frontend_ref.lower()
+    assert "useprogramquery" in frontend_ref_lower
+    assert "useprogramevent" in frontend_ref_lower
+    assert "signandsend" in frontend_ref_lower
+    assert "getprogrammetadata" in frontend_ref_lower
+    assert "api.message.send" in frontend_ref
+    assert "wallet" in frontend_ref_lower
 
     validation_ref = read("references/sails-gtest-and-local-validation.md")
     validation_ref_lower = validation_ref.lower()

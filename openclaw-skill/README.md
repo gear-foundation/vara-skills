@@ -15,7 +15,7 @@ The wrapper sends OpenClaw to the same root router used by Codex and Claude. Sta
 - standard Gear/Vara Sails only
 - new app flow and existing feature work
 - message flow, replies, delays, and reservations
-- architecture, IDL/client, `gtest`, and local smoke
+- architecture, IDL/client, `gtest`, local smoke, and React frontend wiring
 
 ## Notes
 

@@ -16,6 +16,7 @@ EXPECTED_SKILLS = (
     "gtest-tdd-loop",
     "idea-to-spec",
     "sails-dev-env",
+    "sails-frontend",
     "sails-architecture",
     "sails-feature-workflow",
     "sails-gtest",

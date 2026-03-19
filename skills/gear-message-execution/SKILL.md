@@ -15,6 +15,7 @@ Provide a focused local path for reasoning about message flow and execution beha
 - `../../references/gear-sails-production-patterns.md`
 - `../../references/gear-messaging-and-replies.md`
 - `../../references/gear-gas-reservations-and-waitlist.md`
+- `../../references/scale-binary-decoding-guide.md`
 
 ## Route Here When
 
@@ -22,14 +23,18 @@ Provide a focused local path for reasoning about message flow and execution beha
 - delayed work spans future blocks
 - reservations or waitlist behavior affect the design
 - a builder is mixing raw payload handling into an otherwise standard Sails flow
+- raw hex, reply bytes, event bytes, or metadata-vs-IDL decoding path is unclear
 
 ## Working Model
 
 1. Confirm what executes now versus after the next block.
-2. Identify whether the path is fire-and-forget, reply-driven, delayed, or reservation-backed.
-3. Separate transport failure, timeout, and error reply.
-4. Check whether rollback should revert local state if a send or reply path fails.
-5. If the path is in tests, confirm the block-advance pattern and expected reply timing.
+2. If raw bytes are involved, classify the source first: constructor, service payload, reply, event, full state, or state-function output.
+3. Determine whether the bytes are Sails-routed, plain SCALE, or metadata-driven state output.
+4. Match the decoder artifact to the source: generated client or `.idl`, `ProgramMetadata`, or `state.meta.wasm`.
+5. Identify whether the path is fire-and-forget, reply-driven, delayed, or reservation-backed.
+6. Separate transport failure, timeout, and error reply.
+7. Check whether rollback should revert local state if a send or reply path fails.
+8. If the path is in tests, confirm the block-advance pattern and expected reply timing.
 
 ## Guardrails
 
@@ -41,3 +46,6 @@ Provide a focused local path for reasoning about message flow and execution beha
 - If a Sails route is involved, expect route-prefixed encoding rather than a raw struct payload.
 - Keep the guidance on the standard Gear/Vara Sails path.
 - Prefer local repo references over external skill dependencies.
+- Do not start with plain `Decode::<T>` on arbitrary bytes when a Sails route may be involved.
+- Match decode artifact to source: generated client or `.idl` for standard Sails interface paths, `ProgramMetadata` for full state, and `state.meta.wasm` for state-function output.
+- Treat `gear-meta` as a debugging fallback, not the first-choice default path.

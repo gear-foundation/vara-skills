@@ -175,6 +175,24 @@ For low-level reads, use:
 - `api.programState.read` with `ProgramMetadata` for the full state
 - `api.programState.readUsingWasm` for state functions backed by `state.meta.wasm`
 
+## SCALE Decode Decision
+
+When the frontend drops below the generated Sails path, classify the bytes before decoding:
+
+- standard Sails constructors, service calls, replies, and events:
+  - prefer the generated client
+  - use runtime `parseIdl` only when dynamic control is explicitly required
+
+- full state reads:
+  - use `api.programState.read` with `ProgramMetadata`
+
+- state-function outputs:
+  - use `api.programState.readUsingWasm` with `state.meta.wasm`
+
+Do not decode arbitrary Sails-facing bytes as a bare DTO until you have ruled out routing framing.
+Do not use `.idl` and `ProgramMetadata` interchangeably.
+Do not use full-state metadata where `state.meta.wasm` is the correct artifact.
+
 ## Commands And Transactions
 
 For standard Sails writes, prefer hooks over manual extrinsic assembly.

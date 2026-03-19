@@ -131,11 +131,13 @@ def main() -> int:
     assert "../../references/sails-gtest-and-local-validation.md" in ship
     assert "../../references/sails-rs-imports.md" in ship
     assert "../../references/delayed-message-pattern.md" in ship
+    assert "../../references/scale-binary-decoding-guide.md" in ship
     assert "gear-message-execution" in ship
     assert "sails-dev-env" in ship
     assert "cargo sails program" in ship
     assert "0.10.2" in ship
     assert "build.rs" in ship
+
 
     new_app = read("skills/sails-new-app/SKILL.md")
     assert "Sails" in new_app
@@ -177,11 +179,13 @@ def main() -> int:
     assert "voucherid" in frontend_lower
     assert "@gear-js/api" in frontend
     assert "../../references/sails-frontend-and-gear-js.md" in frontend
+    assert "../../references/scale-binary-decoding-guide.md" in frontend
 
     gtest_loop = read("skills/sails-gtest/SKILL.md")
     assert "../../references/sails-gtest-and-local-validation.md" in gtest_loop
     assert "../../references/gear-gas-reservations-and-waitlist.md" in gtest_loop
     assert "../../references/gtest-patterns.md" in gtest_loop
+    assert "../../references/scale-binary-decoding-guide.md" in gtest_loop
     assert "MessageId" in gtest_loop
     assert "run_next_block" in gtest_loop
 
@@ -199,6 +203,7 @@ def main() -> int:
     assert "../../references/gear-execution-model.md" in execution
     assert "../../references/gear-messaging-and-replies.md" in execution
     assert "../../references/gear-gas-reservations-and-waitlist.md" in execution
+    assert "../../references/scale-binary-decoding-guide.md" in execution
 
     gear_execution = read("references/gear-execution-model.md")
     gear_execution_lower = gear_execution.lower()
@@ -345,6 +350,14 @@ def main() -> int:
     assert "token-scope-checklist.md" in token_skill
     assert "token-crate-chooser.md" in token_skill
     assert "token-gtest-matrix.md" in token_skill
+
+    scale_decode = read("references/scale-binary-decoding-guide.md")
+    scale_decode_lower = scale_decode.lower()
+    assert "decode::<T>" in scale_decode_lower or "bare scale payload" in scale_decode_lower
+    assert "state.meta.wasm" in scale_decode
+    assert "programmetadata" in scale_decode_lower
+    assert "gear-meta" in scale_decode_lower
+    assert "sails-routed" in scale_decode_lower or "sails route" in scale_decode_lower
 
     print("starter skills ok")
     return 0

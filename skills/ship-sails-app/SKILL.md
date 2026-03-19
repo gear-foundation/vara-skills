@@ -49,6 +49,7 @@ Use this as the first stop for the provisional Sails-builder pack. Route the bui
 - Need to author or debug `gtest`: `../sails-gtest/SKILL.md`
 - `gtest` is green and the next step is a typed live-node smoke run: `../sails-local-smoke/SKILL.md`
 - Need to add a fungible token or token-backed accounting layer with awesome-sails: `../awesome-sails-vft/SKILL.md`
+- Need to build or repair the React or TypeScript frontend for a Sails app: `../sails-frontend/SKILL.md`
 
 ## Required Artifact Chain
 

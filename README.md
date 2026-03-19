@@ -22,6 +22,7 @@ The pack is being narrowed toward standard Gear/Vara Sails app builders:
 - reasoning about Gear message flow and execution behavior
 - choosing the right `gstd` API when design depends on lower-level Gear behavior
 - getting architecture, IDL or client wiring, `gtest`, and local-node validation right
+- building or extending a React frontend for a standard Sails app with Sails-JS and Gear-JS
 
 ## Installation
 

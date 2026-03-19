@@ -29,6 +29,7 @@ Load the repo router at `../SKILL.md`, then begin with `ship-sails-app`.
 - IDL or generated client issues: `../skills/sails-idl-client/SKILL.md`
 - `gtest` authoring or debugging: `../skills/sails-gtest/SKILL.md`
 - Local-node smoke after green tests: `../skills/sails-local-smoke/SKILL.md`
+- React or TypeScript frontend work: `../skills/sails-frontend/SKILL.md`
 
 ## Scope
 

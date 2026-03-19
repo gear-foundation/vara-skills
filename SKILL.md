@@ -29,6 +29,7 @@ The repo is intended to be self-contained: use local `references/` handbook file
 - Run typed local-node smoke after green `gtest`: `skills/sails-local-smoke/SKILL.md`
 - Add a fungible token layer with awesome-sails: `skills/awesome-sails-vft/SKILL.md`
 - Interact with Vara Network on-chain (deploy, call, transfer, monitor): `skills/vara-wallet/SKILL.md`
+- Build or extend a React frontend for a Sails app: `skills/sails-frontend/SKILL.md`
 
 ## Guardrails
 

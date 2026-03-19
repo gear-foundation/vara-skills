@@ -17,6 +17,7 @@ Run the Sails-first test loop with generated clients and explicit `gtest` eviden
 - `../../references/sails-cheatsheet.md`
 - `../../references/sails-gtest-and-local-validation.md`
 - `../../references/gear-gas-reservations-and-waitlist.md`
+- `../../references/scale-binary-decoding-guide.md`
 
 Write the result to `docs/plans/YYYY-MM-DD-<topic>-gtest.md`.
 
@@ -24,7 +25,7 @@ Write the result to `docs/plans/YYYY-MM-DD-<topic>-gtest.md`.
 
 1. Confirm the implementation target is ready for verification.
 2. Use generated clients or `GtestEnv` instead of hand-built payloads where the workspace supports them.
-3. If the test must go below generated clients, remember the raw mental model: `send_bytes*` returns a `MessageId`, `run_next_block` returns the `BlockRunResult`, and the reply evidence lives in the block result.
+3. If the test must go below generated clients, first decide whether the payload or reply bytes are Sails-routed, plain SCALE, or metadata-driven state output; then apply the raw mental model: `send_bytes*` returns a `MessageId`, `run_next_block` returns the `BlockRunResult`, and the reply evidence lives in the block result.
 4. Pick the right `BlockRunMode` and advance blocks explicitly when replies or deferred effects depend on progression.
 5. Use `run_to_block` when delayed work or timeout behavior spans multiple blocks.
 6. Assert behavior, replies, events, or accounting in the test result, not just compilation.
@@ -36,3 +37,4 @@ Write the result to `docs/plans/YYYY-MM-DD-<topic>-gtest.md`.
 - Do not use green `cargo test` output without Sails-appropriate assertions as proof.
 - Do not start local-node smoke while `gtest` is still red.
 - Do not skip gas or value reasoning when tests depend on it.
+- Do not decode raw reply or event bytes as a bare business DTO until you have checked whether Sails routing framing is present.

@@ -16,6 +16,7 @@ Keep frontend work on the typed Sails path first: generated `lib.ts` plus `@gear
 - `../../references/sails-idl-client-pipeline.md`
 - `../../references/sails-cheatsheet.md`
 - `../../references/sails-gtest-and-local-validation.md`
+- `../../references/scale-binary-decoding-guide.md`
 
 ## Standard Path
 
@@ -27,7 +28,7 @@ Keep frontend work on the typed Sails path first: generated `lib.ts` plus `@gear
 6. Use `usePrepareProgramTransaction` to obtain `gasLimit`, `extrinsic`, or fee data before send when the UX needs validation or previews.
 7. Use `useSendProgramTransaction` for commands, await `result.response`, and surface pending, success, and failure states in the UI instead of relying only on extrinsic submission.
 8. Pass `voucherId` only when the flow is intentionally voucher-backed or prepaid. Treat full gasless or signless UX as a separate product decision; use the dedicated EZ-transactions path when the product spec requires it.
-9. Drop to low-level `@gear-js/api` only for dynamic multi-IDL control, metadata work, raw mailbox or voucher flows, or direct `api.message.send` and `api.programState.read` cases.
+9. Drop to low-level `@gear-js/api` only for dynamic multi-IDL control, metadata work, raw mailbox or voucher flows, or direct `api.message.send`, `api.programState.read`, and `api.programState.readUsingWasm` cases. On those paths, identify whether the bytes are IDL-driven, metadata-driven, or `state.meta.wasm`-driven before decoding.
 
 ## Dependency Freshness Policy
 
@@ -148,3 +149,4 @@ Name these decisions explicitly in the work product:
 - On manual transaction-builder or low-level Gear-JS paths, make the gas strategy explicit.
 - Do not enable `watch` subscriptions everywhere by default; only subscribe where the UX truly benefits.
 - Do not mix Sails IDL-driven calls with metadata-driven low-level calls unless the reason is named explicitly.
+- Do not decode arbitrary raw bytes with plain SCALE rules until you have named whether the source is a Sails interface path, a full-state metadata path, or a state-function path.

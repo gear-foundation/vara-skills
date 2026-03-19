@@ -19,6 +19,7 @@ Use this as the first stop for the provisional Sails-builder pack. Route the bui
 - `../../references/sails-program-and-service-architecture.md`
 - `../../references/sails-idl-client-pipeline.md`
 - `../../references/sails-gtest-and-local-validation.md`
+- `../../references/scale-binary-decoding-guide.md`
 
 ## Standard Defaults
 
@@ -44,6 +45,7 @@ Use this as the first stop for the provisional Sails-builder pack. Route the bui
   1. `sails_rs::build_client::<Program>()`
   2. `sails_rs::ClientBuilder::<Program>::from_env().build_idl().generate()`
   3. explicit `sails_idl_gen::generate_idl_to_file::<Program>(...)` plus `ClientGenerator::from_idl_path(...)`
+- For binary decoding questions, match the decoder to the source: generated client or `.idl` for standard Sails interface paths, `ProgramMetadata` for full state, and `state.meta.wasm` for state-function output. Use plain `Decode::<T>` only when the bytes are known to be a bare SCALE payload.
 
 ## Greenfield Bootstrap
 
@@ -64,6 +66,7 @@ Use this as the first stop for the provisional Sails-builder pack. Route the bui
 - `gtest` is green and the next step is a typed live-node smoke run: `../sails-local-smoke/SKILL.md`
 - Need to add a fungible token or token-backed accounting layer with awesome-sails: `../awesome-sails-vft/SKILL.md`
 - Need to build or repair the React or TypeScript frontend for a Sails app: `../sails-frontend/SKILL.md`
+- Raw hex, reply-byte ambiguity, event decoding confusion, or metadata-vs-IDL uncertainty: `../gear-message-execution/SKILL.md`
 
 ## Required Artifact Chain
 

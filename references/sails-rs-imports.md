@@ -51,9 +51,11 @@ use sails_rs::gstd::{exec, msg};
 ## Builder Defaults
 
 - For an app / wasm crate, the default `build.rs` path is `sails_rs::build_wasm()`.
-- For a Rust client-generation crate, use `sails_rs::build_client::<Program>()`.
+- For a Rust client-generation crate, use `sails_rs::build_client::<Program>()` as the default shorthand.
 - Use the Wasm path when the crate’s job is to build the on-chain artifact.
 - Use the client path when the crate’s job is to generate a typed Rust client from a program interface.
+- Reach for direct `sails-idl-gen` / `sails-client-gen` only when the repo intentionally requires a manual pipeline.
+- If the repo needs custom client-generation control, prefer the official configurable builder path instead of dropping immediately to fully manual generators.
 
 ## Export And Event Rules
 

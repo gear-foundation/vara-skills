@@ -18,10 +18,14 @@ Keep Sails builders on the typed pipeline for IDL generation, Rust client genera
 
 ## Build Script Path
 
-- Check the repo's `build.rs` before inventing a manual IDL step. In the Sails examples, `cargo build` often refreshes generation because `build.rs` calls helpers such as `sails_rs::build_client::<Program>()`, `ClientBuilder::<Program>::from_env().build_idl().generate()`, or `sails_idl_gen::generate_idl_to_file::<Program>(...)`.
-- For app or wasm crates on the current `sails-rs 0.10.2` path, prefer `features = ["wasm-builder"]` in `[build-dependencies]`.
-- Dedicated client crates usually wire generation through `sails-client-gen` and `sails-idl-gen`. Some older repos still use the `build` alias on `sails-rs`; preserve it only when the repo already depends on it intentionally.
-- Do not assume a single fixed output location. Depending on the repo, the generated `.idl` may land in the crate directory, a binpath-derived Wasm sibling path, or `OUT_DIR`.
+- Check the repo's `build.rs` before inventing a manual IDL step.
+- For a dedicated Rust client crate, prefer the standard Sails build-helper path:
+  - `[build-dependencies] sails-rs = { version = "...", features = ["build"] }`
+  - `fn main() { sails_rs::build_client::<Program>(); }`
+- If the repo needs more control over generation, use the configurable Sails path:
+  - `sails_rs::ClientBuilder::<Program>::from_env().build_idl().generate()`
+- Treat direct `sails-idl-gen` plus `sails-client-gen` wiring as a manual fallback for non-standard layouts or explicitly custom generation needs.
+- Do not assume a single fixed output location. Depending on the repo, generated `.idl` and Rust client artifacts may land in `OUT_DIR`, the client crate output path, or another repo-defined location.
 
 ## Inputs
 
@@ -44,3 +48,4 @@ Keep Sails builders on the typed pipeline for IDL generation, Rust client genera
 - Do not treat `sails-js` as a runtime target; it is the JavaScript client library used by generated and dynamic IDL-driven flows.
 - Do not replace the standard path with raw ABI, ethers-style bindings, or hand-written SCALE payloads for a standard Vara Sails app.
 - Do not treat missing codegen as a reason to bypass the Sails pipeline.
+- Do not document `sails-idl-gen` + `sails-client-gen` as the default dedicated-client path when the repo can use `sails-rs` build helpers.

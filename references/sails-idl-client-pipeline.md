@@ -10,12 +10,14 @@
 
 ### Template Workspace Pattern
 
-- A program or root crate builds the Wasm artifact.
-- In the current templates, app or wasm crates use `sails-rs = { version = "0.10.2", features = ["wasm-builder"] }` in `[build-dependencies]`.
-- `cargo build` commonly produces `.opt.wasm` and may also refresh `.idl` output.
-- Client generation may happen in the same crate or in a dedicated client crate.
-- Dedicated client crates usually depend on `sails-client-gen` and `sails-idl-gen` in `[build-dependencies]` rather than `sails-rs`.
-- `features = ["build"]` still exists in `sails-rs 0.10.2`, but treat it as compatibility or legacy shorthand unless the repo already uses it intentionally.
+- A standard Sails workspace may generate Wasm, `.idl`, and Rust client artifacts through build scripts.
+- For dedicated Rust client crates, the normal path is:
+  - `[build-dependencies] sails-rs = { version = "...", features = ["build"] }`
+  - `fn main() { sails_rs::build_client::<Program>(); }`
+- If the repo needs custom generation controls, use:
+  - `sails_rs::ClientBuilder::<Program>::from_env().build_idl().generate()`
+- Use direct `sails_idl_gen::generate_idl_to_file::<Program>(...)` plus
+  `ClientGenerator::from_idl_path(...).generate_to(...)` only for explicitly manual or non-standard pipelines.
 
 ### Shorthand Builder
 
@@ -29,7 +31,7 @@ Use this when default paths and workspace layout are conventional.
 
 Use this when the repo needs controlled output paths or additional generation settings.
 
-### Manual Generation
+### Manual Generation (Non-default)
 
 - `sails_idl_gen::generate_idl_to_file::<Program>(...)`
 - `ClientGenerator::from_idl_path(...).generate_to(...)`

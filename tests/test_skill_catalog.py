@@ -116,6 +116,7 @@ def main() -> int:
     assert "rustup" in dev_env_lower
     assert "cargo install sails-cli" in dev_env_lower
     assert "cargo-sails" in dev_env_lower
+    assert "cargo sails program" in dev_env_lower
     assert "wasm32v1-none" in dev_env
     assert "wasm32-unknown-unknown" in dev_env
     assert "install-gear.sh" in dev_env or "install-gear.ps1" in dev_env
@@ -132,13 +133,15 @@ def main() -> int:
     assert "../../references/delayed-message-pattern.md" in ship
     assert "gear-message-execution" in ship
     assert "sails-dev-env" in ship
+    assert "cargo sails program" in ship
     assert "0.10.2" in ship
-    assert "wasm-builder" in ship
+    assert "build.rs" in ship
 
     new_app = read("skills/sails-new-app/SKILL.md")
     assert "Sails" in new_app
     assert ".idl" in new_app and ".opt.wasm" in new_app
     assert "build.rs" in new_app
+    assert "cargo sails program" in new_app
     assert "../../references/sails-idl-client-pipeline.md" in new_app
     assert "../../references/sails-program-and-service-architecture.md" in new_app
     assert "sails-dev-env" in new_app
@@ -247,7 +250,7 @@ def main() -> int:
     assert "build.rs" in idl_pipeline
     assert "build_client" in idl_pipeline_lower or "clientbuilder" in idl_pipeline_lower
     assert ".idl" in idl_pipeline
-    assert "wasm-builder" in idl_pipeline
+    assert "build.rs" in idl_pipeline
     assert 'features = ["build"]' in idl_pipeline
 
     frontend_ref = read("references/sails-frontend-and-gear-js.md")
@@ -271,7 +274,7 @@ def main() -> int:
 
     sails_imports = read("references/sails-rs-imports.md")
     assert "0.10.2" in sails_imports
-    assert "wasm-builder" in sails_imports
+    assert "build.rs" in sails_imports
     assert "#[codec(crate = sails_rs::scale_codec)]" in sails_imports
     assert "#[scale_info(crate = sails_rs::scale_info)]" in sails_imports
     assert "#[export]" in sails_imports

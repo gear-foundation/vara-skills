@@ -14,7 +14,7 @@ Get the machine to a verified baseline for standard Sails Rust work: `rustup`, R
 1. Detect whether the builder is on `macOS`, `Linux`, or `Windows`.
 2. If `rustup` is missing, install it with the official bootstrap for that platform.
 3. Install or update the `stable` and `nightly` toolchains, then add `wasm32v1-none` and `wasm32-unknown-unknown`.
-4. Install the Sails Rust CLI with `cargo install sails-cli`, which provides `cargo-sails`.
+4. Install the Sails Rust CLI with `cargo install sails-cli`, which provides `cargo-sails` and the standard greenfield bootstrap command `cargo sails program <project-name>`.
 5. Install the latest official `gear` release binary with the local helper in `./scripts/install-gear.sh` on `macOS` or `Linux`, or `./scripts/install-gear.ps1` on `Windows`.
 6. Verify the toolchain with `rustup show`, `cargo sails --version`, and `gear --version`.
 7. Route back into `../sails-new-app/SKILL.md`, `../ship-sails-app/SKILL.md`, `../sails-gtest/SKILL.md`, or `../sails-local-smoke/SKILL.md` depending on the builder's next task.
@@ -40,6 +40,7 @@ bash ./scripts/install-gear.sh --to "${HOME}/.local/bin"
 
 rustup show
 cargo sails --version
+cargo sails --help
 gear --version
 ```
 
@@ -63,6 +64,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\install-gear.ps1 -Destination
 
 rustup show
 cargo sails --version
+cargo sails --help
 gear --version
 ```
 

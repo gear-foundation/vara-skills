@@ -24,7 +24,10 @@ Use this as the first stop for the provisional Sails-builder pack. Route the bui
 
 - Start with Sails for standard Vara work, not raw low-level `gstd`. Use `sails-rs 0.10.2` as the current baseline unless the target repo already pins a newer compatible patch.
 - In standard Sails repos, `cargo build` runs `build.rs`: program or wasm crates usually call `sails_rs::build_wasm()`, while the repo may also emit `.idl` and typed client outputs from that same build flow.
-- For app or wasm crates, the current build-dependency default is `sails-rs = { version = "0.10.2", features = ["wasm-builder"] }`. Dedicated client crates usually use `sails-client-gen` and `sails-idl-gen` instead. Some older repos still show the `build` alias, but do not steer new app guidance back to that older spelling.
+- For dedicated Rust client crates, prefer `sails-rs = { version = "...", features = ["build"] }`
+  with `sails_rs::build_client::<Program>()` or the configurable
+  `sails_rs::ClientBuilder::<Program>::from_env().build_idl().generate()` path.
+- Treat direct `sails-client-gen` and `sails-idl-gen` wiring as a manual pipeline for explicitly non-standard repo layouts.
 - In `#[program]`, public constructors return `Self`; name that constructor shape and the chosen state ownership pattern explicitly in planning artifacts.
 - In `#[service]`, only methods tagged with `#[export]` are public Sails routes. Event-producing paths should use `emit_event`.
 - Standard Vara account addresses are Substrate `SS58` addresses, not Ethereum `0x` addresses. Local tooling commonly uses Vara prefix `137`.
@@ -36,7 +39,18 @@ Use this as the first stop for the provisional Sails-builder pack. Route the bui
 - If the flow checks remaining execution budget, use `exec::gas_available()`.
 - Gasless flows use vouchers so a sponsor covers gas and fees for scoped interactions; the chain is not simply free. Signless flows add a temporary delegated account, sub-account, or session for the app. Prefer existing frontend tooling such as EZ-transactions or signless or gasless hooks.
 - For local validation, use dev accounts or user-provided `SS58` addresses, keep seed phrases and private keys out of commit-ready examples, and do not invent program IDs, voucher IDs, or account addresses.
-- Check the repo's `build.rs` before inventing manual generation commands. Common patterns include `sails_rs::build_client::<Program>()`, `ClientBuilder::<Program>::from_env().build_idl().generate()`, or explicit `sails_idl_gen::generate_idl_to_file::<Program>(...)`.
+- Check the repo's `build.rs` before inventing manual generation commands.
+  Prefer this order:
+  1. `sails_rs::build_client::<Program>()`
+  2. `sails_rs::ClientBuilder::<Program>::from_env().build_idl().generate()`
+  3. explicit `sails_idl_gen::generate_idl_to_file::<Program>(...)` plus `ClientGenerator::from_idl_path(...)`
+
+## Greenfield Bootstrap
+
+- For a new Sails/Vara project from scratch, prefer the official template bootstrap:
+  `cargo sails program <project-name>`.
+- This creates the standard workspace layout with `app`, `client`, `src`, `tests`, top-level `build.rs`, and baseline Cargo wiring.
+- For an existing repository, follow the repo’s current layout instead of re-bootstrapping it through the CLI template.
 
 ## Route By Situation
 

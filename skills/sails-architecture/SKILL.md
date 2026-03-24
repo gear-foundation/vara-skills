@@ -9,6 +9,8 @@ description: Use when a builder needs to shape or correct standard Gear/Vara Sai
 
 Turn an approved spec into a Sails-specific architecture artifact before implementation starts.
 
+If the work changes a released contract or introduces a new deployed contract version, the architecture note must also define compatibility expectations for public routes, replies, events, generated clients, and off-chain consumers such as frontend and indexer.
+
 ## Inputs
 
 - `../../assets/architecture-template.md`
@@ -19,6 +21,7 @@ Turn an approved spec into a Sails-specific architecture artifact before impleme
 - `../../references/gear-messaging-and-replies.md`
 - `../../references/gear-gas-reservations-and-waitlist.md`
 - `../../references/awesome-sails-token-patterns.md`
+- `../../references/contract-interface-evolution.md`
 
 Write the result to `docs/plans/YYYY-MM-DD-<topic>-architecture.md`.
 
@@ -48,6 +51,31 @@ Write the result to `docs/plans/YYYY-MM-DD-<topic>-architecture.md`.
 - Are routes, replies, and events stable enough for generated clients?
 - If a delayed or self-call hits a Sails route, does the design keep generated clients or equivalent route-prefixed encoding in the contract?
 - Does the design account for async Gear message flow and failure paths?
+- If this changes a released contract, has the design classified the change as additive or breaking?
+- Are existing public routes, replies, and events preserved unless the architecture explicitly versions them?
+- Does the note define contract version and status surface such as `Active` and `ReadOnly` when relevant?
+- Does the design explain frontend and indexer impact for a new deployed contract version?
+- If a cutover is required, does the note say how old and new versions coexist during rollout?
+- If migration is required, does the note define export/import responsibilities instead of hiding them inside vague “upgrade” wording?
+
+## Released Contract Evolution Defaults
+
+- If the work targets an already released contract, treat public routes, reply shapes, event payloads, and generated-client expectations as compatibility-sensitive surfaces.
+- Prefer additive changes such as new routes, new services, or a new deployed contract version over mutating an existing public shape in place.
+- If the user is preparing a new contract version, define how the old and new versions coexist during cutover.
+- If the old version must stop accepting writes, make that lifecycle explicit in the architecture note.
+- If state migration is required, define the split between `V1`, `V2`, and the off-chain migrator instead of implying an in-place code swap.
+
+## Future Migration Readiness
+
+If the contract is expected to live beyond its first production release, the architecture note must describe how state could later be exported from `V1`.
+
+At minimum:
+- identify business-significant state stored in the program
+- distinguish source-of-truth data from derived or rebuildable data
+- describe whether future export would rely on full-state reads, selective state functions, or explicit export methods
+- note any collections that will require deterministic chunking or canonical ordering
+- state whether the contract may need a `ReadOnly` lifecycle mode in a future release
 
 ## Guardrails
 
@@ -57,3 +85,7 @@ Write the result to `docs/plans/YYYY-MM-DD-<topic>-architecture.md`.
 - Do not assume delayed automation works without future gas availability.
 - Do not treat Waitlist storage as free or indefinitely prolongable.
 - Keep implementation detail out of the architecture note unless it changes the public contract.
+- Do not change a released public route shape in place unless the architecture explicitly treats it as a breaking change.
+- Do not change a released event payload in place without explicit versioning or cutover notes.
+- Do not assume IDL regeneration alone makes a breaking interface change safe.
+- Do not describe Gear/Sails evolution as an in-place hot swap of live contract code.

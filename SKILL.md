@@ -7,7 +7,7 @@ description: Use when a builder needs the top-level router for the provisional s
 
 This repository is the portable router for the provisional `vara-skills` pack.
 
-Use `skills/ship-sails-app/SKILL.md` first when the task is about building or extending a standard Gear/Vara Sails application.
+Use `skills/ship-sails-app/SKILL.md` first when the task is about standard greenfield or unreleased Gear/Vara Sails application work.
 
 The repo is intended to be self-contained: use local `references/` handbook files before depending on sibling repositories or machine-local skill directories.
 
@@ -30,6 +30,7 @@ The repo is intended to be self-contained: use local `references/` handbook file
 - Add a fungible token layer with awesome-sails: `skills/awesome-sails-vft/SKILL.md`
 - Interact with Vara Network on-chain (deploy, call, transfer, monitor): `skills/vara-wallet/SKILL.md`
 - Build or extend a React frontend for a Sails app: `skills/sails-frontend/SKILL.md`
+- Evolve a released Sails contract, prepare a new deployed version, plan cutover, or design V1->V2 migration: `skills/sails-program-evolution/SKILL.md`
 
 ## Guardrails
 

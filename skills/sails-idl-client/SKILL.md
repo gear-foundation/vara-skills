@@ -9,6 +9,8 @@ description: Use when a builder needs to wire or repair the standard Gear/Vara S
 
 Keep Sails builders on the typed pipeline for IDL generation, Rust client generation, and integration wiring.
 
+If a released contract evolves or a new deployed contract version is introduced, keep the generated-client path compatible with the approved cutover plan instead of assuming one regenerated client can replace all consumers immediately.
+
 ## Default JS Or TS Path
 
 - Treat the program `.idl` as the source of truth for the interface.
@@ -27,11 +29,19 @@ Keep Sails builders on the typed pipeline for IDL generation, Rust client genera
 - Treat direct `sails-idl-gen` plus `sails-client-gen` wiring as a manual fallback for non-standard layouts or explicitly custom generation needs.
 - Do not assume a single fixed output location. Depending on the repo, generated `.idl` and Rust client artifacts may land in `OUT_DIR`, the client crate output path, or another repo-defined location.
 
+## Released Contract Evolution
+
+- Treat each `.idl` as the interface contract for one deployed program version.
+- If a new deployed contract version changes the public surface, do not assume every consumer can switch at once.
+- Keep old and new generated clients available during cutover when frontend, tests, scripts, or migration tooling still depend on the previous version.
+- Regenerate clients as part of release work, but do not treat regeneration alone as compatibility validation.
+
 ## Inputs
 
 - `../../references/sails-cheatsheet.md`
 - `../../references/sails-idl-client-pipeline.md`
 - `../../assets/task-plan-template.md`
+- `../../references/contract-interface-evolution.md`
 
 ## Route Here When
 

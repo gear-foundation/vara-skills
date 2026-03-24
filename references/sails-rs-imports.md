@@ -36,6 +36,46 @@ sails-rs = { version = "0.10.2", features = ["build"] }
 - In current official examples, dedicated Rust client crates commonly use sails-rs with features = ["build"].
 - Reach for direct sails-client-gen / sails-idl-gen only when the repo intentionally uses a manual generation pipeline.
 
+## Workspace Feature Conflict Warning
+
+In `0.10.2`, `sails-rs` compiles `client/gstd_env.rs` even when only the `gtest` feature is enabled. That module references `::gstd` types. When Cargo feature unification enables both `gstd` and `gtest` on `sails-rs` in the same workspace, the build breaks.
+
+On Rust 1.94+ the `dyn` trait object without the `dyn` keyword (`E0782`) is a hard error, triggering additional failures in `gstd_env.rs`.
+
+Prevention:
+
+- Use one workspace per program. Do not combine multiple programs and a shared test crate in a single top-level workspace.
+- Always bootstrap with `cargo sails program <name>`, which generates the correct isolated layout.
+- If you must share types across programs, extract them into a standalone `no_std` types crate with no `sails-rs` dependency.
+
+## Canonical Workspace Layout
+
+`cargo sails program <name>` generates:
+
+```
+<name>/
+├── Cargo.toml          # resolver = "3", edition = "2024", rust-version = "1.91"
+├── build.rs            # sails_rs::build_wasm()
+├── src/
+│   └── lib.rs          # #[program] + service modules
+├── app/
+│   ├── Cargo.toml      # sails-rs (no features) — business logic, no_std
+│   └── src/lib.rs
+├── client/
+│   ├── Cargo.toml      # sails-rs with features = ["build"]
+│   ├── build.rs        # sails_rs::build_client::<Program>()
+│   └── src/lib.rs
+├── tests/
+│   └── gtest.rs        # sails-rs with features = ["gtest"] in dev-dependencies
+└── rust-toolchain.toml # channel = "stable", targets = ["wasm32v1-none"]
+```
+
+Key constraints:
+
+- `resolver = "3"` and `edition = "2024"` are the current defaults. Older `resolver = "2"` / `edition = "2021"` layouts cause feature-unification bugs with `sails-rs`.
+- `gtest` and `gclient` belong in `[dev-dependencies]` only, never in `[dependencies]`.
+- Each program is its own workspace root, not a member of a shared multi-program workspace.
+
 ## Common Imports
 
 ```rust
@@ -45,8 +85,9 @@ use sails_rs::gstd::{exec, msg};
 ```
 
 - Reach for `RefCell` when the program owns mutable state and services borrow it.
-- Use `sails_rs::collections::*` when you want `no_std`-friendly collections through the framework path.
-- Import `exec` and `msg` from `sails_rs::gstd` for standard Gear or Vara Sails programs.
+- Use `sails_rs::collections::*` when you want `no_std`-friendly collections through the framework path. Note that `sails_rs::collections::BTreeMap` is a `no_std` re-export and may lack some `std` methods. In particular, `drain()` is not available. Use `keys().cloned().collect::<Vec<_>>()` then iterate and remove as a workaround.
+- Import `exec` and `msg` from `sails_rs::gstd` for standard Gear or Vara Sails programs. The `prelude::*` does not re-export `msg` or `exec`; guards like `msg::source()` and delayed-message helpers like `exec::program_id()` require the explicit import.
+- `gstd::prog` (program creation via `create_program_bytes`) is not re-exported through `sails_rs::gstd`. If a Sails program needs to create child programs, add `gstd` as a direct dependency: `gstd = "1.10.0"`.
 
 ## Builder Defaults
 

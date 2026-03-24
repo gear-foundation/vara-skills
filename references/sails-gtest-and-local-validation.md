@@ -53,11 +53,38 @@ Pick `Next` or `Manual` for timing-sensitive flows, delayed work, reply absence,
 ## Typed Local Smoke
 
 1. Start or reuse a local node.
-2. Connect with `GearApi`.
+2. Connect with `GearApi`:
+
+```rust
+use gclient::{GearApi, WSAddress};
+
+// Local node on default port (ws://127.0.0.1:9944):
+let api = GearApi::init(WSAddress::dev()).await?;
+
+// Custom port — port goes in the second arg, NOT in the URL:
+let api = GearApi::init(WSAddress::new("ws://127.0.0.1", 9944)).await?;
+```
+
+Common API confusions:
+
+- `GclientEnv` has no `upload_code` method. Use `GearApi` directly for code upload and program deployment, then wrap in `GclientEnv` for typed client calls.
+- `GearApi::dev_from_path()` expects a filesystem path to the node binary, not a WebSocket URL.
+- `WSAddress::new(url, port)` — the port is the second argument. Do not embed the port in the URL string.
+
 3. Wrap the API in `GclientEnv` or the equivalent generated-client environment.
-4. Upload the tested Wasm, deploy with a unique salt, and record the real program id.
-5. Use the generated client for one command and one query path.
-6. Use local dev accounts such as `//Alice` and `//Bob` only for local smoke, and keep seed phrases or private keys out of committed docs.
+4. Upload the tested Wasm, deploy with a unique salt, and record the real program id. If the constructor does non-trivial work, override gas with an explicit limit — default `calculateGas()` may be insufficient.
+5. If the program uses delayed messages, transfer VARA to the program address before exercising commands. Unlike `gtest`, on-chain programs need balance to pay for future gas.
+6. Use the generated client for one command and one query path.
+7. Use local dev accounts such as `//Alice` and `//Bob` only for local smoke, and keep seed phrases or private keys out of committed docs.
+
+## JS/TS Deploy Pitfalls
+
+When deploying via the Sails JS client (`@gear-js/api` or `sails-js`):
+
+- `tx.withAccount(keyringPair)` — pass the keyring pair directly. Do not wrap it: `{ signer: keyringPair }` causes "Invalid signer interface" errors.
+- If init fails with "Program has been terminated," the constructor ran out of gas. Override with `tx.withGas(200_000_000_000n)` or higher.
+- Programs that schedule delayed messages need VARA balance. After deploy, transfer funds: `api.balance.transfer(programId, amount)`.
+- Prefer `newCtorFromCode()` from the generated Sails client, which handles code upload and init in one transaction.
 
 ## Setup Ergonomics
 

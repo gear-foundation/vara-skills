@@ -24,10 +24,11 @@ Validate the generated client path against a local node after `gtest` is already
 ## Sequence
 
 1. Confirm the `docs/plans/...-gtest.md` note shows a green test loop.
-2. Start or reuse a local node and connect with `GearApi`.
-3. Deploy the tested Wasm and record the actual program id returned by the deploy flow.
-4. Use the typed generated-client path through a local client environment such as `GclientEnv`, wiring in the actual deployed program id.
-5. Exercise one command or query path that proves the typed integration works on a local node.
+2. Start or reuse a local node and connect with `GearApi::init(WSAddress::dev())` for local node on default port. Do not use `GearApi::dev_from_path()` — that expects a filesystem path to the node binary, not a WebSocket URL.
+3. Deploy the tested Wasm and record the actual program id returned by the deploy flow. If the constructor does non-trivial work, override gas with an explicit limit.
+4. If the program uses delayed messages, transfer VARA to the program address before exercising commands. On-chain programs need balance to pay for future gas — this is not required in `gtest`.
+5. Use the typed generated-client path through a local client environment such as `GclientEnv`, wiring in the actual deployed program id.
+6. Exercise one command or query path that proves the typed integration works on a local node.
 
 ## References
 

@@ -387,6 +387,7 @@ Guardrails:
 - do not emit vague variants like Updated when the domain change should be explicit
 - do not treat event payload layout as disposable once off-chain consumers depend on it
 - do not emit success-style events on paths that may still fail or revert
+- `emit_event` is only available inside the `impl` block annotated with `#[service(events = Events)]`. Internal methods that need to emit events must be defined in that same annotated `impl` block, not in a separate plain `impl`. They can be private (no `#[export]`).
 
 ## 9. Async Rules: Re-Read State After `.await`
 
@@ -575,7 +576,8 @@ Production rules:
 - persist enough state to make the delayed handler idempotent or safely repeatable
 - use `ReservationId` only when later execution budget must survive across executions
 - unreserve or remove reservations when the lifecycle ends
-- derive gas budgets from explicit config and `exec::gas_available()`, not hard-coded hope
+- derive gas budgets from `exec::gas_available()`, not hard-coded values. When a handler both does work AND schedules its own next invocation via delayed self-message, a fixed gas amount will fail if execution consumed most of the budget. Use `let gas_for_next = exec::gas_available() * 9 / 10;` or similar dynamic calculation.
+- on-chain, a program must hold sufficient VARA balance to cover gas for delayed messages. Transfer VARA to the program address after deployment. In `gtest`, delayed messages succeed without explicit program funding — this asymmetry is a common source of "works in test, fails on chain" bugs.
 
 If delayed work is essential, the architecture should name:
 

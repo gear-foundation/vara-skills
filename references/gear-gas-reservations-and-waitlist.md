@@ -25,6 +25,7 @@
 - Prefer delayed messages when the program must revisit state in a later block.
 - Pair delayed execution with reservation only when the later path really needs preserved gas.
 - Do not describe delayed automation as off-chain cron unless an off-chain agent is explicitly part of the design.
+- On-chain, a program must have sufficient VARA balance to cover gas for delayed messages. Transfer VARA to the program address after deployment. This is not required in `gtest`, which is a known test/production gap.
 
 ## Testing And Accounting
 

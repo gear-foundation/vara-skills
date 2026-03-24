@@ -72,3 +72,23 @@ Tests should account for this when choosing the first payload.
 - `UserspacePanic` is often the expected assertion target for fatal command-path validation.
 - `RanOutOfGas` and similar reply codes are best asserted through reply logs plus `failed.contains(&msg_id)`.
 - For low-level debugging, record the `MessageId`, the block you ran, and the relevant `BlockRunResult` evidence in the test note.
+
+## Program Funding And Child Creation
+
+- Programs that create child programs via `gstd::prog::create_program_bytes` need balance in their account. The child program requires existential deposit even when `value = 0` is passed.
+- In `gtest`, fund the parent program before the factory call:
+
+```rust
+// Fund parent program so it can afford child existential deposit
+system.mint_to(parent_program_id, 100_000_000_000_000);
+
+// Now the factory method can call create_program_bytes successfully
+let msg_id = program.send_bytes(sender, create_child_payload);
+let r = system.run_next_block();
+assert!(!r.failed.contains(&msg_id));
+```
+
+- `GtestEnv` wraps `System`, making direct `mint_to` calls awkward after deployment. Either:
+  - Fund the program before wrapping in `GtestEnv`.
+  - Use raw `gtest` APIs for the funding step alongside `GtestEnv` for typed calls.
+- `NotEnoughValue` in `gtest` for child creation almost always means the parent program is unfunded.

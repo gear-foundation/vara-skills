@@ -32,4 +32,4 @@ Move a greenfield request from scope to an approved Sails workspace path without
 - Keep the standard Sails workspace shape and build-generated `.idl` and `.opt.wasm` artifact path intact, and check the crate's `build.rs` before adding ad hoc generation steps.
 - Do not jump into raw Gear primitives when a Sails path already exists.
 - Do not skip the planning docs just because the repo is greenfield.
-- Prefer the official `cargo sails program <project-name>` bootstrap for greenfield Sails/Vara work instead of hand-assembling the workspace from scratch.
+- Always use `cargo sails program <project-name>` for greenfield Sails/Vara work. Hand-assembled workspaces are a known source of errors: shared top-level workspaces cause Cargo feature unification to enable both `gstd` and `gtest` on `sails-rs` simultaneously, breaking the build. Older hand-scaffolded layouts also use `resolver = "2"` / `edition = "2021"` instead of the correct `resolver = "3"` / `edition = "2024"`. See `../../references/sails-rs-imports.md` for the canonical layout.

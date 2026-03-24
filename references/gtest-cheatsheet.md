@@ -13,6 +13,14 @@
 - The first message is often initialization.
 - Time-dependent behavior needs explicit block advancement.
 - Program funding and user funding are not interchangeable.
+- Programs creating child programs via `create_program_bytes` must have balance to cover the child's existential deposit. Fund the parent program before the factory call.
+- `GtestEnv` consumes the `System`, making post-deploy `system.mint_to()` awkward. Fund programs as part of the deploy fixture before wrapping in `GtestEnv`, or use raw `gtest` APIs for the funding step.
+
+## Child Program Creation
+
+- `gstd::prog::create_program_bytes(code_id, salt, payload, value)` requires the calling program to hold sufficient balance. With `value = 0`, the call still fails if the child needs existential deposit.
+- In `gtest`, fund the parent program with `system.mint_to(parent_program_id, amount)` before invoking the factory method.
+- `gstd::prog` is not re-exported through `sails_rs::gstd`. Add `gstd` as a direct dependency for program creation primitives.
 
 ## Sails-First Testing
 - Prefer generated clients in `GtestEnv` over hand-authored payload bytes.

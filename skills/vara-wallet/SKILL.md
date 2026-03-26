@@ -227,7 +227,7 @@ export VARA_WS=wss://testnet.vara.network
 
 ```bash
 $VW transfer $TO 1.5                        # 1.5 VARA
-$VW transfer $TO 15000000000 --units raw    # same in raw units
+$VW transfer $TO 1500000000000 --units raw   # same in raw units
 ```
 
 Existential deposit is ~10 VARA on mainnet.

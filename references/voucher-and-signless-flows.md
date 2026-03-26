@@ -55,7 +55,7 @@ Duration is block-based and bounded by on-chain constants (`minDuration`, `maxDu
 | Parameter | Type | Purpose |
 |-----------|------|---------|
 | spender | AccountId | Who can use the voucher |
-| balance | u128 | Gas allocation in smallest unit |
+| balance | u128 | Gas allocation in smallest unit (use `BigInt` or string in JS to avoid precision loss above 2^53) |
 | duration | BlockNumber | How many blocks the voucher is valid |
 | programs | Option\<BTreeSet\<ProgramId\>\> | Authorized programs (None = any) |
 | code_uploading | bool | Allow UploadCode via voucher |

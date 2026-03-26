@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A portable, self-contained skill pack for Gear/Vara Sails smart contract builders. It ships as markdown skills, shared reference docs, and validation tooling — packaged for Claude Code (plugin), Codex, and OpenClaw.
 
-Current version: **1.3.0**. The skill catalog is provisional until the sibling `vara-skills-evals` repo proves uplift.
+Current version: **1.3.1**. The skill catalog is provisional until the sibling `vara-skills-evals` repo proves uplift.
 
 ## Commands
 

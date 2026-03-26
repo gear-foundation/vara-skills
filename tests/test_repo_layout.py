@@ -63,6 +63,7 @@ def main() -> int:
     require(ROOT / "references" / "vara-network-endpoints.md")
     require(ROOT / "references" / "vara-eth-bridge-contracts.md")
     require(ROOT / "references" / "vara-eth-bridge-flows.md")
+    require(ROOT / "references" / "voucher-and-signless-flows.md")
     require(ROOT / "skills" / "gear-gstd-api-map" / "SKILL.md")
     require(ROOT / "skills" / "gear-message-execution" / "SKILL.md")
     require(ROOT / "scripts" / "install-codex-skills.sh")

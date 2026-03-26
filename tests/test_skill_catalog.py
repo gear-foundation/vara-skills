@@ -132,6 +132,7 @@ def main() -> int:
     assert "../../references/sails-rs-imports.md" in ship
     assert "../../references/delayed-message-pattern.md" in ship
     assert "../../references/scale-binary-decoding-guide.md" in ship
+    assert "../../references/voucher-and-signless-flows.md" in ship
     assert "gear-message-execution" in ship
     assert "sails-dev-env" in ship
     assert "cargo sails program" in ship
@@ -155,6 +156,7 @@ def main() -> int:
     assert "../../references/gear-execution-model.md" in feature
     assert "../../references/gear-messaging-and-replies.md" in feature
     assert "../../references/sails-gtest-and-local-validation.md" in feature
+    assert "../../references/voucher-and-signless-flows.md" in feature
 
     architecture = read("skills/sails-architecture/SKILL.md")
     architecture_lower = architecture.lower()
@@ -376,6 +378,27 @@ def main() -> int:
     assert "Ethereum" in bridge_flows
     assert "ZK" in bridge_flows or "zero-knowledge" in bridge_flows
     assert "fee" in bridge_flows.lower()
+
+    voucher_ref = read("references/voucher-and-signless-flows.md")
+    voucher_ref_lower = voucher_ref.lower()
+    assert "when to use" in voucher_ref_lower
+    assert "builder recipe" in voucher_ref_lower
+    assert "api.voucher.issue" in voucher_ref
+    assert "GearVoucher" in voucher_ref
+    assert "signless" in voucher_ref_lower
+    assert "failure" in voucher_ref_lower
+    assert "lifecycle" in voucher_ref_lower
+    assert "vara-wiki" not in voucher_ref_lower
+    assert "../../references/voucher-and-signless-flows.md" in frontend
+    assert "../../references/voucher-and-signless-flows.md" in smoke
+
+    wallet = read("skills/vara-wallet/SKILL.md")
+    assert "voucher issue" in wallet.lower()
+    assert "voucher revoke" in wallet.lower()
+    assert "../../references/voucher-and-signless-flows.md" in wallet
+
+    frontend_ref = read("references/sails-frontend-and-gear-js.md")
+    assert "voucher-and-signless-flows.md" in frontend_ref
 
     upgrade_skill = ROOT / "skills" / "vara-skills-upgrade"
     require(upgrade_skill)

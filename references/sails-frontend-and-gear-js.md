@@ -485,6 +485,8 @@ Voucher-aware flows exist at both levels:
 
 For product-level gasless and signless UX, the current docs point to the EZ-transactions package and its providers and hooks. Treat this as an explicit product decision rather than a hidden default.
 
+For the canonical voucher lifecycle, builder recipes, signless sessions, and failure modes, see `references/voucher-and-signless-flows.md`.
+
 ## Mailbox And Replies
 
 If the frontend needs user mailbox handling rather than direct Sails commands:
@@ -494,8 +496,6 @@ If the frontend needs user mailbox handling rather than direct Sails commands:
 - `sendReply` and `claimValue` are separate flows from a normal command send
 
 This is an advanced path. Name it explicitly in the plan instead of blending it into ordinary Sails UI work.
-
-## Environment Contract
 
 ## Environment Contract
 

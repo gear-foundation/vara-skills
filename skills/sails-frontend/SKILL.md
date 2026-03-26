@@ -17,6 +17,7 @@ Keep frontend work on the typed Sails path first: generated `lib.ts` plus `@gear
 - `../../references/sails-cheatsheet.md`
 - `../../references/sails-gtest-and-local-validation.md`
 - `../../references/scale-binary-decoding-guide.md`
+- `../../references/voucher-and-signless-flows.md`
 
 ## Standard Path
 

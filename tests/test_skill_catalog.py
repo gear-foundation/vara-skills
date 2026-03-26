@@ -377,6 +377,23 @@ def main() -> int:
     assert "ZK" in bridge_flows or "zero-knowledge" in bridge_flows
     assert "fee" in bridge_flows.lower()
 
+    voucher_ref = read("references/voucher-and-signless-flows.md")
+    voucher_ref_lower = voucher_ref.lower()
+    assert "when to use" in voucher_ref_lower
+    assert "builder recipe" in voucher_ref_lower
+    assert "api.voucher.issue" in voucher_ref
+    assert "GearVoucher" in voucher_ref
+    assert "signless" in voucher_ref_lower
+    assert "failure" in voucher_ref_lower
+    assert "lifecycle" in voucher_ref_lower
+    assert "vara-wiki" not in voucher_ref_lower
+    assert "../../references/voucher-and-signless-flows.md" in frontend
+    assert "../../references/voucher-and-signless-flows.md" in smoke
+
+    wallet = read("skills/vara-wallet/SKILL.md")
+    assert "voucher issue" in wallet.lower()
+    assert "voucher revoke" in wallet.lower()
+
     print("starter skills ok")
     return 0
 

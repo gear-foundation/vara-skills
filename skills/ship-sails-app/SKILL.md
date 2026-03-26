@@ -20,6 +20,7 @@ Use this as the first stop for the provisional Sails-builder pack. Route the bui
 - `../../references/sails-idl-client-pipeline.md`
 - `../../references/sails-gtest-and-local-validation.md`
 - `../../references/scale-binary-decoding-guide.md`
+- `../../references/voucher-and-signless-flows.md`
 
 ## Standard Defaults
 
@@ -38,7 +39,7 @@ Use this as the first stop for the provisional Sails-builder pack. Route the bui
 - Deferred work uses delayed messages measured in blocks. A program can send a delayed message to itself or another actor. If the flow needs gas to survive across blocks, use reserved gas or `ReservationId`; reservation duration is bounded and is not a value top-up.
 - For delayed self-messages, use the named payload-plus-guard recipe in `../../references/delayed-message-pattern.md` instead of inventing a one-off byte layout.
 - If the flow checks remaining execution budget, use `exec::gas_available()`.
-- Gasless flows use vouchers so a sponsor covers gas and fees for scoped interactions; the chain is not simply free. Signless flows add a temporary delegated account, sub-account, or session for the app. Prefer existing frontend tooling such as EZ-transactions or signless or gasless hooks.
+- For gasless and signless UX patterns (vouchers, sessions, EZ-transactions), see `../../references/voucher-and-signless-flows.md`.
 - For local validation, use dev accounts or user-provided `SS58` addresses, keep seed phrases and private keys out of commit-ready examples, and do not invent program IDs, voucher IDs, or account addresses.
 - Check the repo's `build.rs` before inventing manual generation commands.
   Prefer this order:

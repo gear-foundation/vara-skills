@@ -27,8 +27,7 @@ If the request targets a released contract, a new deployed contract version, or 
 
 ## Sponsored UX Cases
 
-- If the feature includes gasless UX, define the voucher flow in the spec and architecture. A voucher lets a sponsor pay gas and fees for approved interactions; it does not make Vara free.
-- If the feature includes signless UX, model the temporary delegated account, sub-account, or session flow up front. Prefer existing EZ-transactions or signless or gasless hooks over ad hoc wallet-sign-every-action code.
+- If the feature includes gasless or signless UX, see `../../references/voucher-and-signless-flows.md` for the canonical builder recipes, lifecycle, and failure modes. Define the voucher or session flow in the spec and architecture.
 
 ## References
 
@@ -39,6 +38,7 @@ If the request targets a released contract, a new deployed contract version, or 
 - `../../references/gear-messaging-and-replies.md`
 - `../../references/sails-gtest-and-local-validation.md`
 - `../../references/contract-interface-evolution.md`
+- `../../references/voucher-and-signless-flows.md`
 
 ## Guardrails
 

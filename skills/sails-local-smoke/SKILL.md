@@ -20,6 +20,7 @@ Validate the generated client path against a local node after `gtest` is already
 - `../../references/sails-gtest-and-local-validation.md`
 - `../../references/sails-idl-client-pipeline.md`
 - `../../references/sails-cheatsheet.md`
+- `../../references/voucher-and-signless-flows.md`
 
 ## Sequence
 

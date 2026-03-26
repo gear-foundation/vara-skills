@@ -83,7 +83,7 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 | `$VW call <pid> Service/Function --args '[...]' --value <v> --units vara\|raw --gas-limit <n> --idl <path>` | Sails state-changing call |
 | `$VW vft transfer <token> <to> <amount> --idl <path>` | Transfer fungible tokens |
 | `$VW vft approve <token> <spender> <amount> --idl <path>` | Approve token spender |
-| `$VW voucher issue <spender> <value>` | Issue gas voucher |
+| `$VW voucher issue <spender> <value>` | Issue gas voucher (see `../../references/voucher-and-signless-flows.md`) |
 | `$VW voucher revoke <spender> <voucherId>` | Revoke voucher |
 | `$VW tx <pallet> <method> [args...]` | Submit generic extrinsic |
 

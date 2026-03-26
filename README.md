@@ -10,7 +10,7 @@ Each skill is a markdown file.
 
 - `SKILL.md` is the top-level router for the pack.
 - `skills/<name>/SKILL.md` is a narrower workflow or topic skill.
-- `references/` is the self-contained handbook for Gear execution, Sails architecture, IDL/client generation, `gtest`, and local validation.
+- `references/` is the self-contained handbook for Gear execution, Sails architecture, IDL/client generation, `gtest`, local validation, voucher/signless flows, and network configuration.
 
 The pack is being narrowed toward standard Gear/Vara Sails app builders:
 
@@ -23,6 +23,7 @@ The pack is being narrowed toward standard Gear/Vara Sails app builders:
 - choosing the right `gstd` API when design depends on lower-level Gear behavior
 - getting architecture, IDL or client wiring, `gtest`, and local-node validation right
 - building or extending a React frontend for a standard Sails app with Sails-JS and Gear-JS
+- wiring gasless (voucher) and signless (session) UX flows
 
 ## Installation
 
@@ -94,6 +95,10 @@ Use `openclaw-skill/SKILL.md` as the wrapper entrypoint for the same pack.
 - `sails-feature-workflow`: stage-by-stage workflow for changing behavior in an existing Sails repo.
 - `sails-rust-implementer`: implements approved Rust or Sails tasks while preserving routing, IDL, and async contract behavior.
 - `sails-idl-client`: fixes or wires the IDL and generated client pipeline in app, client, or test crates.
+- `sails-frontend`: builds or extends a React/TypeScript frontend for a Sails app using Sails-JS, generated clients, and Gear-JS.
+- `awesome-sails-vft`: adds a fungible token to a Sails app using awesome-sails building blocks, covering VFT crates, roles, events, and tests.
+- `sails-program-evolution`: guides V1-to-V2 contract migration, interface evolution, and cutover planning for released Sails programs.
+- `vara-wallet`: interacts with Vara Network on-chain — deploy programs, call Sails methods, manage wallets, transfer tokens, issue vouchers.
 
 ### Verification And Runtime Behavior
 
@@ -105,6 +110,10 @@ Use `openclaw-skill/SKILL.md` as the wrapper entrypoint for the same pack.
 ### Deep Capability Helpers
 
 - `gear-gstd-api-map`: design-time API chooser for `gstd`, `gcore`, and `gsys` when a spec or architecture depends on exact Gear messaging or execution primitives.
+
+### Maintenance
+
+- `vara-skills-upgrade`: checks for new pack versions and handles inline or standalone upgrades.
 
 ## Recommended Workflows
 
@@ -176,8 +185,7 @@ The supporting benchmark summary lives in the sibling `vara-skills-evals` repo a
 make verify
 ```
 
-This runs repository layout, skill-validator, skill-catalog, parser, and install tests for the current product repo surface.
-It also validates the Claude packaging metadata in `.claude-plugin/`.
+This runs repository layout, skill-validator, skill-catalog, gstd-api-map, parser, install, packaging metadata, and update-check tests for the current product repo surface.
 
 ## Current Direction
 

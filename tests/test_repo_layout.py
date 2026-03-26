@@ -69,6 +69,8 @@ def main() -> int:
     require(ROOT / "scripts" / "install-codex-skills.sh")
     require(ROOT / "scripts" / "validate-repo.sh")
     require(ROOT / "tests" / "test_install_codex_skills.py")
+    require(ROOT / "VERSION")
+    require(ROOT / "bin" / "vara-skills-update-check")
     require(ROOT / "tests")
 
     for path in sanitized_files():

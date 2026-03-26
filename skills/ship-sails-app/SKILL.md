@@ -3,6 +3,15 @@ name: ship-sails-app
 description: Use when a builder needs the top-level router for a standard Gear/Vara Sails app workflow from spec through gtest and local smoke. Do not use for Vara.eth or ethexe work, raw gstd-only programs, or non-Sails tasks.
 ---
 
+## Preamble (run first)
+
+```bash
+_UPD=$(~/.claude/skills/vara-skills/bin/vara-skills-update-check 2>/dev/null || .claude/skills/vara-skills/bin/vara-skills-update-check 2>/dev/null || true)
+[ -n "$_UPD" ] && echo "$_UPD" || true
+```
+
+If output shows `UPGRADE_AVAILABLE <old> <new>`: read `../vara-skills-upgrade/SKILL.md` and follow the "Inline upgrade flow" (auto-upgrade if configured, otherwise ask user with 3 options, write snooze if declined). If `JUST_UPGRADED <from> <to>`: tell user "Running vara-skills v{to} (upgraded from v{from})!" and continue.
+
 # Ship Sails App
 
 ## Role

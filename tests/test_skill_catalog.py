@@ -400,6 +400,15 @@ def main() -> int:
     frontend_ref = read("references/sails-frontend-and-gear-js.md")
     assert "voucher-and-signless-flows.md" in frontend_ref
 
+    upgrade_skill = ROOT / "skills" / "vara-skills-upgrade"
+    require(upgrade_skill)
+    validate(upgrade_skill)
+
+    upgrade_md = read("skills/vara-skills-upgrade/SKILL.md")
+    assert "Inline upgrade flow" in upgrade_md or "Inline Upgrade Flow" in upgrade_md
+    assert "UPGRADE_AVAILABLE" in upgrade_md
+    assert "JUST_UPGRADED" in upgrade_md or "just-upgraded-from" in upgrade_md
+
     print("starter skills ok")
     return 0
 

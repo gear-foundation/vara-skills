@@ -78,6 +78,13 @@ def main() -> int:
     assert isinstance(author, dict), "marketplace plugin author should use object form"
     assert_nonempty_string(author.get("name"), "marketplace plugin author should include a non-empty name")
 
+    version_path = ROOT / "VERSION"
+    require(version_path)
+    file_version = version_path.read_text(encoding="utf-8").strip()
+    assert file_version == metadata.get("version"), (
+        f"VERSION file ({file_version}) must match marketplace.json metadata version ({metadata.get('version')})"
+    )
+
     openclaw_skill = openclaw_skill_path.read_text(encoding="utf-8")
     assert "ship-sails-app" in openclaw_skill, "OpenClaw wrapper should route through ship-sails-app"
     assert "standard Gear/Vara Sails" in openclaw_skill, "OpenClaw wrapper should constrain scope"

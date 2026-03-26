@@ -11,12 +11,12 @@
 
 ## Builder Recipe: Voucher-Only Flow
 
-1. Sponsor issues a voucher for the user: `api.voucher.issue(spender, balance, duration, programs, codeUploading)`. The returned `VoucherId` is the handle for all subsequent operations.
-2. Frontend checks the voucher exists before sending: `api.voucher.exists(accountId, voucherId)`.
+1. Sponsor issues a voucher: call `api.voucher.issue(spender, balance, duration, programs, codeUploading)`. This returns `{ extrinsic }`. Sign and send the extrinsic, then extract the `VoucherId` from the `VoucherIssued` event in the transaction result.
+2. Frontend checks a voucher exists for the user and program: `api.voucher.exists(accountId, programId)`. This is a UX hint only — expiry, revocation, and exhaustion can still cause failure after this check.
 3. Frontend wraps the transaction with the voucher: `api.voucher.call(voucherId, { SendMessage: tx })`.
 4. User sends the wrapped transaction. Gas is paid from the voucher balance, not the user wallet.
-5. Monitor voucher health: check remaining balance via `api.voucher.details()`, extend duration or top up balance via `api.voucher.update()` if needed.
-6. Cleanup: after the voucher expires, sponsor revokes it via `api.voucher.revoke()` to reclaim unspent funds.
+5. Monitor voucher health: check remaining balance via `api.voucher.details(spender, voucherId)`, extend duration or top up balance via `api.voucher.update(spender, voucherId, opts)` if needed.
+6. Cleanup: after the voucher expires, sponsor revokes it via `api.voucher.revoke(spender, voucherId)` to reclaim unspent funds.
 
 ## Builder Recipe: Signless Session Flow
 
@@ -34,10 +34,11 @@ Guardrails:
 
 ## Builder Recipe: EZ-Transactions (Full Gasless + Signless)
 
+- **Prerequisite:** a backend sponsor service that issues and manages vouchers on behalf of users. EZ-transactions does not create vouchers from thin air — a funded backend must issue them.
 - Wrap the app root with `GaslessTransactionsProvider` and `SignlessTransactionsProvider`.
 - Use `useGaslessTransaction` and `useSignlessTransaction` hooks in components.
-- The EZ-transactions package handles voucher issuance, session management, and transaction wrapping internally.
-- This is a product-level integration. Document it in the feature spec, not as an afterthought.
+- The EZ-transactions package handles session management and transaction wrapping on the frontend. Voucher issuance and lifecycle management happen on the backend.
+- This is a product-level integration. Document the backend sponsor service in the feature spec. Plan for backend outage and voucher budget exhaustion as first-class failure modes.
 
 ## Voucher Lifecycle
 
@@ -64,8 +65,8 @@ Duration is block-based and bounded by on-chain constants (`minDuration`, `maxDu
 
 | Intent | Method | Returns |
 |--------|--------|---------|
-| Issue | `api.voucher.issue(spender, balance, duration, programs?, codeUploading?)` | extrinsic, VoucherId via event |
-| Check exists | `api.voucher.exists(accountId, voucherId)` | boolean |
+| Issue | `api.voucher.issue(spender, balance, duration, programs?, codeUploading?)` | `{ extrinsic }` — extract VoucherId from `VoucherIssued` event after signAndSend |
+| Check exists | `api.voucher.exists(accountId, programId)` | boolean (checks if any voucher exists for this user+program pair) |
 | List all | `api.voucher.getAllForAccount(accountId)` | Record\<VoucherId, ProgramId[]\> |
 | Details | `api.voucher.details(spender, voucherId)` | VoucherDetails (owner, programs, expiry, codeUploading) |
 | Execute | `api.voucher.call(voucherId, { SendMessage \| SendReply \| UploadCode })` | extrinsic |
@@ -113,6 +114,8 @@ Update options: `moveOwnership`, `balanceTopUp`, `appendPrograms`, `prolongValid
 - Duration out of bounds: below `minDuration` or above `maxDuration` at issuance time.
 - Session expired (signless): session block deadline passed, session key rejected by program.
 - Session action not allowed (signless): action type not in the session's allowed set, rejected by program.
+- Backend sponsor service down (EZ-transactions): no new vouchers issued, existing vouchers still work until exhausted.
+- Sponsor budget exhausted: backend has no funds to issue new vouchers.
 
 ## See Also
 

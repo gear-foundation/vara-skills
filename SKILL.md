@@ -3,6 +3,15 @@ name: vara-skills
 description: Use when a builder needs the top-level router for the provisional standard Gear/Vara Sails skill pack across Codex, Claude, or OpenClaw. Do not use for Vara.eth or ethexe work, non-Sails programs, or broad protocol research.
 ---
 
+## Preamble (run first)
+
+```bash
+_UPD=$(~/.claude/skills/vara-skills/bin/vara-skills-update-check 2>/dev/null || .claude/skills/vara-skills/bin/vara-skills-update-check 2>/dev/null || true)
+[ -n "$_UPD" ] && echo "$_UPD" || true
+```
+
+If output shows `UPGRADE_AVAILABLE <old> <new>`: read `skills/vara-skills-upgrade/SKILL.md` and follow the "Inline upgrade flow" (auto-upgrade if configured, otherwise ask user with 3 options, write snooze if declined). If `JUST_UPGRADED <from> <to>`: tell user "Running vara-skills v{to} (upgraded from v{from})!" and continue.
+
 # Vara Skills
 
 This repository is the portable router for the provisional `vara-skills` pack.

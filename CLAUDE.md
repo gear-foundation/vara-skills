@@ -6,17 +6,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A portable, self-contained skill pack for Gear/Vara Sails smart contract builders. It ships as markdown skills, shared reference docs, and validation tooling — packaged for Claude Code (plugin), Codex, and OpenClaw.
 
-Current version: **1.2.0**. The skill catalog is provisional until the sibling `vara-skills-evals` repo proves uplift.
+Current version: **1.3.0**. The skill catalog is provisional until the sibling `vara-skills-evals` repo proves uplift.
 
 ## Commands
 
 ```bash
-make verify          # Run the full validation suite (layout, skills, parser, install, packaging)
+make verify          # Run the full validation suite (layout, skills, parser, install, packaging, update)
 make test-layout     # Repo structure checks only
 make test-skills     # Skill validation + catalog + gstd-api-map tests
 make test-parser     # gtest output parser tests
 make test-install    # Codex install script tests
 make test-packaging  # Claude plugin metadata validation
+make test-update     # Auto-update check script tests
 ```
 
 All tests are Python 3 (`python3 tests/<file>.py`). No pip dependencies required.
@@ -26,9 +27,11 @@ All tests are Python 3 (`python3 tests/<file>.py`). No pip dependencies required
 ### Content layers
 
 - **`SKILL.md`** (root) — top-level router that dispatches by builder intent to specific skills
-- **`skills/<name>/SKILL.md`** — individual workflow or topic skills (17 total), each may contain `assets/` subdirs
+- **`skills/<name>/SKILL.md`** — individual workflow or topic skills (20 total), each may contain `assets/` subdirs
 - **`references/`** — self-contained handbook covering Gear execution, Sails architecture, IDL/client pipeline, gtest patterns, and more. Skills reference these via relative paths.
 - **`assets/`** — canonical output templates (spec, architecture, task-plan, gtest report)
+- **`VERSION`** — single-line version file, kept in sync with `marketplace.json`
+- **`bin/vara-skills-update-check`** — bash script that checks for new versions on each skill invocation. State cached in `~/.vara-skills/` (cache, snooze, upgrade marker). Controlled via env vars: `VARA_SKILLS_UPDATE_CHECK=false` to disable, `VARA_SKILLS_AUTO_UPGRADE=true` for silent upgrades.
 
 ### Packaging surfaces
 

@@ -35,3 +35,19 @@
 - Advance blocks explicitly in `gtest`; `send` alone is not execution.
 - Assert effects after the block that should have produced them.
 - When smoke-testing against a local node, use the real deployed program id and observe the same async message boundaries you modeled in tests.
+
+## Program Lifecycle
+
+1. **Upload code** — submit compiled Wasm to the network. The runtime validates the Wasm is well-formed and stores the code blob identified by its code hash.
+2. **Create program** — send an init message that instantiates a program from the validated code. The runtime allocates state and runs the init handler.
+3. **Active** — the program handles messages, mutates state, stages outbound sends, and emits events. Balance must stay above the existential deposit.
+4. **Exit** — the program calls `gr_exit` to terminate, or init fails and the program is never activated. Locked deposit is released on exit.
+
+A program that runs out of balance or is not accessed for the initial rent period risks being paused or removed by the rent system.
+
+## Rent
+
+- Programs occupy on-chain state and must maintain at least the existential deposit (~1 VARA on mainnet).
+- The initial rent period is approximately 173 days (5,000,000 blocks on Vara Network).
+- If a program's balance drops below the threshold and the rent period expires, the program may be removed from active state.
+- For long-lived programs, ensure the account is topped up periodically or funded sufficiently at creation.

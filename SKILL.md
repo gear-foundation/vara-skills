@@ -31,9 +31,13 @@ The repo is intended to be self-contained: use local `references/` handbook file
 - Interact with Vara Network on-chain (deploy, call, transfer, monitor): `skills/vara-wallet/SKILL.md`
 - Build or extend a React frontend for a Sails app: `skills/sails-frontend/SKILL.md`
 - Evolve a released Sails contract, prepare a new deployed version, plan cutover, or design V1->V2 migration: `skills/sails-program-evolution/SKILL.md`
+- Look up network endpoints, testnet/mainnet RPC, account format, or program lifecycle: `references/vara-network-endpoints.md`
+- Look up bridge contract addresses or bridged token program IDs: `references/vara-eth-bridge-contracts.md`
+- Understand Vara-Ethereum bridge flows, fee model, or integration patterns: `references/vara-eth-bridge-flows.md`
 
 ## Guardrails
 
 - This catalog is still provisional and is expected to change as `vara-skills-evals` measures uplift.
 - Stay on the standard Gear/Vara Sails path for v1.
 - If the task is Vara.eth or ethexe-specific, stop and use a dedicated ethexe skill instead of this pack.
+- Bridge reference knowledge (addresses, flows, fees) is in scope as a lookup resource. Full Vara.eth workflow routing is still deferred to dedicated ethexe skills.

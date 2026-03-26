@@ -445,6 +445,17 @@ Rules:
 - prefer Sails command builders when the program is a Sails app
 - use low-level message send only when you need a true escape hatch
 
+### Gas Calculation Methods
+
+| Method | Use When |
+|--------|----------|
+| `api.program.calculateGas.handle(source, destination, payload, value, allowOtherPanics, metadata)` | Sending a message to an existing program |
+| `api.program.calculateGas.reply(source, messageId, payload, value, allowOtherPanics, metadata)` | Replying to a message in the user's mailbox |
+| `api.program.calculateGas.initUpload(source, code, payload, value, allowOtherPanics, metadata)` | Uploading code and initializing in one step |
+| `api.program.calculateGas.initCreate(source, codeId, payload, value, allowOtherPanics, metadata)` | Creating a program from already-uploaded code |
+
+All methods return `{ min_limit, reserved, burned }`. Use `min_limit` as the gas limit for the extrinsic. Set `allowOtherPanics` to `false` for strict error checking or `true` to tolerate panics in downstream programs.
+
 ### Raw state reads
 
 ```ts

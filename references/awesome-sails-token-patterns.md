@@ -311,6 +311,8 @@ This pattern is strongly reinforced by the Gear bridge architecture:
 
 Default rule: if another subsystem needs to move user tokens, start from approval-based ingress before inventing a custom authorization flow.
 
+For deployed bridge contract and token addresses, see `vara-eth-bridge-contracts.md`. For bridge flow mechanics and fee model, see `vara-eth-bridge-flows.md`.
+
 ## Testing Defaults
 
 A token integration is not complete until it covers the minimum matrix.

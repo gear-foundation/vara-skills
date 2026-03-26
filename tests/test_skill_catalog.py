@@ -359,6 +359,24 @@ def main() -> int:
     assert "gear-meta" in scale_decode_lower
     assert "sails-routed" in scale_decode_lower or "sails route" in scale_decode_lower
 
+    endpoints = read("references/vara-network-endpoints.md")
+    assert "wss://rpc.vara.network" in endpoints
+    assert "SS58" in endpoints
+    assert "137" in endpoints
+    assert "10^12" in endpoints
+
+    bridge_contracts = read("references/vara-eth-bridge-contracts.md")
+    assert "Last Verified" in bridge_contracts
+    assert "Verifier" in bridge_contracts
+    assert "MessageQueue" in bridge_contracts
+    assert "vft-manager" in bridge_contracts
+
+    bridge_flows = read("references/vara-eth-bridge-flows.md")
+    assert "Vara" in bridge_flows
+    assert "Ethereum" in bridge_flows
+    assert "ZK" in bridge_flows or "zero-knowledge" in bridge_flows
+    assert "fee" in bridge_flows.lower()
+
     print("starter skills ok")
     return 0
 

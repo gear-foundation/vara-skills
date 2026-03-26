@@ -223,7 +223,7 @@ export VARA_WS=wss://testnet.vara.network
 
 ## Units
 
-1 VARA = 10^10 minimal units. Amounts default to VARA.
+1 VARA = 10^12 minimal units. Amounts default to VARA. For full network endpoint and account format details, see `references/vara-network-endpoints.md`.
 
 ```bash
 $VW transfer $TO 1.5                        # 1.5 VARA

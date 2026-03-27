@@ -4,14 +4,14 @@
     "name": "Gear Foundation"
   },
   "metadata": {
-    "version": "1.3.1",
+    "version": "1.4.0",
     "description": "Official Gear/Vara Sails builder skill pack marketplace for Claude Code."
   },
   "plugins": [
     {
       "name": "vara-skills",
       "source": "./",
-      "version": "1.3.1",
+      "version": "1.4.0",
       "description": "Gear/Vara Sails builder skill pack for Claude Code — 20 skills for smart contract development on Vara Network.",
       "author": {
         "name": "Gear Foundation"

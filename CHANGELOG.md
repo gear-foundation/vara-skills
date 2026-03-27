@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2026-03-27
+
+### Added
+- Sails 1.0.0-beta baseline: ReflectHash derive pattern, Sails Header Protocol reference, IDL V2 format guide, new `#[export]` options (`overrides`, `entry_id`, `throws`)
+- `sails-new-app`: Troubleshooting section for broken scaffold recovery with fallback manual bootstrap sequence
+- `sails-idl-client`: Generated Client Pitfalls section covering `no_std` double-injection in hand-assembled workspaces and custom `BTreeMap` key type decoding issues
+- `sails-gtest`: Common Pitfalls section covering Rust 2024 listener lifetime bindings and program balance accounting with existential deposit
+- IDL V2 Format section in `sails-idl-client-pipeline.md` with syntax overview (version header, Rust-like types, service-scoped types, `@query`, `throws`, `@partial`)
+- `cargo sails client-js` CLI and `cargo sails idl -n` flag documented
+- 0.10.x legacy notes in reference files where patterns differ from 1.0.0-beta (build.rs, ReflectHash, header protocol)
+- Test assertions for new skill sections (Troubleshooting, Generated Client Pitfalls, Common Pitfalls, ReflectHash)
+
+### Changed
+- Scaffold command updated from `cargo sails program` to `cargo sails new` across all skills, references, README, and tests (9 content locations + 3 test assertions)
+- Version baseline updated from `sails-rs 0.10.2` to `sails-rs 1.0.0-beta.1` across all references and skills
+- Install command pinned to `cargo install sails-cli@1.0.0-beta.1 --locked` in `sails-dev-env`
+- Root program `build.rs` pattern updated to chained `build_wasm()` + `ClientBuilder::from_wasm_path().build_idl()`
+- Canonical workspace layout updated with new `src/lib.rs` wasm re-export pattern
+
 ## [1.3.1] - 2026-03-26
 
 ### Added

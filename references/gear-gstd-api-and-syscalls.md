@@ -43,6 +43,8 @@ Use `exec` when the design question is about current execution context, gas, wai
 | Read environment variables | `exec::env_vars` | `gr_env_vars` |
 | Read block height or timestamp | `exec::block_height`, `exec::block_timestamp` | `gr_block_height`, `gr_block_timestamp` |
 | Inspect remaining gas | `exec::gas_available` | `gr_gas_available` |
+| Read raw bytes from program state | `exec::read_bytes` | `gr_read` |
+| Reserve gas for future system use | `exec::system_reserve_gas` | `gr_system_reserve_gas` |
 | Inspect attached or available value | `exec::value_available`, `msg::value` | `gr_value_available`, `gr_value` |
 | Allocate reply deposit for `handle_reply` | `exec::reply_deposit` | `gr_reply_deposit` |
 | Wait for future work | `exec::wait`, `exec::wait_for`, `exec::wait_up_to` | `gr_wait`, `gr_wait_for`, `gr_wait_up_to` |

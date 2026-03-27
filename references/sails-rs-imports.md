@@ -2,8 +2,9 @@
 
 ## Current Baseline
 
-- Use `sails-rs 0.10.2` as the pack baseline unless the target repo already pins a newer compatible patch.
-- Prefer teaching the current template defaults from that release instead of older blog posts or copied snippets.
+- Use `sails-rs 1.0.0-beta.2` as the pack baseline unless the target repo already pins a different version.
+- If the target repo uses `sails-rs 0.10.x`, follow its version. Sections below note where 0.10.x patterns differ from 1.0.0-beta.
+- Prefer teaching the current template defaults instead of older blog posts or copied snippets.
 
 ## Cargo Defaults
 
@@ -11,13 +12,13 @@
 
 ```toml
 [dependencies]
-sails-rs = "0.10.2"
+sails-rs = "1.0.0-beta.2"
 
 [build-dependencies]
-sails-rs = { version = "0.10.2", features = ["wasm-builder"] }
+sails-rs = { version = "1.0.0-beta.2", features = ["build"] }
 
 [dev-dependencies]
-sails-rs = { version = "0.10.2", features = ["gtest"] }
+sails-rs = { version = "1.0.0-beta.2", features = ["gtest"] }
 ```
 
 - Add `gclient` features or dependencies only when the crate also runs local-node smoke or off-chain integration tests.
@@ -27,10 +28,10 @@ sails-rs = { version = "0.10.2", features = ["gtest"] }
 
 ```toml
 [dependencies]
-sails-rs = "0.10.2"
+sails-rs = "1.0.0-beta.2"
 
 [build-dependencies]
-sails-rs = { version = "0.10.2", features = ["build"] }
+sails-rs = { version = "1.0.0-beta.2", features = ["build"] }
 ```
 
 - In current official examples, dedicated Rust client crates commonly use sails-rs with features = ["build"].
@@ -38,26 +39,26 @@ sails-rs = { version = "0.10.2", features = ["build"] }
 
 ## Workspace Feature Conflict Warning
 
-In `0.10.2`, `sails-rs` compiles `client/gstd_env.rs` even when only the `gtest` feature is enabled. That module references `::gstd` types. When Cargo feature unification enables both `gstd` and `gtest` on `sails-rs` in the same workspace, the build breaks.
+In `0.10.x`, `sails-rs` compiles `client/gstd_env.rs` even when only the `gtest` feature is enabled. That module references `::gstd` types. When Cargo feature unification enables both `gstd` and `gtest` on `sails-rs` in the same workspace, the build breaks.
 
 On Rust 1.94+ the `dyn` trait object without the `dyn` keyword (`E0782`) is a hard error, triggering additional failures in `gstd_env.rs`.
 
 Prevention:
 
 - Use one workspace per program. Do not combine multiple programs and a shared test crate in a single top-level workspace.
-- Always bootstrap with `cargo sails program <name>`, which generates the correct isolated layout.
+- Always bootstrap with `cargo sails new <name>`, which generates the correct isolated layout.
 - If you must share types across programs, extract them into a standalone `no_std` types crate with no `sails-rs` dependency.
 
 ## Canonical Workspace Layout
 
-`cargo sails program <name>` generates:
+`cargo sails new <name>` generates:
 
 ```
 <name>/
 ├── Cargo.toml          # resolver = "3", edition = "2024", rust-version = "1.91"
-├── build.rs            # sails_rs::build_wasm()
+├── build.rs            # sails_rs::build_wasm() + ClientBuilder::from_wasm_path().build_idl()
 ├── src/
-│   └── lib.rs          # #[program] + service modules
+│   └── lib.rs          # wasm re-export + WASM_BINARY code module
 ├── app/
 │   ├── Cargo.toml      # sails-rs (no features) — business logic, no_std
 │   └── src/lib.rs
@@ -91,7 +92,18 @@ use sails_rs::gstd::{exec, msg};
 
 ## Builder Defaults
 
-- For an app / wasm crate, the default `build.rs` path is `sails_rs::build_wasm()`.
+- For the root program crate, the default `build.rs` chains wasm build with IDL generation:
+  ```rust
+  fn main() {
+      if let Some((_, wasm_path)) = sails_rs::build_wasm() {
+          sails_rs::ClientBuilder::<app::Program>::from_wasm_path(
+              wasm_path.with_extension(""),
+          )
+          .build_idl();
+      }
+  }
+  ```
+  In 0.10.x workspaces, the build.rs uses standalone `sails_rs::build_wasm()` without the chained IDL step.
 - For a Rust client-generation crate, use `sails_rs::build_client::<Program>()` as the default shorthand.
 - Use the Wasm path when the crate’s job is to build the on-chain artifact.
 - Use the client path when the crate’s job is to generate a typed Rust client from a program interface.
@@ -100,8 +112,10 @@ use sails_rs::gstd::{exec, msg};
 
 ## Export And Event Rules
 
-- In `0.10.2`, treat `#[export]` as mandatory for every service method that should be publicly callable.
+- Treat `#[export]` as mandatory for every service method that should be publicly callable.
 - Public Rust methods without `#[export]` are implementation details, not remote Sails routes.
+- In 1.0.0-beta+, `#[export]` supports additional options: `overrides = ServiceType`, `entry_id = N`, and `route = "Name"` for service inheritance patterns.
+- `#[export(unwrap_result)]` allows internal use of `Result<T, E>` and `?` while exposing the unwrapped success path to clients. In IDL V2, this generates a `throws ErrorType` clause.
 - Use `self.emit_event(...)`, not `notify_on(...)`.
 
 ```rust
@@ -124,6 +138,36 @@ impl CounterService<'_> {
 }
 ```
 
+## ReflectHash
+
+In 1.0.0-beta+, all types that appear in the IDL (service method parameters, return types, event payloads, exposed DTOs) must derive `ReflectHash`. This is a compile-time Keccak256 structural hash used to compute deterministic Interface IDs for the Sails header protocol.
+
+```rust
+#[derive(Encode, Decode, TypeInfo, ReflectHash)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
+#[reflect_hash(crate = sails_rs::sails_reflect_hash)]
+pub struct MyDto {
+    pub value: u64,
+}
+```
+
+In 0.10.x, `ReflectHash` does not exist. Use `#[derive(Encode, Decode, TypeInfo)]` only.
+
+## Sails Header Protocol
+
+In 1.0.0-beta+, every Sails message opens with a 16-byte binary header replacing the old string-based SCALE routing:
+
+- Bytes 0-1: magic `"GM"` (0x47 0x4D)
+- Byte 2: version (0x01)
+- Byte 3: header length (0x10)
+- Bytes 4-11: Interface ID (8-byte service fingerprint)
+- Bytes 12-13: Entry ID (little-endian method selector)
+- Byte 14: Route Index
+- Byte 15: reserved
+
+This is transparent when using generated clients. When debugging raw bytes, the first 16 bytes are the header, not a SCALE-encoded service/method name. In 0.10.x, routing uses SCALE-encoded string names instead.
+
 ## SCALE Derive Boilerplate
 
 - When shared DTOs or events derive SCALE traits in a `no_std` Sails crate, prefer:
@@ -133,5 +177,5 @@ impl CounterService<'_> {
 
 ## Agent Notes
 
-- If the repo already pins a newer compatible patch, follow the repo version instead of forcing `0.10.2`.
+- If the repo already pins a specific version, follow the repo version instead of forcing the pack baseline.
 - Do not tell builders to hand-roll routes or event wiring when generated clients and `emit_event` already cover the standard path.

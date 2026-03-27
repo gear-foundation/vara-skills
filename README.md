@@ -91,7 +91,7 @@ Use `openclaw-skill/SKILL.md` as the wrapper entrypoint for the same pack.
 ### Build And Implementation
 
 - `sails-dev-env`: prepares or repairs the local Rust, Wasm, `cargo-sails`, and `gear` toolchain for standard Sails work.
-- `sails-new-app`: greenfield workflow for creating a standard Sails workspace, typically starting from `cargo sails program <project-name>`, without skipping the planning artifacts.
+- `sails-new-app`: greenfield workflow for creating a standard Sails workspace, typically starting from `cargo sails new <project-name>`, without skipping the planning artifacts.
 - `sails-feature-workflow`: stage-by-stage workflow for changing behavior in an existing Sails repo.
 - `sails-rust-implementer`: implements approved Rust or Sails tasks while preserving routing, IDL, and async contract behavior.
 - `sails-idl-client`: fixes or wires the IDL and generated client pipeline in app, client, or test crates.
@@ -121,7 +121,7 @@ Use `openclaw-skill/SKILL.md` as the wrapper entrypoint for the same pack.
 
 - `ship-sails-app` -> `sails-dev-env` when the machine is not ready.
 - `ship-sails-app` -> `sails-new-app` to establish the greenfield path.
-- For a standard new Sails/Vara project, bootstrap the workspace with `cargo sails program <project-name>` before custom wiring.
+- For a standard new Sails/Vara project, bootstrap the workspace with `cargo sails new <project-name>` before custom wiring.
 - `idea-to-spec` -> `gear-architecture-planner` or `sails-architecture` -> `task-decomposer` to create the artifact chain in `docs/plans/`.
 - `sails-rust-implementer` for the approved code changes.
 - `sails-idl-client` if the generated interface path needs wiring or repair.

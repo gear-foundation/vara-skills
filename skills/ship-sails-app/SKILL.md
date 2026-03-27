@@ -33,7 +33,7 @@ Use this as the first stop for the provisional Sails-builder pack. Route the bui
 
 ## Standard Defaults
 
-- Start with Sails for standard Vara work, not raw low-level `gstd`. Use `sails-rs 0.10.2` as the current baseline unless the target repo already pins a newer compatible patch.
+- Start with Sails for standard Vara work, not raw low-level `gstd`. Use `sails-rs 1.0.0-beta.1` as the current baseline unless the target repo already pins a different version. If the repo uses `0.10.x`, follow its version.
 - In standard Sails repos, `cargo build` runs `build.rs`: program or wasm crates usually call `sails_rs::build_wasm()`, while the repo may also emit `.idl` and typed client outputs from that same build flow.
 - For dedicated Rust client crates, prefer `sails-rs = { version = "...", features = ["build"] }`
   with `sails_rs::build_client::<Program>()` or the configurable
@@ -60,7 +60,7 @@ Use this as the first stop for the provisional Sails-builder pack. Route the bui
 ## Greenfield Bootstrap
 
 - For a new Sails/Vara project from scratch, prefer the official template bootstrap:
-  `cargo sails program <project-name>`.
+  `cargo sails new <project-name>`.
 - This creates the standard workspace layout with `app`, `client`, `src`, `tests`, top-level `build.rs`, and baseline Cargo wiring.
 - For an existing repository, follow the repo’s current layout instead of re-bootstrapping it through the CLI template.
 

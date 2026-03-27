@@ -2,7 +2,7 @@
 
 ## Current Baseline
 
-- Use `sails-rs 1.0.0-beta.1` as the pack baseline unless the target repo already pins a different version.
+- Use `sails-rs 1.0.0-beta.2` as the pack baseline unless the target repo already pins a different version.
 - If the target repo uses `sails-rs 0.10.x`, follow its version. Sections below note where 0.10.x patterns differ from 1.0.0-beta.
 - Prefer teaching the current template defaults instead of older blog posts or copied snippets.
 
@@ -12,13 +12,13 @@
 
 ```toml
 [dependencies]
-sails-rs = "1.0.0-beta.1"
+sails-rs = "1.0.0-beta.2"
 
 [build-dependencies]
-sails-rs = { version = "1.0.0-beta.1", features = ["build"] }
+sails-rs = { version = "1.0.0-beta.2", features = ["build"] }
 
 [dev-dependencies]
-sails-rs = { version = "1.0.0-beta.1", features = ["gtest"] }
+sails-rs = { version = "1.0.0-beta.2", features = ["gtest"] }
 ```
 
 - Add `gclient` features or dependencies only when the crate also runs local-node smoke or off-chain integration tests.
@@ -28,10 +28,10 @@ sails-rs = { version = "1.0.0-beta.1", features = ["gtest"] }
 
 ```toml
 [dependencies]
-sails-rs = "1.0.0-beta.1"
+sails-rs = "1.0.0-beta.2"
 
 [build-dependencies]
-sails-rs = { version = "1.0.0-beta.1", features = ["build"] }
+sails-rs = { version = "1.0.0-beta.2", features = ["build"] }
 ```
 
 - In current official examples, dedicated Rust client crates commonly use sails-rs with features = ["build"].

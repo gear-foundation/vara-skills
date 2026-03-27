@@ -2,7 +2,7 @@
 
 ## Release Baseline
 
-- Treat `sails-rs 1.0.0-beta.1` as the current standard baseline for this pack. If the target repo uses `0.10.x`, follow its version.
+- Treat `sails-rs 1.0.0-beta.2` as the current standard baseline for this pack. If the target repo uses `0.10.x`, follow its version.
 - Public service methods must be marked with `#[export]` to become Sails routes.
 - Event enums should use `#[sails_rs::event]`.
 - Event emission should use `emit_event`, not older renamed patterns.
@@ -46,7 +46,7 @@
 
 ## IDL And Clients
 - Sails generates IDL from Rust types at build time.
-- In 1.0.0-beta+, the IDL uses V2 syntax: Rust-like type names (`String` not `str`, `Option<T>` not `opt T`), `@query` annotation instead of `query` keyword, types scoped inside service blocks, `program` block for constructors, and a `!@sails: 1.0.0-beta.1` version header. Services carry deterministic Interface IDs (`service Name@0x...`).
+- In 1.0.0-beta+, the IDL uses V2 syntax: Rust-like type names (`String` not `str`, `Option<T>` not `opt T`), `@query` annotation instead of `query` keyword, types scoped inside service blocks, `program` block for constructors, and a `!@sails: 1.0.0-beta.2` version header. Services carry deterministic Interface IDs (`service Name@0x...`).
 - Generated clients are the default typed integration surface for Rust and TypeScript.
 - Generated clients encode the correct payloads for constructor and service calls. In 1.0.0-beta+ this uses the binary header protocol; in 0.10.x this uses route-prefixed SCALE encoding.
 - Architecture decisions must keep exported DTO names distinct from service names.

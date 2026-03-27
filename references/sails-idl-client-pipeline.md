@@ -62,7 +62,7 @@ Use this only when the repo layout or artifact wiring is genuinely non-standard.
 
 In 1.0.0-beta+, the IDL uses V2 syntax. Key differences from V1:
 
-- Version header: files start with `!@sails: 1.0.0-beta.1`
+- Version header: files start with `!@sails: 1.0.0-beta.2`
 - Rust-like type names: `String` (not `str`), `Option<T>` (not `opt T`), `Result<T, E>` (not `result (T, E)`), `Vec<T>` (not `vec T`)
 - Services have explicit blocks: `service Name@0x<interface_id> { events {} functions {} types {} extends {} }`
 - Types are scoped inside service `types {}` blocks, not at file level

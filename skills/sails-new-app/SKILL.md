@@ -31,7 +31,7 @@ Move a greenfield request from scope to an approved Sails workspace path without
 If `cargo sails new <name>` fails or the `new` subcommand is not available:
 
 1. **Verify the CLI version**: Run `cargo sails --help` and confirm the `new` subcommand exists. The older `cargo sails program` subcommand is broken in current releases (`not able to find subfolder 'templates/program'`).
-2. **Reinstall with the correct version**: `cargo install sails-cli@1.0.0-beta.1 --locked`
+2. **Reinstall with the correct version**: `cargo install sails-cli@1.0.0-beta.2 --locked`
 3. **Fallback manual bootstrap** if the CLI still fails: assemble the standard workspace shape by hand:
    - `Cargo.toml` — workspace root with `resolver = "3"`, `edition = "2024"`, `rust-version = "1.91"`. Use workspace dependencies for `sails-rs`. Do NOT use a shared workspace `[dependencies]` that unifies `gstd` and `gtest` features.
    - `build.rs` — standard Sails build script (see `../../references/sails-rs-imports.md` for the current pattern).

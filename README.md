@@ -37,7 +37,12 @@ cd vara-skills
 bash scripts/install-codex-skills.sh
 ```
 
-Then start a new Codex session and load the top-level `SKILL.md` when you want the pack router.
+This installs the full Codex pack surface:
+
+- `$CODEX_HOME/skills/vara-skills` -> repo root, including the router `SKILL.md`, shared `assets/`, shared `references/`, and helper scripts.
+- `$CODEX_HOME/skills/<skill-name>` -> each installable skill directory under `skills/`.
+
+Then start a new Codex session and use `vara-skills` when you want the pack router.
 
 ### Claude Code Plugin
 

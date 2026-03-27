@@ -9,23 +9,9 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "install-codex-skills.sh"
-EXPECTED_SKILLS = (
-    "gear-architecture-planner",
-    "gear-gstd-api-map",
-    "gear-message-execution",
-    "gtest-tdd-loop",
-    "idea-to-spec",
-    "sails-dev-env",
-    "sails-frontend",
-    "sails-architecture",
-    "sails-feature-workflow",
-    "sails-gtest",
-    "sails-idl-client",
-    "sails-local-smoke",
-    "sails-new-app",
-    "sails-rust-implementer",
-    "ship-sails-app",
-    "task-decomposer",
+PACK_NAME = "vara-skills"
+EXPECTED_SKILLS = tuple(
+    sorted(path.name for path in (ROOT / "skills").iterdir() if path.is_dir())
 )
 
 
@@ -44,6 +30,14 @@ def main() -> int:
         )
         assert result.returncode == 0, result.stderr
         target = Path(tmpdir) / "skills"
+        pack_link = target / PACK_NAME
+        assert pack_link.is_symlink(), f"missing symlink for {PACK_NAME}"
+        assert pack_link.resolve() == ROOT.resolve(), (
+            f"wrong target for {PACK_NAME}: {pack_link.resolve()}"
+        )
+        assert (pack_link / "SKILL.md").exists(), "root pack should expose SKILL.md"
+        assert (pack_link / "assets").is_dir(), "root pack should expose assets/"
+        assert (pack_link / "references").is_dir(), "root pack should expose references/"
         for skill in EXPECTED_SKILLS:
             link = target / skill
             assert link.is_symlink(), f"missing symlink for {skill}"

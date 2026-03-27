@@ -10,7 +10,18 @@
 
 ### Template Workspace Pattern
 
-- A standard Sails workspace may generate Wasm, `.idl`, and Rust client artifacts through build scripts.
+- In 1.0.0-beta+, the root program crate's `build.rs` chains wasm build with IDL generation:
+  ```rust
+  fn main() {
+      if let Some((_, wasm_path)) = sails_rs::build_wasm() {
+          sails_rs::ClientBuilder::<app::Program>::from_wasm_path(
+              wasm_path.with_extension(""),
+          )
+          .build_idl();
+      }
+  }
+  ```
+  In 0.10.x, the root build.rs uses standalone `sails_rs::build_wasm()`.
 - For dedicated Rust client crates, the normal path is:
   - `[build-dependencies] sails-rs = { version = "...", features = ["build"] }`
   - `fn main() { sails_rs::build_client::<Program>(); }`
@@ -41,9 +52,28 @@ Use this only when the repo layout or artifact wiring is genuinely non-standard.
 ## JavaScript And TypeScript Path
 
 - Use `sails-js` or `sails-js-cli` for the normal JS or TS client flow.
+- In 1.0.0-beta+, `cargo sails client-js <idl_path> [out_path]` generates TypeScript client code directly from IDL.
+- The `cargo sails idl` subcommand now supports `-n <program-name>` to set the program name in generated IDL.
 - The usual output includes `lib.ts` and typed program or service classes.
 - Pair the generated client with `GearApi` for node connectivity.
 - Use `parseIdl` only when a dynamic runtime path is explicitly needed instead of pre-generated files.
+
+## IDL V2 Format
+
+In 1.0.0-beta+, the IDL uses V2 syntax. Key differences from V1:
+
+- Version header: files start with `!@sails: 1.0.0-beta.1`
+- Rust-like type names: `String` (not `str`), `Option<T>` (not `opt T`), `Result<T, E>` (not `result (T, E)`), `Vec<T>` (not `vec T`)
+- Services have explicit blocks: `service Name@0x<interface_id> { events {} functions {} types {} extends {} }`
+- Types are scoped inside service `types {}` blocks, not at file level
+- `@query` annotation before functions instead of `query` keyword prefix
+- `throws` keyword for error types: `Validate(v: u32) -> u32 throws ValidationError;`
+- Program block: `program ProgramName { constructors {} services {} }`
+- `@partial` and `@entry-id: N` annotations for subset client generation
+- `!@include: path.idl` for file inclusion, `alias NewType = OldType;` for type aliases
+- Generics are preserved in IDL (`GenericStruct<T>`) instead of monomorphized names
+
+In 0.10.x, the IDL uses V1 syntax with `str`, `opt T`, `result (T, E)`, `query` keyword, and file-level type declarations.
 
 ## Pipeline Debugging Checklist
 

@@ -32,6 +32,23 @@ Write the result to `docs/plans/YYYY-MM-DD-<topic>-gtest.md`.
 7. Record failure mode, fix, and passing command output in the gtest note.
 8. Route to `../sails-local-smoke/SKILL.md` only after the suite is green.
 
+## Common Pitfalls
+
+- **Rust 2024 listener lifetime**: Under edition 2024 capture rules, chained calls like `program.service().listener().listen().await` fail with "temporary value dropped while borrowed". Bind each intermediate to a longer-lived variable:
+  ```rust
+  let mut service = program.service_name();
+  let mut listener = service.listener();
+  let event = listener.listen().await.unwrap();
+  ```
+
+- **Program balance accounting in gtest**: The deployed program account has an existential deposit. Absolute balance assertions like `== wager` or `== 0` will fail even when the contract accounting logic is correct. Capture the initial balance after deploy and assert deltas relative to that baseline:
+  ```rust
+  let initial_balance = env.balance_of(program_id);
+  // ... perform actions ...
+  let final_balance = env.balance_of(program_id);
+  assert_eq!(final_balance - initial_balance, expected_delta);
+  ```
+
 ## Guardrails
 
 - Do not use green `cargo test` output without Sails-appropriate assertions as proof.

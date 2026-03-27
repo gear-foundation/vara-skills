@@ -3,6 +3,7 @@
 ## Source Of Truth
 
 - Treat the program `.idl` as the typed interface contract.
+- In 1.0.0-beta.2+, the IDL is embedded in the WASM binary as a custom section (`sails:idl`). This means the deployed `.opt.wasm` carries its own interface description, making it possible to extract the IDL directly from an on-chain program without a separate `.idl` file.
 - Generated Rust and TypeScript clients should follow the `.idl`, not a hand-maintained parallel contract.
 - If the program interface changed, refresh the `.idl` and generated clients before deeper debugging.
 

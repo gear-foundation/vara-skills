@@ -36,6 +36,7 @@
 - `sails_rs::collections::BTreeMap` is a `no_std` re-export. Some `std` methods like `drain()` are not available. Use `keys().cloned().collect::<Vec<_>>()` then iterate and remove as a workaround for drain-like patterns.
 - `gstd::prog` (including `create_program_bytes`) is not re-exported through `sails_rs::gstd`. If a Sails program needs to create child programs, add `gstd` as a direct dependency: `gstd = "1.10.0"`.
 - In 1.0.0-beta+, all IDL-visible types (method params, return types, event payloads) must derive `ReflectHash` with `#[reflect_hash(crate = sails_rs::sails_reflect_hash)]`. Missing this derive causes compile errors when the type appears in a service interface. In 0.10.x, `ReflectHash` does not exist.
+- A function returning `CommandReply<()>` that also accepts value (payable) must send a manual reply. The framework does not auto-reply for `CommandReply<()>` when value is attached. If the reply is missing, the caller's value transfer succeeds but no reply is delivered.
 
 ## Program-Level Payable
 - Use `#[program(payable)]` if the program must accept value on an empty payload without routing to a service.

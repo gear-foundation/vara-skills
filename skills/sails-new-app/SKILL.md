@@ -30,9 +30,10 @@ Move a greenfield request from scope to an approved Sails workspace path without
 
 If `cargo sails new <name>` fails or the `new` subcommand is not available:
 
-1. **Verify the CLI version**: Run `cargo sails --help` and confirm the `new` subcommand exists. The older `cargo sails program` subcommand is broken in current releases (`not able to find subfolder 'templates/program'`).
-2. **Reinstall with the correct version**: `cargo install sails-cli@1.0.0-beta.2 --locked`
-3. **Fallback manual bootstrap** if the CLI still fails: assemble the standard workspace shape by hand:
+1. **Verify the CLI version**: Run `cargo sails --help` and confirm the `new` subcommand exists. The older `cargo sails program` subcommand was removed in 1.0.0-beta.2 (its templates no longer ship).
+2. **Reinstall with the correct version**: `cargo install sails-cli@1.0.0-beta.2 --locked` (or `cargo binstall sails-cli@1.0.0-beta.2` for faster binary install).
+3. **Cargo cache issue**: If `cargo sails new` fails with `failed to select a version for the requirement sails-client-gen = "=1.0.0-beta.2"`, the crate index is stale. Run `cargo update sails-rs` inside the created folder, or prime the cache first with `cargo info sails-rs@1.0.0-beta.2`.
+4. **Fallback manual bootstrap** if the CLI still fails: assemble the standard workspace shape by hand:
    - `Cargo.toml` — workspace root with `resolver = "3"`, `edition = "2024"`, `rust-version = "1.91"`. Use workspace dependencies for `sails-rs`. Do NOT use a shared workspace `[dependencies]` that unifies `gstd` and `gtest` features.
    - `build.rs` — standard Sails build script (see `../../references/sails-rs-imports.md` for the current pattern).
    - `app/` — the program crate (`src/lib.rs` with `#[program]`).

@@ -97,13 +97,21 @@ git fetch origin
 git reset --hard origin/main
 ```
 
-**If plugin install:** Tell the user: "This is a Claude Code plugin install. To upgrade, run: `claude plugin update vara-skills`"
+**If plugin install:**
+
+```bash
+_MKT="$HOME/.claude/plugins/marketplaces/vara-skills"
+if [ -d "$_MKT/.git" ]; then
+  git -C "$_MKT" fetch origin 2>/dev/null && git -C "$_MKT" reset --hard origin/main 2>/dev/null
+fi
+claude plugin update vara-skills@vara-skills
+```
 
 **If non-git install:** Tell the user: "This is not a git install. Re-clone from https://github.com/gear-foundation/vara-skills or reinstall the Claude Code plugin."
 
 ### Step 4: Post-upgrade
 
-After a successful git upgrade:
+After a successful git or plugin upgrade:
 
 ```bash
 STATE_DIR="${VARA_SKILLS_STATE_DIR:-$HOME/.vara-skills}"
@@ -112,12 +120,14 @@ echo "{old}" > "$STATE_DIR/just-upgraded-from"
 rm -f "$STATE_DIR/last-update-check" "$STATE_DIR/update-snoozed"
 ```
 
-Show the user what changed:
+**If git install**, show what changed:
 
 ```bash
 git log --oneline "{old_tag}..HEAD" 2>/dev/null | head -20
 ```
 
 If the tag lookup fails, just show: "Upgraded vara-skills from v{old} to v{new}."
+
+**If plugin install**, just show: "Upgraded vara-skills from v{old} to v{new}. Restart Claude Code to apply changes."
 
 Then continue with the original skill that triggered the preamble.

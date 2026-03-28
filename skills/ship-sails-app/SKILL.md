@@ -6,8 +6,21 @@ description: Use when a builder needs the top-level router for a standard Gear/V
 ## Preamble (run first)
 
 ```bash
-_UPD=$(~/.claude/skills/vara-skills/bin/vara-skills-update-check 2>/dev/null || .claude/skills/vara-skills/bin/vara-skills-update-check 2>/dev/null || true)
-[ -n "$_UPD" ] && echo "$_UPD" || true
+_VS_DIR=""
+for _d in \
+  "${VARA_SKILLS_DIR:-}" \
+  "$HOME/.claude/skills/vara-skills" \
+  ".claude/skills/vara-skills" \
+  "$HOME"/.claude/plugins/cache/vara-skills/vara-skills/*; do
+  if [ -n "$_d" ] && [ -f "$_d/bin/vara-skills-update-check" ]; then
+    _VS_DIR="$_d"; break
+  fi
+done
+if [ -n "$_VS_DIR" ]; then
+  export VARA_SKILLS_DIR="$_VS_DIR"
+  _UPD=$("$_VS_DIR/bin/vara-skills-update-check" 2>/dev/null || true)
+  [ -n "$_UPD" ] && echo "$_UPD" || true
+fi
 ```
 
 If output shows `UPGRADE_AVAILABLE <old> <new>`: read `../vara-skills-upgrade/SKILL.md` and follow the "Inline upgrade flow" (auto-upgrade if configured, otherwise ask user with 3 options, write snooze if declined). If `JUST_UPGRADED <from> <to>`: tell user "Running vara-skills v{to} (upgraded from v{from})!" and continue.

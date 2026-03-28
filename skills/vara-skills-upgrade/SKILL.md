@@ -14,7 +14,18 @@ Upgrade the vara-skills pack to the latest version. Invoked automatically by the
 Run the update check with force (busts cache and snooze):
 
 ```bash
-VARA_SKILLS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/../.." && pwd)"
+_VS_DIR=""
+for _d in \
+  "${VARA_SKILLS_DIR:-}" \
+  "$HOME/.claude/skills/vara-skills" \
+  ".claude/skills/vara-skills" \
+  "$HOME"/.claude/plugins/cache/vara-skills/vara-skills/*; do
+  if [ -n "$_d" ] && [ -f "$_d/bin/vara-skills-update-check" ]; then
+    _VS_DIR="$_d"; break
+  fi
+done
+VARA_SKILLS_DIR="${_VS_DIR:-${VARA_SKILLS_DIR:-}}"
+export VARA_SKILLS_DIR
 _UPD=$("$VARA_SKILLS_DIR/bin/vara-skills-update-check" --force 2>/dev/null || true)
 [ -n "$_UPD" ] && echo "$_UPD" || echo "vara-skills is up to date ($(cat "$VARA_SKILLS_DIR/VERSION" 2>/dev/null || echo unknown))"
 ```
@@ -68,8 +79,14 @@ Tell the user the snooze duration (level 1: 24h, level 2: 48h, level 3+: 7 days)
 Detect the install type:
 
 ```bash
-VARA_SKILLS_DIR="${VARA_SKILLS_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/../.." && pwd)}"
-[ -d "$VARA_SKILLS_DIR/.git" ] && echo "INSTALL_TYPE: git" || echo "INSTALL_TYPE: non-git"
+# VARA_SKILLS_DIR is inherited from preamble or standalone block above
+if [ -d "${VARA_SKILLS_DIR:-.}/.git" ]; then
+  echo "INSTALL_TYPE: git"
+elif echo "$VARA_SKILLS_DIR" | grep -q 'plugins/cache'; then
+  echo "INSTALL_TYPE: plugin"
+else
+  echo "INSTALL_TYPE: non-git"
+fi
 ```
 
 **If git install:**
@@ -80,7 +97,9 @@ git fetch origin
 git reset --hard origin/main
 ```
 
-**If non-git install:** Tell the user: "This is not a git install. Update vara-skills through the Claude Code plugin system: `/plugin marketplace update vara-skills`."
+**If plugin install:** Tell the user: "This is a Claude Code plugin install. To upgrade, run: `claude plugin update vara-skills`"
+
+**If non-git install:** Tell the user: "This is not a git install. Re-clone from https://github.com/gear-foundation/vara-skills or reinstall the Claude Code plugin."
 
 ### Step 4: Post-upgrade
 

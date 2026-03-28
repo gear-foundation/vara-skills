@@ -181,6 +181,28 @@ def test_corrupt_cache_file() -> None:
         assert result.stdout.strip() == ""
 
 
+def test_plugin_cache_path_discovery() -> None:
+    """Verify update-check works when VARA_SKILLS_DIR points to a plugin cache path."""
+    with tempfile.TemporaryDirectory() as base:
+        # Simulate ~/.claude/plugins/cache/vara-skills/vara-skills/1.3.1/
+        plugin_dir = Path(base, "plugins", "cache", "vara-skills", "vara-skills", "1.3.1")
+        plugin_dir.mkdir(parents=True)
+        Path(plugin_dir, "VERSION").write_text("1.3.1\n")
+        bin_dir = plugin_dir / "bin"
+        bin_dir.mkdir()
+        import shutil
+        shutil.copy2(str(SCRIPT), str(bin_dir / "vara-skills-update-check"))
+
+        state_dir = Path(base, "state")
+        state_dir.mkdir()
+
+        # No cache, bogus URL → should fall back to UP_TO_DATE gracefully
+        result = run_check(str(plugin_dir), str(state_dir), remote_url="http://localhost:1/nope")
+        assert result.returncode == 0
+        cache = Path(state_dir, "last-update-check").read_text()
+        assert "UP_TO_DATE 1.3.1" in cache
+
+
 def test_cache_version_mismatch_refetches() -> None:
     with tempfile.TemporaryDirectory() as skills_dir, tempfile.TemporaryDirectory() as state_dir:
         Path(skills_dir, "VERSION").write_text("2.0.0\n")
@@ -206,6 +228,7 @@ def main() -> int:
         test_snooze_expired,
         test_snooze_new_version_ignores_snooze,
         test_force_clears_cache_and_snooze,
+        test_plugin_cache_path_discovery,
         test_network_failure_graceful,
         test_corrupt_snooze_file,
         test_corrupt_cache_file,

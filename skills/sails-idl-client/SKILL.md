@@ -41,6 +41,16 @@ If a released contract evolves or a new deployed contract version is introduced,
 - Keep old and new generated clients available during cutover when frontend, tests, scripts, or migration tooling still depend on the previous version.
 - Regenerate clients as part of release work, but do not treat regeneration alone as compatibility validation.
 
+## Frontend IDL Handoff
+
+When a Sails program's IDL is consumed by a frontend in a separate workspace or repo:
+
+- Check in an IDL snapshot in the frontend project so the frontend toolchain can build independently.
+- Document the refresh command: after regenerating the IDL from the Rust workspace, copy it to the frontend snapshot location and regenerate the TypeScript client.
+- If the IDL is only generated in `OUT_DIR` during Rust builds, it will not be available to the frontend at build time.
+
+See `../../references/sails-idl-client-pipeline.md` for the canonical frontend export pattern.
+
 ## Inputs
 
 - `../../references/sails-cheatsheet.md`

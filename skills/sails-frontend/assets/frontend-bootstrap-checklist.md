@@ -7,7 +7,13 @@ Use this before writing UI code for a Vara Sails application.
 - Confirm the deployed `programId` for each environment.
 - Confirm the node endpoint for local, testnet, or other target networks.
 - Confirm the intended network and API assumptions for the target node.
+- If using Next.js App Router: confirm `transpilePackages` includes Gear/Sails packages in `next.config.js`.
+- If using Next.js App Router: confirm all Gear provider and hook code is in `'use client'` files.
+- If using Next.js App Router: confirm heavy Gear imports use `dynamic(() => import(...), { ssr: false })` or runtime `await import(...)`.
+- If the repo has a Rust `app/` crate and the frontend framework expects `app/`: confirm one has been renamed (e.g. frontend in `frontend/`).
 - Confirm the current `.idl` and whether the frontend should generate `lib.ts` or parse IDL dynamically.
+- Confirm the `.idl` file is checked into the frontend project or the copy/generation command is documented.
+- If the IDL is generated in the Rust workspace `OUT_DIR`, confirm the handoff path to the frontend is explicit. See `sails-idl-client-pipeline.md`.
 - Confirm whether the app stays fully on the provider-and-hooks path or needs a justified low-level `@gear-js/api` escape hatch.
 - List each Sails service function as one of: command, query, or event subscription.
 - Mark each write action as wallet-bound or not wallet-bound.
@@ -47,6 +53,18 @@ Use this before writing UI code for a Vara Sails application.
 - Confirm env vars are documented and actually used.
 - Confirm the app fails visibly when required env vars are missing.
 - Confirm one full happy-path action can be performed from the UI.
+- Confirm the installed `sails-js` API surface matches the code: `signAndSend` (not `sendAndWait`), positional args, query builder with `.call()`.
+- If runtime IDL parsing is used, confirm `sails-js-parser` is installed and `new Sails(parser)` initialization is present.
+
+## Verification Order (Next.js App Router)
+
+When the frontend is a Next.js App Router project:
+
+1. `next build` first (generates route types under `.next/types`)
+2. `tsc --noEmit` second (type-check against generated types)
+3. Manual or automated smoke of the running app
+
+Do not run `tsc --noEmit` before `next build`; route parameter types will be missing.
 
 ## Dependency Resolution Checks
 

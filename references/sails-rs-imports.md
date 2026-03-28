@@ -21,7 +21,7 @@ sails-rs = { version = "1.0.0-beta.2", features = ["build"] }
 sails-rs = { version = "1.0.0-beta.2", features = ["gtest"] }
 ```
 
-- Add `gclient` features or dependencies only when the crate also runs local-node smoke or off-chain integration tests.
+- Add `gclient` features or dependencies only when the crate also runs local-node smoke or off-chain integration tests. For deployment and CLI interaction without a Rust test harness, use `vara-wallet` instead.
 - Do not add `sails-idl-gen` to the default app/wasm baseline unless the repo intentionally uses a more manual IDL pipeline.
 
 ### Dedicated Client Crate
@@ -74,7 +74,7 @@ Prevention:
 Key constraints:
 
 - `resolver = "3"` and `edition = "2024"` are the current defaults. Older `resolver = "2"` / `edition = "2021"` layouts cause feature-unification bugs with `sails-rs`.
-- `gtest` and `gclient` belong in `[dev-dependencies]` only, never in `[dependencies]`.
+- `gtest` and `gclient` belong in `[dev-dependencies]` only, never in `[dependencies]`. `gclient` is for Rust-native test harnesses; for deployment and on-chain interaction, `vara-wallet` is the primary tool.
 - Each program is its own workspace root, not a member of a shared multi-program workspace.
 
 ## Common Imports

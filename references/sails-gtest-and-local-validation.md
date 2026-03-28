@@ -50,7 +50,30 @@ Pick `Next` or `Manual` for timing-sensitive flows, delayed work, reply absence,
 - Event assertions should happen after the producing block and only expect events on successful execution.
 - If you drop to raw `gtest`, inspect the matching `MessageId` in the `BlockRunResult` instead of expecting a direct typed return value.
 
-## Typed Local Smoke
+## Local Smoke — Primary Path (vara-wallet)
+
+The fastest local smoke path uses `vara-wallet` for deployment and interaction. No Rust tooling needed beyond building the `.opt.wasm`.
+
+1. Start or reuse a local node on the default port (ws://localhost:9944).
+2. Set the local endpoint: `export VARA_WS=ws://localhost:9944`. The default is mainnet — always override for local work.
+3. Import a funded dev account: `vara-wallet wallet import --seed '//Alice' --name alice`.
+4. Deploy the `.opt.wasm` artifact:
+   ```bash
+   UPLOAD=$(vara-wallet --account alice program upload ./target/wasm32-unknown-unknown/release/my_program.opt.wasm)
+   PROGRAM_ID=$(echo $UPLOAD | jq -r .programId)
+   ```
+   If the constructor does non-trivial work, add `--gas-limit <n>`.
+5. If the program uses delayed messages, transfer VARA to the program address: `vara-wallet --account alice transfer $PROGRAM_ID 100`.
+6. Exercise one command and one query:
+   ```bash
+   vara-wallet --account alice call $PROGRAM_ID MyService/DoSomething --args '["hello"]' --idl ./my_program.idl
+   vara-wallet call $PROGRAM_ID MyService/GetState --args '[]' --idl ./my_program.idl
+   ```
+7. Use local dev accounts such as `//Alice` and `//Bob` only for local smoke, and keep seed phrases or private keys out of committed docs.
+
+## Local Smoke — Secondary Path (Rust gclient)
+
+Use this path when the project already has a Rust test harness built on `gclient` and `GclientEnv`. For new projects, prefer the vara-wallet path above.
 
 1. Start or reuse a local node.
 2. Connect with `GearApi`:
@@ -72,7 +95,7 @@ Common API confusions:
 - `WSAddress::new(url, port)` — the port is the second argument. Do not embed the port in the URL string.
 
 3. Wrap the API in `GclientEnv` or the equivalent generated-client environment.
-4. Upload the tested Wasm, deploy with a unique salt, and record the real program id. If the constructor does non-trivial work, override gas with an explicit limit — default `calculateGas()` may be insufficient.
+4. Upload the `.opt.wasm`, deploy with a unique salt, and record the real program id. If the constructor does non-trivial work, override gas with an explicit limit — default `calculateGas()` may be insufficient.
 5. If the program uses delayed messages, transfer VARA to the program address before exercising commands. Unlike `gtest`, on-chain programs need balance to pay for future gas.
 6. Use the generated client for one command and one query path.
 7. Use local dev accounts such as `//Alice` and `//Bob` only for local smoke, and keep seed phrases or private keys out of committed docs.

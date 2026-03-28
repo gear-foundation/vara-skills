@@ -2,6 +2,24 @@
 
 This note captures the standard frontend path for Vara Sails applications and the justified fallback path for lower-level Gear-JS work.
 
+## Contents
+
+- [Default Decision](#default-decision)
+- [Next.js App Router Compatibility](#nextjs-app-router-compatibility)
+- [Typical Package Surface](#typical-package-surface)
+- [Root Provider Composition](#root-provider-composition)
+- [Wallet And Account Flow](#wallet-and-account-flow)
+- [Typed Sails Client Path](#typed-sails-client-path)
+- [Queries](#queries)
+- [SCALE Decode Decision](#scale-decode-decision)
+- [Commands And Transactions](#commands-and-transactions)
+- [Events](#events)
+- [Low-Level Gear-JS Fallback](#low-level-gear-js-fallback)
+- [Vouchers, Gasless, And Signless](#vouchers-gasless-and-signless)
+- [Mailbox And Replies](#mailbox-and-replies)
+- [Environment Contract](#environment-contract)
+- [Default Review Checklist](#default-review-checklist)
+
 ## Default Decision
 
 For a standard Vara Sails frontend, use this order:
@@ -14,6 +32,32 @@ For a standard Vara Sails frontend, use this order:
 
 Do not start with manual SCALE payload assembly when an IDL and generated client are available.
 Do not switch to low-level Gear-JS just because a UI flow is custom.
+
+## Next.js App Router Compatibility
+
+`@gear-js/api`, `sails-js`, and `@polkadot/api` depend on browser globals and WASM. They break in React Server Components by default. When the frontend uses Next.js App Router:
+
+- Add Gear packages to `transpilePackages` in `next.config.js`:
+  ```js
+  const nextConfig = {
+    transpilePackages: ['@gear-js/api', 'sails-js', '@polkadot/api'],
+    webpack: (config) => {
+      config.resolve.fallback = { ...config.resolve.fallback, fs: false, net: false, tls: false };
+      return config;
+    },
+  };
+  ```
+  Note: this `webpack` configuration applies when Next.js uses webpack. If using Turbopack (default in Next.js 15+), the fallback configuration may differ.
+- Mark all Gear provider and hook files with `'use client'`.
+- Use dynamic imports with `ssr: false` for components that initialize Gear connections:
+  ```tsx
+  import dynamic from 'next/dynamic';
+  const GearProviders = dynamic(() => import('./GearProviders'), { ssr: false });
+  ```
+- If `@gear-js/react-hooks` or its subdependencies (e.g. wallet packages) cause server-build failures even after `transpilePackages`, fall back to a lower-level `sails-js` + `@gear-js/api` integration path with explicit client-only runtime boundaries. If falling back, commit to the lower-level path for the entire project. Do not mix hooks-based and non-hooks-based service access in the same codebase.
+- On the lower-level fallback path, use `await import('sails-js')` and `await import('@gear-js/api')` at runtime inside client components instead of top-level static imports, to prevent Next.js from bundling them into server page-data collection.
+- `next/font/google` fetches fonts from Google at build time. CI environments or proof-loop sandboxes without internet access will fail. Use local font files or `next/font/local` in offline environments.
+- `.next/types` verification order: run `next build` before `tsc --noEmit` because App Router generates route type files during the build step. Running typecheck first will fail on missing route types.
 
 ## Typical Package Surface
 
@@ -35,6 +79,8 @@ Add these only if the app uses packaged wallet/UI components:
 
 ### Optional low-level layer
 Add low-level metadata, mailbox, voucher, or raw API helpers only when the app genuinely needs escape-hatch behavior.
+
+When using the transaction-builder path without React hooks (e.g. in a Node.js script, test harness, or Next.js API route), add `@polkadot/util` and `@polkadot/util-crypto` as explicit dependencies. These are normally pulled in transitively by `@gear-js/react-hooks`, but on the no-hooks path they must be listed explicitly or the build will fail with unresolved module errors.
 
 Version resolution order:
 1. Follow the target repository lockfile first.
@@ -146,6 +192,24 @@ Use generated client code as the default for product code.
 Reserve runtime IDL parsing for dynamic integrations, tooling, playgrounds, or cases where the IDL is not known at build time.
 
 If the program `.idl` changes, regenerate the client before treating the frontend as up to date.
+
+### sails-js-parser Initialization
+
+When using `sails-js` programmatically for runtime IDL parsing (not the generated client path), the `Sails` class requires an explicit parser instance:
+
+```ts
+import { Sails } from 'sails-js';
+import { SailsIdlParser } from 'sails-js-parser';
+
+const parser = await SailsIdlParser.new();
+const sails = new Sails(parser);
+const idl = await fetch('/program.idl').then(r => r.text());
+sails.parseIdl(idl);
+```
+
+Without `sails-js-parser`, calling `parseIdl` will throw: `Parser not set. Use sails-js-parser package to initialize the parser and pass it to the Sails constructor.`
+
+In Next.js, this code must run client-side only via a `'use client'` component or dynamic import with `ssr: false`. If `sails-js` exports its own parser in a future version, the separate `sails-js-parser` import may no longer be needed.
 
 ## Queries
 
@@ -354,6 +418,19 @@ const reply = await response();
 ```
 
 Use this path for custom orchestration, batch flows, or non-React helpers.
+
+### API Surface Reference
+
+As of `sails-js` 0.x / 1.0.0-beta, validate these conventions against the installed version before wiring UI code:
+
+- `tx.signAndSend()` returns `{ response }` where `response` is a callable function that returns a promise of the decoded reply. Pattern: `const { response } = await tx.signAndSend(); const reply = await response();`
+- Do not use `sendAndWait()` or `withAccount(...).sendAndWait()` — these do not exist on the current `sails-js` transaction builder.
+- For the hooks path, `sendTransactionAsync` returns `{ response }` as a promise: `const result = await sendTransactionAsync({ args: [...] }); const reply = await result.response;`
+- Function arguments are positional, not wrapped in objects. If the Sails function takes `(config: GameConfig)`, call `CreateGame(configValue)` not `CreateGame({ config: configValue })`.
+- Query builder: `useProgramQuery({ program, serviceName, functionName, args: [] })`. Outside hooks: `program.serviceName.FunctionName(...args)` returns a query builder; call `.withAddress(programId)` then `.call()` to execute.
+- Validate the generated `Program` class surface before wiring: confirm `program.<serviceName>.<functionName>` exists. If it returns `undefined`, the generated client does not match the current IDL.
+
+If the installed `sails-js` version differs from the conventions above, validate the actual API surface from the package exports before wiring.
 
 ### Canonical mutation pattern
 

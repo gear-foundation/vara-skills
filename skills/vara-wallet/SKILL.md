@@ -52,7 +52,7 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 
 | Command | Purpose |
 |---------|---------|
-| `$VW node info` | Chain name, spec version, existential deposit |
+| `$VW node info` | Chain name, genesis, latest block |
 | `$VW balance [address]` | Account balance in VARA |
 | `$VW program info <id>` | Program status and codeId |
 | `$VW program list [--count N]` | List on-chain programs |
@@ -68,6 +68,11 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 | `$VW events prune [--older-than <duration>]` | Delete old events |
 | `$VW query <pallet> <method> [args...]` | Generic storage query |
 | `$VW vft balance <token> [account] --idl <path>` | Fungible token balance |
+| `$VW vft info <token> --idl <path>` | Token name, symbol, decimals, total supply |
+| `$VW vft allowance <token> <owner> <spender> --idl <path>` | Token allowance |
+| `$VW dex pairs --factory <addr>` | List DEX trading pairs |
+| `$VW dex pool <t0> <t1> --factory <addr>` | Pool reserves and prices |
+| `$VW dex quote <tIn> <tOut> <amount> --factory <addr>` | Swap quote with price impact |
 
 ### Write (account required — add `--account <name>`)
 
@@ -77,15 +82,28 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 | `$VW program upload <wasm> [--payload <hex>] [--value <v>] [--units vara\|raw]` | Upload + init program |
 | `$VW program deploy <codeId> [--payload <hex>] [--value <v>] [--units vara\|raw]` | Deploy from existing code |
 | `$VW code upload <wasm>` | Upload code blob only |
-| `$VW message send <dest> [--payload <hex>] [--value <v>]` | Send message to any actor (program, user, wallet) — also usable for VARA transfers with custom payload |
+| `$VW message send <dest> [--payload <hex>] [--value <v>]` | Send message to any actor (program, user, wallet) |
 | `$VW message reply <mid> [--payload <hex>]` | Reply to a message |
 | `$VW mailbox claim <messageId>` | Claim value from mailbox message |
 | `$VW call <pid> Service/Function --args '[...]' --value <v> --units vara\|raw --gas-limit <n> --idl <path>` | Sails state-changing call |
 | `$VW vft transfer <token> <to> <amount> --idl <path>` | Transfer fungible tokens |
+| `$VW vft transfer-from <token> <from> <to> <amount> --idl <path>` | Transfer from approved allowance |
 | `$VW vft approve <token> <spender> <amount> --idl <path>` | Approve token spender |
+| `$VW vft mint <token> <to> <amount> --idl <path>` | Admin token minting |
+| `$VW vft burn <token> <from> <amount> --idl <path>` | Admin token burning |
+| `$VW dex swap <tIn> <tOut> <amount> --factory <addr> [--slippage <bps>]` | Swap tokens (auto-approves) |
+| `$VW dex add-liquidity <t0> <t1> <a0> <a1> --factory <addr>` | Add pool liquidity |
+| `$VW dex remove-liquidity <t0> <t1> <lp> --factory <addr>` | Remove pool liquidity |
 | `$VW voucher issue <spender> <value>` | Issue gas voucher (see `../../references/voucher-and-signless-flows.md`) |
 | `$VW voucher revoke <spender> <voucherId>` | Revoke voucher |
+| `$VW sign <data> [--hex]` | Sign arbitrary data with wallet key (raw sr25519) |
 | `$VW tx <pallet> <method> [args...]` | Submit generic extrinsic |
+
+### Verify (no account needed)
+
+| Command | Purpose |
+|---------|---------|
+| `$VW verify <data> <signature> <address> [--hex]` | Verify signature against data and address |
 
 ### Monitor
 
@@ -130,6 +148,25 @@ $VW --account agent call $PROGRAM_ID MyService/DoSomething --args '["hello"]' --
 $VW call $PROGRAM_ID MyService/GetState --args '[]' --idl ./my_program.idl
 ```
 
+### Local node deployment
+
+When deploying to a local dev node, set the endpoint explicitly. The default is mainnet.
+
+```bash
+# Set local endpoint for the session
+export VARA_WS=ws://localhost:9944
+
+# Import a dev account (e.g. //Alice) for funded local testing
+$VW wallet import --seed '//Alice' --name alice
+
+# Deploy
+UPLOAD=$($VW --account alice program upload ./target/wasm32-unknown-unknown/release/my_program.opt.wasm)
+PROGRAM_ID=$(echo $UPLOAD | jq -r .programId)
+
+# Verify
+$VW call $PROGRAM_ID MyService/GetState --args '[]' --idl ./my_program.idl
+```
+
 ### Send message and wait for reply
 
 ```bash
@@ -165,6 +202,9 @@ $VW events list --type mailbox --limit 10
 ### Token operations
 
 ```bash
+# Token info
+$VW vft info $TOKEN_PROGRAM --idl ./vft.idl
+
 # Check balance
 $VW vft balance $TOKEN_PROGRAM --idl ./vft.idl
 
@@ -175,20 +215,44 @@ $VW --account agent vft transfer $TOKEN_PROGRAM $RECIPIENT 1000 --idl ./vft.idl
 $VW --account agent vft approve $TOKEN_PROGRAM $SPENDER 1000 --idl ./vft.idl
 ```
 
+### DEX operations (Rivr)
+
+```bash
+# Check available pairs
+$VW dex pairs --factory $FACTORY
+
+# Get swap quote with price impact
+$VW dex quote $TOKEN_IN $TOKEN_OUT 100 --factory $FACTORY
+
+# Swap tokens (auto-approves input token)
+$VW --account agent dex swap $TOKEN_IN $TOKEN_OUT 100 --factory $FACTORY --slippage 100
+```
+
 ### Fund an account with a voucher
 
 ```bash
 $VW --account sponsor voucher issue $SPENDER_ADDRESS 100 --duration 14400
 ```
 
+### Sign and verify data
+
+```bash
+# Sign arbitrary data
+SIG=$($VW --account agent sign "hello world" | jq -r .signature)
+
+# Verify signature
+$VW verify "hello world" $SIG $ADDRESS
+```
+
 ## IDL Resolution
 
-Sails commands (`call`, `discover`, `vft`) require an IDL. Currently:
+Sails commands (`call`, `discover`, `vft`) require an IDL. Resolution order:
 
-- **`--idl <path>`** — local file, always works
-- **`VARA_META_STORAGE`** — remote fetch by program codeId (no public registry yet)
+1. **Bundled IDLs** — standard VFT IDLs are bundled and auto-detected for `vft` commands
+2. **`--idl <path>`** — local file, always works
+3. **`VARA_META_STORAGE`** — remote fetch by program codeId (no public registry yet)
 
-For now, always provide `--idl <path>`. Public IDL registry is planned for a future release.
+For non-VFT programs, always provide `--idl <path>`.
 
 ## Output Parsing
 
@@ -214,21 +278,29 @@ $VW --ws wss://testnet.vara.network balance
 
 # Session-wide
 export VARA_WS=wss://testnet.vara.network
+
+# Local dev node
+export VARA_WS=ws://localhost:9944
 ```
 
 | Network | Endpoint |
 |---------|----------|
 | Mainnet | `wss://rpc.vara.network` (default) |
 | Testnet | `wss://testnet.vara.network` |
+| Local | `ws://localhost:9944` |
+
+For full network endpoint and account format details, see `../../references/vara-network-endpoints.md`.
 
 ## Units
 
-1 VARA = 10^12 minimal units. Amounts default to VARA. For full network endpoint and account format details, see `references/vara-network-endpoints.md`.
+1 VARA = 10^12 minimal units (12 decimals). Amounts default to VARA.
 
 ```bash
 $VW transfer $TO 1.5                        # 1.5 VARA
 $VW transfer $TO 1500000000000 --units raw   # same in raw units
 ```
+
+VFT commands support `--units raw|token` for human-readable token amounts using the token's own decimals.
 
 Existential deposit is ~10 VARA on mainnet.
 
@@ -252,4 +324,5 @@ Existential deposit is ~10 VARA on mainnet.
 - Gas is auto-calculated — omit `--gas-limit` unless you have a specific reason.
 - Messages are async. After `message send`, use `wait` to get the reply.
 - `call` auto-detects queries vs functions — no need to specify.
+- When targeting a local dev node, always set `VARA_WS=ws://localhost:9944` or use `--ws`. The default endpoint is mainnet.
 - If `sails-local-smoke` is green and you need to interact with a deployed program on a live network, switch to this skill.

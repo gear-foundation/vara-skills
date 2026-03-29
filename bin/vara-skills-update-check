@@ -163,4 +163,15 @@ if check_snooze "$REMOTE"; then
   exit 0  # snoozed — stay quiet
 fi
 
+# ─── Pre-refresh marketplace clone for plugin installs ───────
+# Claude Code's `plugin update` reads the local HEAD of the
+# marketplace clone, not origin. If the clone is stale, `update`
+# thinks the installed version is already latest. Fix: reset the
+# clone to origin/main so `claude plugin update` sees the new version.
+_MKT="$HOME/.claude/plugins/marketplaces/vara-skills"
+if [ -d "$_MKT/.git" ]; then
+  git -C "$_MKT" fetch origin --quiet 2>/dev/null || true
+  git -C "$_MKT" reset --hard origin/main --quiet 2>/dev/null || true
+fi
+
 echo "UPGRADE_AVAILABLE $LOCAL $REMOTE"

@@ -46,7 +46,7 @@ Use this as the first stop for the provisional Sails-builder pack. Route the bui
 
 ## Standard Defaults
 
-- Start with Sails for standard Vara work, not raw low-level `gstd`. Use `sails-rs 0.10.2` as the current baseline unless the target repo already pins a different version. If the repo uses `1.0.0-beta+`, see the `sails-beta` branch of this pack.
+- Start with Sails for standard Vara work, not raw low-level `gstd`. Use `sails-rs 0.10.3` as the current baseline unless the target repo already pins a different version. If the repo uses `1.0.0-beta+`, see the `sails-beta` branch of this pack.
 - In standard Sails repos, `cargo build` runs `build.rs`: program or wasm crates usually call `sails_rs::build_wasm()`, while the repo may also emit `.idl` and typed client outputs from that same build flow.
 - For dedicated Rust client crates, prefer `sails-rs = { version = "...", features = ["build"] }`
   with `sails_rs::build_client::<Program>()`.

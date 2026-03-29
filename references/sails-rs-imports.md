@@ -2,7 +2,7 @@
 
 ## Current Baseline
 
-- Use `sails-rs 0.10.2` as the pack baseline unless the target repo already pins a different version.
+- Use `sails-rs 0.10.3` as the pack baseline unless the target repo already pins a different version.
 - If the target repo uses `sails-rs 1.0.0-beta+`, follow its version. See the `sails-beta` branch of this pack for beta-specific patterns (ReflectHash, binary header protocol, IDL V2, edition 2024).
 - Prefer teaching the current template defaults instead of older blog posts or copied snippets.
 
@@ -12,13 +12,13 @@
 
 ```toml
 [dependencies]
-sails-rs = "0.10.2"
+sails-rs = "0.10.3"
 
 [build-dependencies]
-sails-rs = { version = "0.10.2", features = ["build"] }
+sails-rs = { version = "0.10.3", features = ["build"] }
 
 [dev-dependencies]
-sails-rs = { version = "0.10.2", features = ["gtest"] }
+sails-rs = { version = "0.10.3", features = ["gtest"] }
 ```
 
 - Add `gclient` features or dependencies only when the crate also runs local-node smoke or off-chain integration tests. For deployment and CLI interaction without a Rust test harness, use `vara-wallet` instead.
@@ -28,10 +28,10 @@ sails-rs = { version = "0.10.2", features = ["gtest"] }
 
 ```toml
 [dependencies]
-sails-rs = "0.10.2"
+sails-rs = "0.10.3"
 
 [build-dependencies]
-sails-rs = { version = "0.10.2", features = ["build"] }
+sails-rs = { version = "0.10.3", features = ["build"] }
 ```
 
 - In current official examples, dedicated Rust client crates commonly use sails-rs with features = ["build"].
@@ -55,8 +55,8 @@ Prevention:
 
 ```
 <name>/
-├── Cargo.toml          # resolver = "2", edition = "2021"
-├── build.rs            # sails_rs::build_wasm()
+├── Cargo.toml          # resolver = "3", edition = "2024", rust-version = "1.91"
+├── build.rs            # sails_rs::build_wasm() + ClientBuilder::from_wasm_path().build_idl()
 ├── src/
 │   └── lib.rs          # wasm re-export + WASM_BINARY code module
 ├── app/
@@ -68,12 +68,12 @@ Prevention:
 │   └── src/lib.rs
 ├── tests/
 │   └── gtest.rs        # sails-rs with features = ["gtest"] in dev-dependencies
-└── rust-toolchain.toml # channel = "stable", targets = ["wasm32-unknown-unknown"]
+└── rust-toolchain.toml # channel = "stable", targets = ["wasm32-unknown-unknown", "wasm32v1-none"]
 ```
 
 Key constraints:
 
-- `resolver = "2"` and `edition = "2021"` are the current defaults.
+- `resolver = "3"`, `edition = "2024"`, and `rust-version = "1.91"` are the current template defaults.
 - `gtest` and `gclient` belong in `[dev-dependencies]` only, never in `[dependencies]`. `gclient` is for Rust-native test harnesses; for deployment and on-chain interaction, `vara-wallet` is the primary tool.
 - Each program is its own workspace root, not a member of a shared multi-program workspace.
 
@@ -92,13 +92,17 @@ use sails_rs::gstd::{exec, msg};
 
 ## Builder Defaults
 
-- For the root program crate, the default `build.rs` calls:
+- For the root program crate, the default `build.rs` chains wasm build with IDL generation:
   ```rust
   fn main() {
-      sails_rs::build_wasm();
+      if let Some((_, wasm_path)) = sails_rs::build_wasm() {
+          sails_rs::ClientBuilder::<app::Program>::from_wasm_path(
+              wasm_path.with_extension(""),
+          )
+          .build_idl();
+      }
   }
   ```
-  In 1.0.0-beta+ workspaces, the build.rs chains wasm build with IDL generation. See the `sails-beta` branch for that pattern.
 - For a Rust client-generation crate, use `sails_rs::build_client::<Program>()` as the default shorthand.
 - Use the Wasm path when the crate’s job is to build the on-chain artifact.
 - Use the client path when the crate’s job is to generate a typed Rust client from a program interface.

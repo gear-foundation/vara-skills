@@ -10,7 +10,17 @@
 
 ### Template Workspace Pattern
 
-- The root program crate's `build.rs` calls `sails_rs::build_wasm()` to build the on-chain artifact.
+- The root program crate's `build.rs` chains wasm build with IDL generation:
+  ```rust
+  fn main() {
+      if let Some((_, wasm_path)) = sails_rs::build_wasm() {
+          sails_rs::ClientBuilder::<app::Program>::from_wasm_path(
+              wasm_path.with_extension(""),
+          )
+          .build_idl();
+      }
+  }
+  ```
 - For dedicated Rust client crates, the normal path is:
   - `[build-dependencies] sails-rs = { version = "...", features = ["build"] }`
   - `fn main() { sails_rs::build_client::<Program>(); }`

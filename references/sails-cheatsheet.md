@@ -2,7 +2,7 @@
 
 ## Release Baseline
 
-- Treat `sails-rs 0.10.2` as the current standard baseline for this pack. If the target repo uses `1.0.0-beta+`, follow its version and see the `sails-beta` branch.
+- Treat `sails-rs 0.10.3` as the current standard baseline for this pack. If the target repo uses `1.0.0-beta+`, follow its version and see the `sails-beta` branch.
 - Public service methods must be marked with `#[export]` to become Sails routes.
 - Event enums should use `#[sails_rs::event]`.
 - Event emission should use `emit_event`, not older renamed patterns.

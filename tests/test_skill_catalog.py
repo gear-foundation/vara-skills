@@ -118,7 +118,7 @@ def main() -> int:
     assert "cargo-sails" in dev_env_lower
     assert "cargo sails new" in dev_env_lower
     assert "wasm32-unknown-unknown" in dev_env
-    assert "wasm32-unknown-unknown" in dev_env
+    assert "wasm32v1-none" in dev_env
     assert "install-gear.sh" in dev_env or "install-gear.ps1" in dev_env
     assert "../gear" not in dev_env
 

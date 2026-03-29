@@ -500,13 +500,9 @@ Default rule: prefer #[export(unwrap_result)] over hand-rolled panic wrappers un
 The stable default is IDL plus generated clients.
 
 ```rust
-// build.rs
+// build.rs (dedicated client crate)
 fn main() {
-    sails_rs::ClientBuilder::<demo::DemoProgram>::from_env()
-        .build_idl()
-        .with_mocks("with_mocks")
-        .generate()
-        .unwrap();
+    sails_rs::build_client::<demo::DemoProgram>();
 }
 ```
 

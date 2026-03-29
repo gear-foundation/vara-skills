@@ -4,19 +4,9 @@
 
 Use this pattern for future-block work such as reminders, auctions, inactivity cleanup, vesting steps, and timeout enforcement.
 
-## Self-Message Payload Encoding
+## Canonical Self-Message Payload
 
-Prefer the generated client path for delayed self-messages when possible. If you must construct delayed message payloads manually, use the version matching your program's sails-rs dependency.
-
-### 1.0.0-beta+ (Binary Header Protocol)
-
-In 1.0.0-beta+, all Sails messages (including self-messages) use the 16-byte binary header protocol. Generated clients encode this automatically. For manual delayed messages, the header requires the Interface ID (8-byte service fingerprint) and Entry ID (2-byte method selector) from the program's IDL. No public runtime helper in `sails-rs` currently constructs the v2 header from service/method names at runtime.
-
-If you cannot use a generated client for the self-message, verify your manual header bytes against the IDL's Interface ID before deploying on-chain. See `sails-rs-imports.md` section **Sails Header Protocol** for the byte layout.
-
-### 0.10.x (SCALE-String Routing)
-
-In 0.10.x, encode service, method, and arguments as SCALE-encoded strings and concatenate:
+For a standard Sails self-call by route name, encode service, method, and arguments in order, then concatenate:
 
 ```rust
 let payload = [
@@ -27,9 +17,10 @@ let payload = [
 .concat();
 ```
 
-- This is the route-prefixed byte shape for 0.10.x when a delayed internal message cannot go through a generated client call directly.
+- This is the route-prefixed byte shape to use when a delayed internal message cannot go through a generated client call directly.
 - Keep the service and method names aligned with the exported Sails routes.
-- In gtest under 1.0.0-beta+, this pattern may still route correctly because the test runtime can support both encoding styles. However, its behavior on-chain with the beta.2 runtime is unverified. Prefer the binary header protocol or the generated client path for on-chain deployment.
+
+Note: In 1.0.0-beta+, messages use a binary header protocol instead of SCALE-string routing. See the `sails-beta` branch for the beta-specific delayed message encoding pattern.
 
 ## Sending The Delayed Message
 

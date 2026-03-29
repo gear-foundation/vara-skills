@@ -7,7 +7,6 @@ This note captures the standard frontend path for Vara Sails applications and th
 - [Default Decision](#default-decision)
 - [Next.js App Router Compatibility](#nextjs-app-router-compatibility)
 - [Typical Package Surface](#typical-package-surface)
-- [Beta.2 JS Ecosystem Status](#beta2-js-ecosystem-status)
 - [Root Provider Composition](#root-provider-composition)
 - [Wallet And Account Flow](#wallet-and-account-flow)
 - [Typed Sails Client Path](#typed-sails-client-path)
@@ -89,16 +88,6 @@ Version resolution order:
 3. If bootstrapping a new app, resolve a compatible package set from current package metadata before writing `package.json`.
 
 Do not pin Gear/Vara frontend package versions from memory.
-
-## Beta.2 JS Ecosystem Status
-
-As of the 1.0.0-beta.2 transition, several JS ecosystem components have known compatibility gaps:
-
-- **sails-js v2 packages:** The v2 `sails-js` and `sails-js-cli` packages matching the beta.2 IDL format may not yet be published to npm. If `sails-js-cli generate` or `cargo sails client-js` fails on a v2 IDL file, check whether a pre-release or source-based install is available. Without v2-compatible client generation, the typed frontend path is blocked.
-- **@polkadot/util version conflicts:** `@gear-js/api` and `sails-js` may require different `@polkadot/util` versions. If `npm install` fails with peer dependency conflicts, use `--legacy-peer-deps` to proceed. Document this workaround in the project README.
-- **vara-wallet v2 IDL parsing:** Some vara-wallet versions cannot parse the v2 IDL format. CLI-based local-smoke calls using `--idl` will fail. This affects the local-smoke validation path but not the frontend JS path directly.
-
-These are expected to resolve as the beta.2 ecosystem stabilizes. Check package changelogs before starting a new frontend against a beta.2 program.
 
 ## Root Provider Composition
 
@@ -432,7 +421,7 @@ Use this path for custom orchestration, batch flows, or non-React helpers.
 
 ### API Surface Reference
 
-As of `sails-js` 0.x / 1.0.0-beta, validate these conventions against the installed version before wiring UI code:
+As of `sails-js` 0.x, validate these conventions against the installed version before wiring UI code:
 
 - `tx.signAndSend()` returns `{ response }` where `response` is a callable function that returns a promise of the decoded reply. Pattern: `const { response } = await tx.signAndSend(); const reply = await response();`
 - Do not use `sendAndWait()` or `withAccount(...).sendAndWait()` — these do not exist on the current `sails-js` transaction builder.

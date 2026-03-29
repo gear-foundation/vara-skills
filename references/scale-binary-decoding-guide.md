@@ -61,12 +61,12 @@ Use this order unless the task explicitly requires a lower-level path:
 
 For a standard Sails app, do not assume constructor, service, reply, or event bytes are just a bare business DTO.
 
-In 1.0.0-beta+, Sails uses a 16-byte binary header protocol (magic `"GM"`, version, interface ID, entry ID, route index) instead of the old string-based SCALE routing used in 0.10.x. The generated client handles this transparently. When debugging raw bytes from 1.0.0-beta+ programs, the first 16 bytes are the header, not a SCALE-encoded service/method name.
+Sails uses route-prefixed SCALE encoding for service and method routing. The generated client handles this transparently. When debugging raw bytes, the leading bytes are SCALE-encoded service and method name strings, not the bare business DTO.
 
 If the path involves a Sails route, decode with the generated client or another Sails-aware IDL path first.
 
 Only decode as a bare struct after you have explicitly confirmed that:
-- the bytes are not carrying Sails routing framing (header-based in 1.0.0-beta+, string-based in 0.10.x), or
+- the bytes are not carrying Sails routing framing, or
 - the routing layer has already been handled by the tool you are using
 
 ## State Reads

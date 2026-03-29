@@ -24,14 +24,11 @@ If a released contract evolves or a new deployed contract version is introduced,
 - For a dedicated Rust client crate, prefer the standard Sails build-helper path:
   - `[build-dependencies] sails-rs = { version = "...", features = ["build"] }`
   - `fn main() { sails_rs::build_client::<Program>(); }`
-- If the repo needs more control over generation, use the configurable Sails path:
-  - `sails_rs::ClientBuilder::<Program>::from_env().build_idl().generate()`
 - Treat direct `sails-idl-gen` plus `sails-client-gen` wiring as a manual fallback for non-standard layouts or explicitly custom generation needs.
 - Do not assume a single fixed output location. Depending on the repo, generated `.idl` and Rust client artifacts may land in `OUT_DIR`, the client crate output path, or another repo-defined location.
 
 ## Generated Client Pitfalls
 
-- **`no_std` double-injection in hand-assembled workspaces**: The standard `cargo sails new` template uses `sails_rs::build_client::<Program>()` in `client/build.rs`, which does not inject `#![no_std]` into generated output. The `client/src/lib.rs` already carries `#![no_std]` and uses `include!()` to pull in the generated file, so the standard path works correctly. However, when hand-assembling a workspace (e.g. after a failed scaffold) and using `ClientBuilder::with_no_std(true)`, the generated file also gets `#![no_std]`, causing `an inner attribute is not permitted in this context`. Fix: use `sails_rs::build_client::<Program>()` or remove `with_no_std(true)` when the generated file is `include!`d inside a crate root that already has `#![no_std]`.
 - **Custom `BTreeMap` key types**: Public IDL-facing map keys should prefer primitive or tuple types (e.g. `u64`, `(u32, u32)`, `ActorId`). Custom struct keys (e.g. `BTreeMap<Pos, V>`) may fail client-side decoding because the generated type may lack the required ordered-key traits. Stick to primitives or tuples unless generated-client support for that custom key type is confirmed.
 
 ## Released Contract Evolution

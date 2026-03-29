@@ -421,7 +421,7 @@ Use this path for custom orchestration, batch flows, or non-React helpers.
 
 ### API Surface Reference
 
-As of `sails-js` 0.x / 1.0.0-beta, validate these conventions against the installed version before wiring UI code:
+As of `sails-js` 0.x, validate these conventions against the installed version before wiring UI code:
 
 - `tx.signAndSend()` returns `{ response }` where `response` is a callable function that returns a promise of the decoded reply. Pattern: `const { response } = await tx.signAndSend(); const reply = await response();`
 - Do not use `sendAndWait()` or `withAccount(...).sendAndWait()` — these do not exist on the current `sails-js` transaction builder.

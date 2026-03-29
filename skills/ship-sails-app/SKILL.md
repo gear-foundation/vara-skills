@@ -46,11 +46,10 @@ Use this as the first stop for the provisional Sails-builder pack. Route the bui
 
 ## Standard Defaults
 
-- Start with Sails for standard Vara work, not raw low-level `gstd`. Use `sails-rs 1.0.0-beta.2` as the current baseline unless the target repo already pins a different version. If the repo uses `0.10.x`, follow its version.
+- Start with Sails for standard Vara work, not raw low-level `gstd`. Use `sails-rs 0.10.2` as the current baseline unless the target repo already pins a different version. If the repo uses `1.0.0-beta+`, see the `sails-beta` branch of this pack.
 - In standard Sails repos, `cargo build` runs `build.rs`: program or wasm crates usually call `sails_rs::build_wasm()`, while the repo may also emit `.idl` and typed client outputs from that same build flow.
 - For dedicated Rust client crates, prefer `sails-rs = { version = "...", features = ["build"] }`
-  with `sails_rs::build_client::<Program>()` or the configurable
-  `sails_rs::ClientBuilder::<Program>::from_env().build_idl().generate()` path.
+  with `sails_rs::build_client::<Program>()`.
 - Treat direct `sails-client-gen` and `sails-idl-gen` wiring as a manual pipeline for explicitly non-standard repo layouts.
 - In `#[program]`, public constructors return `Self`; name that constructor shape and the chosen state ownership pattern explicitly in planning artifacts.
 - In `#[service]`, only methods tagged with `#[export]` are public Sails routes. Event-producing paths should use `emit_event`.
@@ -66,14 +65,13 @@ Use this as the first stop for the provisional Sails-builder pack. Route the bui
 - Check the repo's `build.rs` before inventing manual generation commands.
   Prefer this order:
   1. `sails_rs::build_client::<Program>()`
-  2. `sails_rs::ClientBuilder::<Program>::from_env().build_idl().generate()`
-  3. explicit `sails_idl_gen::generate_idl_to_file::<Program>(...)` plus `ClientGenerator::from_idl_path(...)`
+  2. explicit `sails_idl_gen::generate_idl_to_file::<Program>(...)` plus `ClientGenerator::from_idl_path(...)`
 - For binary decoding questions, match the decoder to the source: generated client or `.idl` for standard Sails interface paths, `ProgramMetadata` for full state, and `state.meta.wasm` for state-function output. Use plain `Decode::<T>` only when the bytes are known to be a bare SCALE payload.
 
 ## Greenfield Bootstrap
 
 - For a new Sails/Vara project from scratch, prefer the official template bootstrap:
-  `cargo sails new <project-name>`.
+  `cargo sails program <project-name>`.
 - This creates the standard workspace layout with `app`, `client`, `src`, `tests`, top-level `build.rs`, and baseline Cargo wiring.
 - For an existing repository, follow the repo’s current layout instead of re-bootstrapping it through the CLI template.
 

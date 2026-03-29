@@ -37,10 +37,11 @@ Validate the generated client path against a local node after `gtest` is already
 4. Import a funded dev account: `$VW wallet import --seed '//Alice' --name alice`.
 5. Deploy the `.opt.wasm` artifact and record the program id:
    ```bash
-   UPLOAD=$($VW --account alice program upload ./target/wasm32-unknown-unknown/release/my_program.opt.wasm)
+   UPLOAD=$($VW --account alice program upload ./target/wasm32-unknown-unknown/release/my_program.opt.wasm --idl ./my_program.idl)
    PROGRAM_ID=$(echo $UPLOAD | jq -r .programId)
    ```
    If the constructor does non-trivial work, override gas with `--gas-limit`.
+   - **Post-deploy verification:** If the service exposes a query, call it immediately after deploy to verify the constructor ran. An uninitialized program will return default or empty state, or panic.
 6. If the program uses delayed messages, transfer VARA to the program address: `$VW --account alice transfer $PROGRAM_ID 100`.
 7. Exercise one command and one query to prove the integration works:
    ```bash
@@ -72,3 +73,4 @@ Use this path when the project already has a Rust test harness that uses `gclien
 - Use `.opt.wasm` as the default deploy artifact. The plain `.wasm` is an intermediate build output that may exceed on-chain size limits.
 - When targeting a local node with `vara-wallet`, always set `VARA_WS=ws://localhost:9944`. The default endpoint is mainnet.
 - Do not embed machine-specific absolute paths in deploy commands or documentation. Use project-relative paths or skill-pack-relative references.
+- Verify the program initialized correctly by calling a read query immediately after deploy. An uninitialized program will appear active but return empty or default state.

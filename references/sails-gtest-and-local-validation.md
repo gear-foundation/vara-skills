@@ -59,10 +59,11 @@ The fastest local smoke path uses `vara-wallet` for deployment and interaction. 
 3. Import a funded dev account: `vara-wallet wallet import --seed '//Alice' --name alice`.
 4. Deploy the `.opt.wasm` artifact:
    ```bash
-   UPLOAD=$(vara-wallet --account alice program upload ./target/wasm32-unknown-unknown/release/my_program.opt.wasm)
+   UPLOAD=$(vara-wallet --account alice program upload ./target/wasm32-unknown-unknown/release/my_program.opt.wasm --idl ./my_program.idl)
    PROGRAM_ID=$(echo $UPLOAD | jq -r .programId)
    ```
    If the constructor does non-trivial work, add `--gas-limit <n>`.
+   - **Post-deploy verification:** If the service exposes a query, call it immediately after deploy to verify the constructor ran. An uninitialized program returns default or empty state, or panics.
 5. If the program uses delayed messages, transfer VARA to the program address: `vara-wallet --account alice transfer $PROGRAM_ID 100`.
 6. Exercise one command and one query:
    ```bash

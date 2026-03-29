@@ -20,6 +20,8 @@ let payload = [
 - This is the route-prefixed byte shape to use when a delayed internal message cannot go through a generated client call directly.
 - Keep the service and method names aligned with the exported Sails routes.
 
+Note: In 1.0.0-beta+, messages use a binary header protocol instead of SCALE-string routing. See the `sails-beta` branch for the beta-specific delayed message encoding pattern.
+
 ## Sending The Delayed Message
 
 ```rust

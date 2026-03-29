@@ -38,6 +38,18 @@
 - In 1.0.0-beta+, all IDL-visible types (method params, return types, event payloads) must derive `ReflectHash` with `#[reflect_hash(crate = sails_rs::sails_reflect_hash)]`. Missing this derive causes compile errors when the type appears in a service interface. In 0.10.x, `ReflectHash` does not exist.
 - A function returning `CommandReply<()>` that also accepts value (payable) must send a manual reply. The framework does not auto-reply for `CommandReply<()>` when value is attached. If the reply is missing, the caller's value transfer succeeds but no reply is delivered.
 
+## Troubleshooting: Common Compile Errors
+
+| Error Message | Cause | Fix |
+|---|---|---|
+| `Could not find parity-scale-codec` | Shared types derive `Encode`/`Decode` without re-path attributes | Add `#[codec(crate = sails_rs::scale_codec)]` and `#[scale_info(crate = sails_rs::scale_info)]` to the type |
+| `the trait bound ReflectHash is not satisfied` | IDL-visible type missing `ReflectHash` derive (1.0.0-beta+ only) | Add `#[derive(ReflectHash)]` and `#[reflect_hash(crate = sails_rs::sails_reflect_hash)]` |
+| `#[panic_handler] function required` | Top-level `src/lib.rs` missing the wasm re-export | Add `#[cfg(target_arch = "wasm32")] pub use app_crate::wasm::*;` to the root crate `src/lib.rs` |
+| `service attribute requires at least one public method with #[export]` | Service impl block has no exported methods | Add `#[export]` to at least one public method in the `#[service]` impl |
+| `static_mut_refs` warning (edition 2024) | Rust 2024 edition flags mutable static references | Add `#![allow(static_mut_refs)]` to the crate root, or refactor to program-owned `RefCell` state |
+
+These errors appear in order of frequency from builder feedback. For the full derive block template, see `references/sails-rs-imports.md` section **ReflectHash**.
+
 ## Program-Level Payable
 - Use `#[program(payable)]` if the program must accept value on an empty payload without routing to a service.
 

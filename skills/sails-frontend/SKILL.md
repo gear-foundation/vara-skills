@@ -19,6 +19,18 @@ Keep frontend work on the typed Sails path first: generated `lib.ts` plus `@gear
 - `../../references/scale-binary-decoding-guide.md`
 - `../../references/voucher-and-signless-flows.md`
 
+## Beta.2 Ecosystem Check
+
+Before starting frontend work for a sails-rs 1.0.0-beta.2 program, verify:
+
+- The target program's `.idl` is in v2 format (look for `!@sails: 1.0.0-beta.2` header and `program` block syntax).
+- A compatible `sails-js` / `sails-js-cli` version is available that can parse v2 IDL. If not published to npm, check for a pre-release or source install.
+- If `npm install` hits `@polkadot/util` peer dependency conflicts, use `--legacy-peer-deps`.
+
+See `../../references/sails-frontend-and-gear-js.md` section **Beta.2 JS Ecosystem Status** for details and workarounds.
+
+If the v2 JS tooling is not available, the typed frontend path is blocked. Document this blocker and defer frontend work until packages are published.
+
 ## Standard Path
 
 1. Treat the program `.idl` as the frontend source of truth.

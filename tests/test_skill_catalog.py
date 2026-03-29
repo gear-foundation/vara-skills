@@ -252,6 +252,8 @@ def main() -> int:
     assert "emit_event" in sails_cheatsheet
     assert "1.0.0-beta" in sails_cheatsheet
     assert "../sails" not in sails_cheatsheet
+    assert "Troubleshooting" in sails_cheatsheet
+    assert "parity-scale-codec" in sails_cheatsheet
 
     idl_pipeline = read("references/sails-idl-client-pipeline.md")
     idl_pipeline_lower = idl_pipeline.lower()
@@ -317,6 +319,7 @@ def main() -> int:
     assert "../sails" not in delayed_message
     assert "../awesome-sails" not in delayed_message
     assert "../dapps" not in delayed_message
+    assert "1.0.0-beta" in delayed_message or "Binary Header" in delayed_message
 
     ship_no_sibling_paths = read("skills/ship-sails-app/SKILL.md")
     assert "../sails`" not in ship_no_sibling_paths
@@ -350,6 +353,7 @@ def main() -> int:
     assert "generated clients" in implementer_lower or "generated client" in implementer_lower
     assert "#[export]" in implementer
     assert "emit_event" in implementer
+    assert "ReflectHash" in implementer
 
     gtest_tdd = read("skills/gtest-tdd-loop/SKILL.md")
     assert "../../references/sails-gtest-and-local-validation.md" in gtest_tdd
@@ -407,6 +411,7 @@ def main() -> int:
 
     frontend_ref = read("references/sails-frontend-and-gear-js.md")
     assert "voucher-and-signless-flows.md" in frontend_ref
+    assert "legacy-peer-deps" in frontend_ref or "Beta.2" in frontend_ref
 
     upgrade_skill = ROOT / "skills" / "vara-skills-upgrade"
     require(upgrade_skill)

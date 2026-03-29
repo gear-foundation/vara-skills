@@ -26,7 +26,7 @@ If the target crate explicitly builds an `ethexe` path, stop and hand back to a 
 
 1. Confirm the task is already specified and architecture-approved.
 2. Identify the smallest code change that satisfies the current task.
-3. Match the current Sails release conventions before improvising: public service routes use `#[export]`, events use `emit_event`, and shared derives may need `#[codec(crate = sails_rs::scale_codec)]` plus `#[scale_info(crate = sails_rs::scale_info)]`.
+3. Match the current Sails release conventions before improvising: public service routes use `#[export]`, events use `emit_event`, and all IDL-visible types (parameters, returns, events) need the full annotation block: `#[derive(Encode, Decode, TypeInfo, ReflectHash)]` with `#[codec(crate = sails_rs::scale_codec)]`, `#[scale_info(crate = sails_rs::scale_info)]`, and `#[reflect_hash(crate = sails_rs::sails_reflect_hash)]`. In 0.10.x, omit `ReflectHash` and its attribute.
 4. Preserve released routes, reply shapes, emitted events, IDL expectations, and client-facing contract stability unless the task explicitly changes them.
 5. Keep failure handling aligned with Gear/Vara async semantics.
 6. Hand local verification to the gtest loop before claiming the task is done.

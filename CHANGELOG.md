@@ -7,14 +7,17 @@ All notable changes to this project will be documented in this file.
 ### Changed (BREAKING)
 - **Baseline reverted to `sails-rs 0.10.2` (stable)** on main branch. The 1.0.0-beta.2 content is preserved on the `sails-beta` branch.
 - Reason: beta.2 ecosystem has unresolved blockers (unpublished npm packages, vara-wallet v2 IDL incompatibility, no delayed message header helper). Stable builders should not hit these issues.
-- All beta-specific patterns (ReflectHash, binary header protocol, IDL V2, edition 2024, `cargo sails new`) moved to `sails-beta` branch
-- Scaffold command: `cargo sails new` reverted to `cargo sails program` on main
+- All beta-specific patterns (ReflectHash, binary header protocol, IDL V2, edition 2024) moved to `sails-beta` branch
 - Build.rs: reverted to standalone `sails_rs::build_wasm()` pattern
 - Troubleshooting table kept but trimmed to stable-relevant errors only
+- `cargo sails new` remains the default bootstrap command
 
 ### Added
 - `sails-beta` branch created as the home for all 1.0.0-beta.2 content, including friction fixes (troubleshooting, constructor payload, delayed message versioning, JS ecosystem status)
 - Cross-version notes in references pointing to `sails-beta` branch for beta patterns
+- Post-deploy verification guidance in local-smoke skill and reference
+- BTreeMap key types pitfall in sails-idl-client skill
+- Troubleshooting table for top 3 stable compile errors in sails-cheatsheet
 
 ## [1.4.0] - 2026-03-27
 

@@ -14,7 +14,7 @@ Get the machine to a verified baseline for standard Sails Rust work: `rustup`, R
 1. Detect whether the builder is on `macOS`, `Linux`, or `Windows`.
 2. If `rustup` is missing, install it with the official bootstrap for that platform.
 3. Install or update the `stable` and `nightly` toolchains, then add `wasm32-unknown-unknown` and `wasm32-unknown-unknown`.
-4. Install the Sails Rust CLI with `cargo install sails-cli --locked`, which provides `cargo-sails` and the standard greenfield bootstrap command `cargo sails program <project-name>`.
+4. Install the Sails Rust CLI with `cargo install sails-cli --locked`, which provides `cargo-sails` and the standard greenfield bootstrap command `cargo sails new <project-name>`.
 5. Install the latest official `gear` release binary from `https://get.gear.rs/` (see Commands below for platform-specific download).
 6. Verify the toolchain with `rustup show`, `cargo sails --version`, and `gear --version`.
 7. Route back into `../sails-new-app/SKILL.md`, `../ship-sails-app/SKILL.md`, `../sails-gtest/SKILL.md`, or `../sails-local-smoke/SKILL.md` depending on the builder's next task.

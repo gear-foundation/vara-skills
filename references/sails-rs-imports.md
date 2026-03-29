@@ -46,12 +46,12 @@ On Rust 1.94+ the `dyn` trait object without the `dyn` keyword (`E0782`) is a ha
 Prevention:
 
 - Use one workspace per program. Do not combine multiple programs and a shared test crate in a single top-level workspace.
-- Always bootstrap with `cargo sails program <name>`, which generates the correct isolated layout.
+- Always bootstrap with `cargo sails new <name>`, which generates the correct isolated layout.
 - If you must share types across programs, extract them into a standalone `no_std` types crate with no `sails-rs` dependency.
 
 ## Canonical Workspace Layout
 
-`cargo sails program <name>` generates:
+`cargo sails new <name>` generates:
 
 ```
 <name>/

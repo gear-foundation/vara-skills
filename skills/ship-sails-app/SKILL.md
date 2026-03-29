@@ -71,7 +71,7 @@ Use this as the first stop for the provisional Sails-builder pack. Route the bui
 ## Greenfield Bootstrap
 
 - For a new Sails/Vara project from scratch, prefer the official template bootstrap:
-  `cargo sails program <project-name>`.
+  `cargo sails new <project-name>`.
 - This creates the standard workspace layout with `app`, `client`, `src`, `tests`, top-level `build.rs`, and baseline Cargo wiring.
 - For an existing repository, follow the repo’s current layout instead of re-bootstrapping it through the CLI template.
 

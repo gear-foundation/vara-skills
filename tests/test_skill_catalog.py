@@ -116,7 +116,7 @@ def main() -> int:
     assert "rustup" in dev_env_lower
     assert "cargo install sails-cli" in dev_env_lower
     assert "cargo-sails" in dev_env_lower
-    assert "cargo sails program" in dev_env_lower
+    assert "cargo sails new" in dev_env_lower
     assert "wasm32-unknown-unknown" in dev_env
     assert "wasm32-unknown-unknown" in dev_env
     assert "install-gear.sh" in dev_env or "install-gear.ps1" in dev_env
@@ -135,7 +135,7 @@ def main() -> int:
     assert "../../references/voucher-and-signless-flows.md" in ship
     assert "gear-message-execution" in ship
     assert "sails-dev-env" in ship
-    assert "cargo sails program" in ship
+    assert "cargo sails new" in ship
     assert "0.10" in ship
     assert "build.rs" in ship
 
@@ -144,7 +144,7 @@ def main() -> int:
     assert "Sails" in new_app
     assert ".idl" in new_app and ".opt.wasm" in new_app
     assert "build.rs" in new_app
-    assert "cargo sails program" in new_app
+    assert "cargo sails new" in new_app
     assert "../../references/sails-idl-client-pipeline.md" in new_app
     assert "../../references/sails-program-and-service-architecture.md" in new_app
     assert "sails-dev-env" in new_app

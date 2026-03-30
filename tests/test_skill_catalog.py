@@ -74,6 +74,12 @@ STARTER_SKILLS = {
         "references",
         "scripts",
     ],
+    "sails-indexer": [
+        "SKILL.md",
+        "assets",
+        "references",
+        "scripts",
+    ],
 }
 
 

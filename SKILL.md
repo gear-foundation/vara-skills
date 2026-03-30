@@ -52,6 +52,7 @@ The repo is intended to be self-contained: use local `references/` handbook file
 - Add a fungible token layer with awesome-sails: `skills/awesome-sails-vft/SKILL.md`
 - Interact with Vara Network on-chain (deploy, call, transfer, monitor): `skills/vara-wallet/SKILL.md`
 - Build or extend a React frontend for a Sails app: `skills/sails-frontend/SKILL.md`
+- Build or extend a read-side indexer and query API for a Sails app: `skills/sails-indexer/SKILL.md`
 - Evolve a released Sails contract, prepare a new deployed version, plan cutover, or design V1->V2 migration: `skills/sails-program-evolution/SKILL.md`
 - Look up network endpoints, testnet/mainnet RPC, account format, or program lifecycle: `references/vara-network-endpoints.md`
 - Look up bridge contract addresses or bridged token program IDs: `references/vara-eth-bridge-contracts.md`

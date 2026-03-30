@@ -27,6 +27,14 @@ The pack is being narrowed toward standard Gear/Vara Sails app builders:
 
 ## Installation
 
+### Claude Code (recommended)
+
+```bash
+npx skills add gear-foundation/vara-skills
+```
+
+That's it. All 20 skills are available immediately as `/vara-skills:<skill-name>`.
+
 ### Codex
 
 Clone the repo and install the local skills:

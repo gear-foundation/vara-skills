@@ -41,6 +41,7 @@ Treat the indexer as a projection pipeline:
 - Model restart, replay, backfill, and duplicate safety as first-class requirements, not as later hardening.
 - Prefer deterministic entity IDs derived from chain facts such as program ID, message ID, block number, extrinsic position, or explicit domain keys.
 - If the repo already has an indexer stack, extend it instead of replacing it with a new framework casually.
+- Pin PostGraphile to the v4 line for this skill pack. The reference code and templates target `postgraphile@4.14.1` and `postgraphile-plugin-connection-filter@2.3.0`. Do not install or document v5 against the current snippets until the API layer is rewritten intentionally.
 - Follow the canonical runtime order from `../../references/sails-indexer-patterns.md`, especially `Start with configuration, not hardcoded endpoints`, `Build one shared batch processor and export its derived types`, `Centralize all IDL decoding behind one decoder`, `Wire the runtime in main.ts, but do not place projection logic there`, `Give every handler the same lifecycle contract`, `Process a batch in a stable order`, `Save in groups and only write what changed`, and `Expose a thin API layer on top of PostgreSQL`.
 
 ## Route Here When
@@ -81,6 +82,51 @@ Cross-check against `../../references/sails-indexer-patterns.md`:
 - `Centralize all IDL decoding behind one decoder` for decoder setup and query encoding or decoding
 - `Keep the SQL schema read-model oriented` before freezing the SQL or ORM schema
 
+## Quick Start
+
+Use this cold-start path when the repo does not already contain a working indexer scaffold.
+
+Templates live in `skills/sails-indexer/assets/`:
+
+- `package.json`
+- `tsconfig.json`
+- `docker-compose.yml`
+- `.env.example`
+
+Cold-start defaults:
+
+- Node.js 20+
+- Docker or Docker Desktop available locally
+- PostgreSQL started through `docker compose up -d`
+- `reflect-metadata` imported once at the top of each runtime entrypoint before TypeORM entities or data source code is loaded
+- `experimentalDecorators: true` and `emitDecoratorMetadata: true` enabled in `tsconfig.json`
+- separate archive and live RPC endpoints; do not point both variables at the same endpoint just to make the scaffold boot
+
+Suggested first-run order:
+
+1. Copy the files from `assets/` into the new indexer repo.
+2. Fill `.env` from `.env.example`.
+3. Install dependencies with `npm install`.
+4. Start PostgreSQL with `docker compose up -d`.
+5. Generate TypeORM entities from `schema.graphql` with `npm run codegen`.
+6. Build once with `npm run build`.
+7. Generate a migration with `npm run db:generate`.
+8. Apply the migration with `npm run db:apply`.
+9. Start the processor with `npm run dev:processor`.
+10. Start the API with `npm run dev:api`.
+11. Verify that `/graphql` is reachable through the chosen local access path.
+
+For schema updates, use this order:
+
+1. update `schema.graphql`
+2. `npm run codegen`
+3. `npm run build`
+4. `npm run db:generate`
+5. `npm run db:apply`
+
+For fixed-program projects, `.env` can stay minimal with one `VARA_PROGRAM_ID` and one `VARA_IDL_PATH`.
+For discovery-driven projects, replace that pair with explicit root IDs such as `REGISTRY_PROGRAM_ID`, `FACTORY_PROGRAM_ID`, or other domain-specific sources and keep discovery logic separate from projection logic.
+
 ## Required Sequence
 
 1. Confirm that an indexer is actually needed and that direct chain queries are not sufficient.
@@ -89,7 +135,7 @@ Cross-check against `../../references/sails-indexer-patterns.md`:
 4. Design the read model around consumer needs, not as a blind mirror of contract storage.
 5. For each entity, name the deterministic ID, update trigger, required fields, and replay behavior.
 6. Decide the enrichment mode for each projection path: event-only, event-plus-query, or periodic derived aggregation.
-7. Separate discovery handlers from domain projection handlers when programs can appear dynamically.
+7. Separate discovery handlers from domain projection handlers when programs can appear dynamically. Fixed-program topologies can skip discovery entirely and load the tracked program list from config at startup.
 8. Define batch processing, duplicate safety, restart rehydration, and backfill rules before writing handlers.
 9. Keep the API layer thin, GraphQL-first, and backed by projected tables or views rather than recomputing domain logic at request time.
 10. Define the frontend access path to GraphQL explicitly: direct CORS-enabled access or frontend proxy or same-origin exposure.

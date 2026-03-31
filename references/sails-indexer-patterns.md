@@ -511,6 +511,8 @@ Why this shape matters:
 
 ### 8. Split dynamic discovery from domain projection
 
+If the topology is fixed from day one, skip discovery entirely. A single known program ID, or a small fixed set of program IDs, should be loaded from configuration and projected directly. Add a discovery handler only when the product truly creates or tracks programs dynamically.
+
 If one program creates or registers child programs, keep that logic in a dedicated handler.
 
 ```ts
@@ -1334,6 +1336,8 @@ Why this shape matters:
 
 A good default is to keep business logic in the processor and let the API expose already projected data.
 
+This section intentionally targets the PostGraphile v4 library API. Pin `postgraphile@4.14.1` and `postgraphile-plugin-connection-filter@2.3.0` when following the snippet below. Do not mix these examples with PostGraphile v5 setup until the API bootstrap is rewritten as a separate migration.
+
 ```ts
 // src/api.ts
 import express from "express";
@@ -1589,7 +1593,7 @@ When implementing a new indexer, follow this order:
 4. `sails-decoder.ts`
 5. `schema.graphql`
 6. `handlers/base.ts`
-7. discovery handler
+7. discovery handler (skip this step for fixed-program topologies)
 8. projection handler with rehydration
 9. enrichment or calculator services
 10. `api.ts`

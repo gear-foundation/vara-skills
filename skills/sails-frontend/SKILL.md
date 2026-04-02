@@ -19,9 +19,22 @@ Keep frontend work on the typed Sails path first: generated `lib.ts` plus `@gear
 - `../../references/scale-binary-decoding-guide.md`
 - `../../references/voucher-and-signless-flows.md`
 
+## Minimal Path (simple apps)
+
+For a straightforward app (counter, single-service CRUD) where the contract is already built:
+
+1. `npx create-vara-app my-dapp --idl path/to/service.idl`
+2. `cd my-dapp && npm install && npm run dev`
+3. Verify: one read query renders, one write action shows disabled/pending/success/error states
+4. Done — the scaffold handles providers, wallet, typed wrappers, and env validation
+
+Skip the rest of this skill unless you need to customize screens, add Next.js support, wire vouchers, or handle advanced flows.
+
 ## Bootstrap with create-vara-app
 
-When a Sails app needs a frontend — whether the project is brand-new or an existing repo without one — start with `create-vara-app`:
+When a Sails app needs a frontend — whether the project is brand-new or an existing repo without one — start with `create-vara-app`.
+
+**Prerequisite:** the contract must be built first so the `.idl` file exists. If the `.idl` is not available yet, build the contract (`cargo build`) or use `create-vara-app` without `--idl` to scaffold with a demo contract.
 
 ```bash
 npx create-vara-app my-dapp --idl path/to/service.idl

@@ -33,11 +33,11 @@ Validate the generated client path against a local node after `gtest` is already
 
 1. Confirm the `docs/plans/...-gtest.md` note shows a green test loop.
 2. Start or reuse a local node on the default port (ws://localhost:9944).
-3. Set the endpoint for the session: `export VARA_WS=ws://localhost:9944`. The default is mainnet — always override for local work.
+3. Set the endpoint: `$VW config set network local` (persists) or `export VARA_WS=ws://localhost:9944` (session only) or `--network local` (per-command). The default is mainnet — always override for local work.
 4. Import a funded dev account: `$VW wallet import --seed '//Alice' --name alice`.
 5. Deploy the `.opt.wasm` artifact and record the program id:
    ```bash
-   UPLOAD=$($VW --account alice program upload ./target/wasm32-unknown-unknown/release/my_program.opt.wasm --idl ./my_program.idl)
+   UPLOAD=$($VW --account alice program upload ./target/wasm32-unknown-unknown/release/my_program.opt.wasm --idl ./my_program.idl --args '[]')
    PROGRAM_ID=$(echo $UPLOAD | jq -r .programId)
    ```
    If the constructor does non-trivial work, override gas with `--gas-limit`.
@@ -71,6 +71,6 @@ Use this path when the project already has a Rust test harness that uses `gclien
 - Do not replace local smoke with explorer queries or ad hoc CLI poking.
 - If `gtest` is red or missing, stop and go back to `../sails-gtest/SKILL.md`.
 - Use `.opt.wasm` as the default deploy artifact. The plain `.wasm` is an intermediate build output that may exceed on-chain size limits.
-- When targeting a local node with `vara-wallet`, always set `VARA_WS=ws://localhost:9944`. The default endpoint is mainnet.
+- When targeting a local node with `vara-wallet`, use `--network local` or `config set network local` or `VARA_WS=ws://localhost:9944`. The default endpoint is mainnet.
 - Do not embed machine-specific absolute paths in deploy commands or documentation. Use project-relative paths or skill-pack-relative references.
 - Verify the program initialized correctly by calling a read query immediately after deploy. An uninitialized program will appear active but return empty or default state.

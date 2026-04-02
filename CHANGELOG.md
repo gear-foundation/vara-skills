@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2026-04-02
+
+### Updated
+- `vara-wallet` skill updated for v0.9.0: `--network` shorthand, `config` CLI, `--estimate`, connection timeout, `--idl`/`--init`/`--args` constructor encoding, faucet command, program list default limit, SS58 output
+- `sails-local-smoke` skill updated with `--network local` and `config set network local` alternatives
+- `sails-gtest-and-local-validation` reference updated with `--network local`, IDL-based deploy, multi-constructor `--init` flag
+
 ## [2.0.0] - 2026-03-29
 
 ### Changed (BREAKING)

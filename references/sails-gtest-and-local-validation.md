@@ -55,14 +55,14 @@ Pick `Next` or `Manual` for timing-sensitive flows, delayed work, reply absence,
 The fastest local smoke path uses `vara-wallet` for deployment and interaction. No Rust tooling needed beyond building the `.opt.wasm`.
 
 1. Start or reuse a local node on the default port (ws://localhost:9944).
-2. Set the local endpoint: `export VARA_WS=ws://localhost:9944`. The default is mainnet — always override for local work.
-3. Import a funded dev account: `vara-wallet wallet import --seed '//Alice' --name alice`.
-4. Deploy the `.opt.wasm` artifact:
+2. Set the local endpoint: `vara-wallet --network local` (per-command), `vara-wallet config set network local` (persists), or `export VARA_WS=ws://localhost:9944` (session). The default is mainnet — always override for local work.
+3. Import a funded dev account: `vara-wallet --network local wallet import --seed '//Alice' --name alice`.
+4. Deploy the `.opt.wasm` artifact with IDL-based constructor encoding:
    ```bash
-   UPLOAD=$(vara-wallet --account alice program upload ./target/wasm32-unknown-unknown/release/my_program.opt.wasm --idl ./my_program.idl)
+   UPLOAD=$(vara-wallet --account alice program upload ./target/wasm32-unknown-unknown/release/my_program.opt.wasm --idl ./my_program.idl --args '[]')
    PROGRAM_ID=$(echo $UPLOAD | jq -r .programId)
    ```
-   If the constructor does non-trivial work, add `--gas-limit <n>`.
+   If the constructor does non-trivial work, add `--gas-limit <n>`. Use `--init <name>` when the IDL has multiple constructors.
    - **Post-deploy verification:** If the service exposes a query, call it immediately after deploy to verify the constructor ran. An uninitialized program returns default or empty state, or panics.
 5. If the program uses delayed messages, transfer VARA to the program address: `vara-wallet --account alice transfer $PROGRAM_ID 100`.
 6. Exercise one command and one query:

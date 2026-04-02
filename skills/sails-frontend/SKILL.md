@@ -19,10 +19,36 @@ Keep frontend work on the typed Sails path first: generated `lib.ts` plus `@gear
 - `../../references/scale-binary-decoding-guide.md`
 - `../../references/voucher-and-signless-flows.md`
 
+## Greenfield Bootstrap
+
+For a brand-new frontend (no existing React app), use `create-vara-app` to scaffold the full stack in one command:
+
+```bash
+npx create-vara-app my-dapp --idl path/to/service.idl
+```
+
+This generates a working Vite + React + TypeScript frontend with:
+- Typed query/transaction wrappers from the IDL (via `sails-js-parser`)
+- Wallet integration (SubWallet, Polkadot.js, Talisman)
+- Live event subscriptions
+- Client-side input validation
+- Debug panel with runtime IDL explorer
+- 37 vitest tests for the codegen pipeline
+
+After bootstrap, continue with the Standard Path below to customize screens, add queries, or wire advanced flows.
+
+Source: https://github.com/gear-foundation/create-vara-app
+
+Without `--idl`, scaffolds with a demo contract. With `--idl`, parses the service name and generates typed components automatically. Re-run the scaffold after contract changes:
+
+```bash
+cd frontend && npx tsx ../scripts/scaffold-client.ts
+```
+
 ## Standard Path
 
 1. Treat the program `.idl` as the frontend source of truth.
-2. Generate or refresh the typed client with `sails-js-cli` before wiring screens, hooks, or forms.
+2. Generate or refresh the typed client. If using `create-vara-app`, run `npx tsx ../scripts/scaffold-client.ts`. Otherwise use `sails-js-cli` before wiring screens, hooks, or forms.
 3. Compose the React root around TanStack Query plus Gear providers: query client, API provider, account provider, and alert provider.
 4. Prefer `useProgram` with the generated `Program` class for typed service access.
 5. Use `useProgramQuery` for Sails queries and `useProgramEvent` only where live subscriptions are actually needed.

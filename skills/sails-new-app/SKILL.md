@@ -18,6 +18,7 @@ Move a greenfield request from scope to an approved Sails workspace path without
 5. Keep the standard template workspace shape created by `cargo sails new <project-name>` intact: `app`, `client`, `src`, `tests`, top-level `build.rs`, Wasm output, and generated-client path.
 6. Keep the standard build-script pipeline intact. In a standard Sails workspace, use the repo-generated build path for `.idl` and Rust client artifacts. For a dedicated client crate, prefer `sails-rs` with `features = ["build"]` and `sails_rs::build_client::<Program>()` before introducing manual `sails-idl-gen` / `sails-client-gen` wiring.
 7. Validate before moving to later phases by finishing with `../sails-gtest/SKILL.md`, then `../sails-local-smoke/SKILL.md`.
+8. When the builder needs a frontend, use `create-vara-app` to scaffold it from the program's `.idl`: `npx create-vara-app <name> --idl path/to/service.idl`. Then route to `../sails-frontend/SKILL.md` for customization.
 
 ## Shared Inputs
 

@@ -7,7 +7,7 @@ description: Use when an agent needs to interact with Vara Network on-chain — 
 
 CLI tool for AI agents to interact with Vara Network on-chain.
 
-**Repository:** https://github.com/ukint-vs/vara-wallet
+**Repository:** https://github.com/gear-foundation/vara-wallet
 **Install:** `npm install -g vara-wallet`
 
 ## Role

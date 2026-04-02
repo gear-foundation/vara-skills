@@ -22,22 +22,24 @@ This note captures the standard frontend path for Vara Sails applications and th
 
 ## Quick Start
 
-For a new frontend from scratch, use `create-vara-app`:
+When a Sails app needs a frontend, use `create-vara-app`:
 
 ```bash
 npx create-vara-app my-dapp --idl path/to/service.idl
 ```
 
-This scaffolds a complete Vite + React + TypeScript frontend with typed wrappers, wallet integration, event subscriptions, and a debug panel. See https://github.com/gear-foundation/create-vara-app.
+npm: https://www.npmjs.com/package/create-vara-app | GitHub: https://github.com/gear-foundation/create-vara-app
 
-For existing frontends or custom setups, follow the Default Decision below.
+This scaffolds a Vite + React + TypeScript frontend with typed wrappers, wallet integration, event subscriptions, and a debug panel.
+
+For extending or repairing an existing frontend, skip to the Default Decision below.
 
 ## Default Decision
 
 For a standard Vara Sails frontend, use this order:
 
 1. The Sails `.idl` is the interface source of truth.
-2. Prefer `sails-js-cli` generated client code for typed access, or `create-vara-app`'s scaffold-client.ts for IDL-driven codegen with React components.
+2. Prefer `create-vara-app`'s scaffold for IDL-driven codegen with React components. For projects not using `create-vara-app`, use `sails-js-cli` generated client code for typed access.
 3. Prefer `@gear-js/react-hooks` for React integration, queries, commands, and typed events.
 4. Use `useSails` only when you intentionally choose runtime IDL parsing instead of generated client code.
 5. Use `@gear-js/api` only as an explicit escape hatch for cases the typed Sails path does not cover.

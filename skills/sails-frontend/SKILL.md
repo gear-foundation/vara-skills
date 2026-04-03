@@ -19,10 +19,53 @@ Keep frontend work on the typed Sails path first: generated `lib.ts` plus `@gear
 - `../../references/scale-binary-decoding-guide.md`
 - `../../references/voucher-and-signless-flows.md`
 
+## Minimal Path (simple apps)
+
+For a straightforward app (counter, single-service CRUD) where the contract is already built:
+
+1. `npx create-vara-app my-dapp --idl path/to/service.idl`
+2. `cd my-dapp && npm install && npm run dev`
+3. Verify: one read query renders, one write action shows disabled/pending/success/error states
+4. Done — the scaffold handles providers, wallet, typed wrappers, and env validation
+
+Skip the rest of this skill unless you need to customize screens, add Next.js support, wire vouchers, or handle advanced flows.
+
+## Bootstrap with create-vara-app
+
+When a Sails app needs a frontend — whether the project is brand-new or an existing repo without one — start with `create-vara-app`.
+
+**Prerequisite:** the contract must be built first so the `.idl` file exists. If the `.idl` is not available yet, build the contract (`cargo build`) or use `create-vara-app` without `--idl` to scaffold with a demo contract.
+
+```bash
+npx create-vara-app my-dapp --idl path/to/service.idl
+```
+
+npm: https://www.npmjs.com/package/create-vara-app
+GitHub: https://github.com/gear-foundation/create-vara-app
+
+This scaffolds a Vite + React + TypeScript frontend with:
+- Typed query/transaction wrappers from the IDL
+- Wallet integration (SubWallet, Polkadot.js, Talisman)
+- Live event subscriptions
+- Client-side input validation
+- Debug panel with runtime IDL explorer
+
+Without `--idl`, scaffolds with a demo contract. With `--idl`, parses the service name and generates typed components automatically.
+
+After the contract changes, re-run the scaffold from the project root:
+
+```bash
+npx tsx scripts/scaffold-client.ts
+```
+
+Detection: if the project has `scripts/scaffold-client.ts`, it was bootstrapped with `create-vara-app`. Use the scaffold script for regeneration. Otherwise use `sails-js-cli`.
+
+After bootstrap, continue with the Standard Path below to customize screens, add queries, or wire advanced flows.
+
 ## Standard Path
 
 1. Treat the program `.idl` as the frontend source of truth.
-2. Generate or refresh the typed client with `sails-js-cli` before wiring screens, hooks, or forms.
+2. Generate or refresh the typed client. If `scripts/scaffold-client.ts` exists, run `npx tsx scripts/scaffold-client.ts` from the project root. Otherwise use `sails-js-cli` before wiring screens, hooks, or forms.
 3. Compose the React root around TanStack Query plus Gear providers: query client, API provider, account provider, and alert provider.
 4. Prefer `useProgram` with the generated `Program` class for typed service access.
 5. Use `useProgramQuery` for Sails queries and `useProgramEvent` only where live subscriptions are actually needed.

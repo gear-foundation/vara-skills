@@ -1,6 +1,6 @@
 ---
 name: ship-sails-app
-description: Use when a builder needs the top-level router for a standard Gear/Vara Sails app workflow from spec through gtest and local smoke. Do not use for Vara.eth or ethexe work, raw gstd-only programs, or non-Sails tasks.
+description: "Use when a builder needs the top-level router for a standard Gear/Vara Sails app workflow — navigates from spec through architecture, implementation, gtest, and local smoke. Routes to the correct stage skill based on current repo state and builder intent. Do not use for Vara.eth or ethexe work, raw gstd-only programs, or non-Sails tasks."
 ---
 
 ## Preamble (run first)

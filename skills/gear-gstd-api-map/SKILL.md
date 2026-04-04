@@ -11,10 +11,10 @@ Keep design work API-first: start from `gstd`, then drop to `gcore` or `gsys` on
 
 ## Inputs
 
-- `../../references/gear-execution-model.md`
-- `../../references/gear-messaging-and-replies.md`
-- `../../references/gear-gas-reservations-and-waitlist.md`
-- `../../references/gear-gstd-api-and-syscalls.md`
+- `../../references/gear-execution-model.md` — execution model and block lifecycle
+- `../../references/gear-messaging-and-replies.md` — message flow and reply semantics
+- `../../references/gear-gas-reservations-and-waitlist.md` — gas reservations and waitlist
+- `../../references/gear-gstd-api-and-syscalls.md` — full API surface and syscall mapping
 
 ## Route Here When
 
@@ -31,12 +31,14 @@ Keep design work API-first: start from `gstd`, then drop to `gcore` or `gsys` on
 4. Check design constraints: block-delayed execution, reply deposit, reservation lifetime, waitlist exposure, gas budget, and route-prefix stability for Sails clients.
 5. Drop to `gcore` to confirm wrapper behavior and to `gsys` only when you need exact syscall names, fallibility, or control-vs-get distinctions.
 
-## API Checklist
+## API Quick Reference
 
-- `msg`: load input, send or reply, add delay, set explicit gas, spend from reservation, stage payload via handle or reply push-plus-commit, and wait for replies through `_for_reply`.
-- `exec`: read block and environment context, inspect `gas_available` or value, `wait`, `wait_for`, `wait_up_to`, `wake`, `reply_deposit`, `random`, or `exit`.
-- `prog`: create child programs with bytes or encoded payloads, add delay, add gas limits, and use create-for-reply flows when the init reply matters.
-- reservations: use `ReservationId::reserve`, `.unreserve`, or reservation pools only when future-block work must keep a gas budget alive.
+| Module | Key APIs | When to Use |
+|--------|----------|-------------|
+| `msg` | `send`, `reply`, `send_delayed`, `send_for_reply`, `send_bytes`, push-plus-commit | Sending messages, replying, delayed dispatch, awaiting replies |
+| `exec` | `gas_available`, `block_height`, `wait`, `wait_for`, `wake`, `reply_deposit`, `exit` | Reading execution context, parking in waitlist, waking actors |
+| `prog` | `create_program`, `create_program_bytes`, create-for-reply | Creating child programs with optional delay and gas limits |
+| reservations | `ReservationId::reserve`, `.unreserve`, reservation pools | Future-block work that must keep a gas budget alive |
 
 ## Guardrails
 

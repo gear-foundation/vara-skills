@@ -10,13 +10,19 @@ description: Use when approved Gear or Vara tasks require Rust or Sails code cha
 Implement approved tasks in Sails-first Rust workspaces without freelancing new scope.
 If the task touches a released contract, preserve public routes, reply shapes, emitted events, and generated-client expectations unless the approved architecture explicitly changes them.
 
-## Start Here
+## Inputs
 
-Read `../../references/sails-cheatsheet.md`, `../../references/sails-rs-imports.md`, `../../references/delayed-message-pattern.md`, `../../references/vara-domain-overview.md`, `../../references/gear-sails-production-patterns.md`, `../../references/gear-messaging-and-replies.md`, and `../../references/gear-gas-reservations-and-waitlist.md`.
+- `../../references/sails-cheatsheet.md` — core Sails patterns and APIs
+- `../../references/sails-rs-imports.md` — import paths for sails-rs types
+- `../../references/delayed-message-pattern.md` — delayed self-message recipe
+- `../../references/vara-domain-overview.md` — Vara domain context
+- `../../references/gear-sails-production-patterns.md` — production patterns
+- `../../references/gear-messaging-and-replies.md` — messaging and reply flows
+- `../../references/gear-gas-reservations-and-waitlist.md` — gas and waitlist
 
-Read `../../references/awesome-sails-token-patterns.md` when the task adds a fungible token, token-backed accounting, or awesome-sails token services.
-
-Read `../../references/contract-interface-evolution.md` when the task touches a released contract, a new deployed contract version, or migration-related code.
+Additional references by task type:
+- Token work: `../../references/awesome-sails-token-patterns.md`
+- Released contract changes: `../../references/contract-interface-evolution.md`
 
 Consume the approved `spec`, `architecture`, and `tasks` artifacts before changing code.
 

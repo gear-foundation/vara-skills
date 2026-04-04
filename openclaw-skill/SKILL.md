@@ -21,15 +21,19 @@ Load the repo router at `../SKILL.md`, then begin with `ship-sails-app`.
 
 ## Route By Task
 
-- Local Rust or Gear setup: `../skills/sails-dev-env/SKILL.md`
-- New app: `../skills/sails-new-app/SKILL.md`
-- Existing feature work: `../skills/sails-feature-workflow/SKILL.md`
-- Message flow or reply behavior: `../skills/gear-message-execution/SKILL.md`
-- Service or program design: `../skills/sails-architecture/SKILL.md`
-- IDL or generated client issues: `../skills/sails-idl-client/SKILL.md`
-- `gtest` authoring or debugging: `../skills/sails-gtest/SKILL.md`
-- Local-node smoke after green tests: `../skills/sails-local-smoke/SKILL.md`
-- React or TypeScript frontend work: `../skills/sails-frontend/SKILL.md`
+| Builder Need | Skill |
+|---|---|
+| Local Rust or Gear setup | `../skills/sails-dev-env/SKILL.md` |
+| New app from scratch | `../skills/sails-new-app/SKILL.md` |
+| Feature or behavior change in existing repo | `../skills/sails-feature-workflow/SKILL.md` |
+| Message flow, replies, or async behavior | `../skills/gear-message-execution/SKILL.md` |
+| Service or program architecture | `../skills/sails-architecture/SKILL.md` |
+| IDL or generated client issues | `../skills/sails-idl-client/SKILL.md` |
+| `gtest` authoring or debugging | `../skills/sails-gtest/SKILL.md` |
+| Local-node smoke after green tests | `../skills/sails-local-smoke/SKILL.md` |
+| React or TypeScript frontend | `../skills/sails-frontend/SKILL.md` |
+| Fungible token with awesome-sails | `../skills/awesome-sails-vft/SKILL.md` |
+| Wallet interactions, deploy, vouchers | `../skills/vara-wallet/SKILL.md` |
 
 ## Scope
 

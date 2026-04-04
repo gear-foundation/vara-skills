@@ -11,13 +11,13 @@ Run the Sails-first test loop with generated clients and explicit `gtest` eviden
 
 ## Inputs
 
-- `../../assets/gtest-report-template.md`
-- `../../references/gtest-cheatsheet.md`
-- `../../references/gtest-patterns.md`
-- `../../references/sails-cheatsheet.md`
-- `../../references/sails-gtest-and-local-validation.md`
-- `../../references/gear-gas-reservations-and-waitlist.md`
-- `../../references/scale-binary-decoding-guide.md`
+- `../../assets/gtest-report-template.md` — report format for gtest results
+- `../../references/gtest-cheatsheet.md` — quick reference for gtest APIs
+- `../../references/gtest-patterns.md` — common test patterns
+- `../../references/sails-cheatsheet.md` — Sails patterns and APIs
+- `../../references/sails-gtest-and-local-validation.md` — full gtest and validation guide
+- `../../references/gear-gas-reservations-and-waitlist.md` — gas reasoning for tests
+- `../../references/scale-binary-decoding-guide.md` — decoding raw reply bytes
 
 Write the result to `docs/plans/YYYY-MM-DD-<topic>-gtest.md`.
 
@@ -48,6 +48,8 @@ Write the result to `docs/plans/YYYY-MM-DD-<topic>-gtest.md`.
   let final_balance = env.balance_of(program_id);
   assert_eq!(final_balance - initial_balance, expected_delta);
   ```
+
+- **Missing block advancement**: Forgetting to call `run_next_block` after sending a message means the reply is never processed. Always advance at least one block after send operations that expect replies.
 
 ## Guardrails
 

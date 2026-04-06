@@ -1,92 +1,93 @@
 # vara-skills
 
-`vara-skills` is a portable, self-contained skill pack for standard Gear/Vara Sails builders.
+Build smart contracts on [Vara Network](https://vara.network) with any AI coding agent. 20 skills that teach your agent to spec, build, test, and deploy Gear/Sails programs.
 
-It is designed to help coding agents start from the right builder workflow, then pull the narrow Gear and Sails knowledge they need without depending on sibling repos or machine-local notes. The current public catalog is provisional and is expected to change as the eval suite identifies which candidate skills actually create uplift.
+## Get Started (2 commands)
+
+```bash
+# 1. Install skills (works with 45+ agents)
+npx skills add gear-foundation/vara-skills --all
+
+# 2. Start your agent and build something
+gemini   # or: claude, codex, goose session, opencode, cursor
+> "Set up Vara dev tools and create a counter program with increment and decrement"
+```
+
+The agent will install Rust, create the project, write the code, and run tests. You don't need to know Rust or blockchain.
+
+### Don't have an agent yet?
+
+| Agent | Install | Cost |
+|-------|---------|------|
+| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | `npm i -g @google/gemini-cli` | Free (240 sessions/day) |
+| [Claude Code](https://claude.ai/code) | `npm i -g @anthropic-ai/claude-code` | API key required |
+| [Goose](https://github.com/block/goose) | `brew install block/tap/goose` | Free with Gemini API |
+| [Codex](https://github.com/openai/codex) | `npm i -g @openai/codex` | API key required |
+| [Kilo Code](https://kilo.ai) | VS Code extension | Free models available |
+| [OpenCode](https://opencode.ai) | `npm i -g opencode-ai` | Free Zen models |
+
+For Gemini CLI: get a free API key at [aistudio.google.com](https://aistudio.google.com) (personal Google account, no credit card).
+
+### Deploy to testnet
+
+After building and testing:
+
+```bash
+npm i -g vara-wallet
+vara-wallet wallet create --name agent
+vara-wallet --network testnet faucet
+```
+
+Then tell your agent: *"Deploy this to Vara testnet"*
+
+### What the skills teach your agent
+
+- Set up Rust + wasm32 + sails-cli from scratch
+- Scaffold new Sails apps (`cargo sails new`)
+- Write correct `#![no_std]` Rust with RefCell state pattern
+- Generate and wire IDL + TypeScript clients
+- Test with gtest using modern Sails client patterns
+- Deploy and interact via vara-wallet CLI
+- Build React frontends with Sails-JS
+- Issue vouchers for gasless UX
+
+---
 
 ## How It Works
 
-Each skill is a markdown file.
+Each skill is a markdown file that your agent reads as context.
 
-- `SKILL.md` is the top-level router for the pack.
-- `skills/<name>/SKILL.md` is a narrower workflow or topic skill.
-- `references/` is the self-contained handbook for Gear execution, Sails architecture, IDL/client generation, `gtest`, local validation, voucher/signless flows, and network configuration.
+- `SKILL.md` — top-level router that dispatches to the right skill
+- `skills/<name>/SKILL.md` — 20 workflow and topic skills
+- `references/` — self-contained handbook (Gear execution, Sails patterns, gtest, wallet, pitfalls)
 
-The pack is being narrowed toward standard Gear/Vara Sails app builders:
+## Installation Methods
 
-- preparing the local Rust and Gear toolchain
-- turning feature ideas into spec, architecture, and task artifacts
-- starting a new Sails app
-- building features in an existing Sails app
-- implementing approved Rust or Sails changes
-- reasoning about Gear message flow and execution behavior
-- choosing the right `gstd` API when design depends on lower-level Gear behavior
-- getting architecture, IDL or client wiring, `gtest`, and local-node validation right
-- building or extending a React frontend for a standard Sails app with Sails-JS and Gear-JS
-- wiring gasless (voucher) and signless (session) UX flows
-
-## Installation
-
-### Quick Start (any agent)
+### Skills CLI (recommended)
 
 ```bash
-npx skills add gear-foundation/vara-skills
+npx skills add gear-foundation/vara-skills --all
 ```
 
-Works with Claude Code, Codex, and any agent that supports the `skills` CLI. Installs all 20 skills and the reference handbook in one command.
-
-### Codex
-
-Clone the repo and install the local skills:
-
-```bash
-git clone git@github.com:gear-foundation/vara-skills.git
-cd vara-skills
-bash scripts/install-codex-skills.sh
-```
-
-This installs the full Codex pack surface:
-
-- `$CODEX_HOME/skills/vara-skills` -> repo root, including the router `SKILL.md`, shared `assets/`, shared `references/`, and helper scripts.
-- `$CODEX_HOME/skills/<skill-name>` -> each installable skill directory under `skills/`.
-
-Then start a new Codex session and use `vara-skills` when you want the pack router.
+Installs into `.agents/skills/` in your project. Works with Claude Code, Codex, Cursor, Cline, Goose, Gemini CLI, and [45+ agents](https://skills.sh).
 
 ### Claude Code Plugin
-
-Claude Code can install this repo directly as a plugin. You do not need a separate Claude-specific fork.
-
-Recommended install from GitHub:
 
 ```bash
 /plugin marketplace add https://github.com/gear-foundation/vara-skills
 /plugin install vara-skills@vara-skills
 ```
 
-If you are developing the plugin from a local checkout, run these commands from the repo root instead:
+### Codex
 
 ```bash
-/plugin marketplace add .
-/plugin install vara-skills@vara-skills
+git clone git@github.com:gear-foundation/vara-skills.git
+cd vara-skills && bash scripts/install-codex-skills.sh
 ```
-
-After local edits, reload the plugin without restarting Claude Code:
-
-```bash
-/reload-plugins
-```
-
-What Claude Code installs:
-
-- the skill directories under `skills/`
-- the same shared `references/` and `assets/` content those skills point at
-- the provisional standard Gear/Vara Sails builder workflow centered on `ship-sails-app`
-
-Important difference from Codex and OpenClaw: the repo-root `SKILL.md` is the portable pack router, but Claude Code loads plugin skills from `skills/`. In Claude Code, `ship-sails-app` is the broad entry skill that should trigger first for standard builder tasks.
 
 ### OpenClaw
 
-Use `openclaw-skill/SKILL.md` as the wrapper entrypoint for the same pack.
+Use `openclaw-skill/SKILL.md` as the wrapper entrypoint.
 
 ## Skill Catalog
 
@@ -127,6 +128,15 @@ Use `openclaw-skill/SKILL.md` as the wrapper entrypoint for the same pack.
 ### Maintenance
 
 - `vara-skills-upgrade`: checks for new pack versions and handles inline or standalone upgrades.
+
+### Community Projects
+
+- `polybaskets-overview`: understand the PolyBaskets prediction market protocol — baskets, index, payout, settlement lifecycle
+- `polybaskets-basket-bet`: claim free CHIP tokens daily and bet on prediction baskets via BetLane
+- `polybaskets-basket-query`: browse baskets, check positions, settlements, and token balances
+- `polybaskets-basket-claim`: claim payout from settled baskets
+- `polybaskets-basket-create`: create a new prediction basket on-chain from Polymarket markets
+- `polybaskets-basket-settle`: propose and finalize basket settlement (settler role only)
 
 ## Recommended Workflows
 

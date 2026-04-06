@@ -1,0 +1,334 @@
+type ClaimConfig = struct {
+  base_claim_amount: u256,
+  max_claim_amount: u256,
+  streak_step: u256,
+  streak_cap_days: u32,
+  claim_period: u64,
+  claim_paused: bool,
+};
+
+type ClaimState = struct {
+  last_claim_at: opt u64,
+  streak_days: u32,
+  total_claimed: u256,
+  claim_count: u32,
+};
+
+type ClaimPreview = struct {
+  amount: u256,
+  streak_days: u32,
+  next_claim_at: opt u64,
+  can_claim_now: bool,
+};
+
+/// Pagination parameters for listing roles or members.
+type Pagination = struct {
+  /// The number of items to skip.
+  offset: u32,
+  /// The maximum number of items to return.
+  limit: u32,
+};
+
+constructor {
+  Create : (admin: actor_id, name: str, symbol: str, decimals: u8, claim_config: opt ClaimConfig);
+};
+
+service BetToken {
+  AddAdmin : (account: actor_id) -> null;
+  AdminMint : (to: actor_id, value: u256) -> null;
+  AllowSpender : (spender: actor_id) -> null;
+  Approve : (spender: actor_id, value: u256) -> bool;
+  Claim : () -> ClaimState;
+  DisallowSpender : (spender: actor_id) -> null;
+  GrantRole : (role_id: [u8, 32], account: actor_id) -> null;
+  PauseClaim : () -> null;
+  ResumeClaim : () -> null;
+  RevokeRole : (role_id: [u8, 32], account: actor_id) -> null;
+  SetClaimConfig : (config: ClaimConfig) -> null;
+  Transfer : (to: actor_id, value: u256) -> bool;
+  TransferFrom : (from: actor_id, to: actor_id, value: u256) -> bool;
+  query Allowance : (owner: actor_id, spender: actor_id) -> u256;
+  query BalanceOf : (account: actor_id) -> u256;
+  query Decimals : () -> u8;
+  query GetClaimConfig : () -> ClaimConfig;
+  query GetClaimPreview : (user: actor_id) -> ClaimPreview;
+  query GetClaimState : (user: actor_id) -> ClaimState;
+  query IsClaimPaused : () -> bool;
+  query IsSpenderAllowed : (spender: actor_id) -> bool;
+  query Name : () -> str;
+  query Symbol : () -> str;
+  query TotalSupply : () -> u256;
+
+  events {
+    Approved: struct {
+      owner: actor_id,
+      spender: actor_id,
+      value: u256,
+      changed: bool,
+    };
+    Claimed: struct {
+      user: actor_id,
+      amount: u256,
+      streak_days: u32,
+      claimed_at: u64,
+    };
+    StreakUpdated: struct {
+      user: actor_id,
+      streak_days: u32,
+      reset: bool,
+    };
+    ClaimConfigUpdated: ClaimConfig;
+    ClaimPaused;
+    ClaimResumed;
+    SpenderAllowed: actor_id;
+    SpenderDisallowed: actor_id;
+  }
+};
+
+service AccessControl {
+  /// Grants `role_id` to `target_account`.
+  /// 
+  /// If `target_account` had not been already granted `role_id`, emits a `RoleGranted`
+  /// event.
+  /// 
+  /// # Requirements
+  /// 
+  /// * The caller must have `role_id`'s admin role.
+  GrantRole : (role_id: [u8, 32], target_account: actor_id) -> null;
+  /// Grants `role_ids` to `target_account`.
+  /// 
+  /// If `target_account` had not been already granted any of the `role_ids`,
+  /// emits a `RoleGranted` event for each newly granted role.
+  /// 
+  /// # Requirements
+  /// 
+  /// * The caller must have the admin role for all specified `role_ids`.
+  GrantRolesBatch : (role_ids: vec [u8, 32], target_account: actor_id) -> null;
+  /// Revokes `role_id` from the calling account.
+  /// 
+  /// Roles are often managed via `grant_role` and `revoke_role`: this function's
+  /// purpose is to provide a mechanism for accounts to lose their privileges
+  /// if they are compromised (such as when a trusted device is misplaced).
+  /// 
+  /// If the calling account had been granted `role_id`, emits a `RoleRevoked`
+  /// event.
+  /// 
+  /// # Requirements
+  /// 
+  /// * The caller must be `account_id`.
+  RenounceRole : (role_id: [u8, 32], account_id: actor_id) -> null;
+  /// Revokes `role_id` from `target_account`.
+  /// 
+  /// If `target_account` had been granted `role_id`, emits a `RoleRevoked` event.
+  /// 
+  /// # Requirements
+  /// 
+  /// * The caller must have `role_id`'s admin role.
+  RevokeRole : (role_id: [u8, 32], target_account: actor_id) -> null;
+  /// Revokes `role_ids` from `target_account`.
+  /// 
+  /// If `target_account` had been granted any of the `role_ids`,
+  /// emits a `RoleRevoked` event for each newly revoked role.
+  /// 
+  /// # Requirements
+  /// 
+  /// * The caller must have the admin role for all specified `role_ids`.
+  RevokeRolesBatch : (role_ids: vec [u8, 32], target_account: actor_id) -> null;
+  /// Sets `new_admin_role_id` as the admin role for `role_id`.
+  /// 
+  /// Emits a `RoleAdminChanged` event.
+  /// 
+  /// # Requirements
+  /// 
+  /// * The caller must have `role_id`'s admin role.
+  SetRoleAdmin : (role_id: [u8, 32], new_admin_role_id: [u8, 32]) -> null;
+  /// Returns the number of roles assigned to the specified member.
+  /// 
+  /// # Arguments
+  /// 
+  /// * `member_id` - The account identifier.
+  query GetMemberRoleCount : (member_id: actor_id) -> u32;
+  /// Returns a list of roles assigned to the specified member with pagination.
+  /// 
+  /// # Arguments
+  /// 
+  /// * `member_id` - The account identifier.
+  /// * `query` - Optional pagination configuration.
+  query GetMemberRoles : (member_id: actor_id, query: opt Pagination) -> vec [u8, 32];
+  /// Returns the admin role ID that controls `role_id`.
+  /// 
+  /// # Arguments
+  /// 
+  /// * `role_id` - The role identifier.
+  /// 
+  /// # Returns
+  /// 
+  /// The `RoleId` of the administrator.
+  query GetRoleAdmin : (role_id: [u8, 32]) -> [u8, 32];
+  /// Returns the total number of roles in the system.
+  query GetRoleCount : () -> u32;
+  /// Returns the number of members in the specified role.
+  /// 
+  /// # Arguments
+  /// 
+  /// * `role_id` - The role identifier.
+  query GetRoleMemberCount : (role_id: [u8, 32]) -> u32;
+  /// Returns a list of members in the specified role with pagination.
+  /// 
+  /// # Arguments
+  /// 
+  /// * `role_id` - The role identifier.
+  /// * `query` - Optional pagination configuration.
+  query GetRoleMembers : (role_id: [u8, 32], query: opt Pagination) -> vec actor_id;
+  /// Returns a list of role IDs with pagination.
+  /// 
+  /// # Arguments
+  /// 
+  /// * `query` - Optional pagination configuration.
+  query GetRoles : (query: opt Pagination) -> vec [u8, 32];
+  /// Checks if `account_id` has been granted `role_id`.
+  /// 
+  /// # Arguments
+  /// 
+  /// * `role_id` - The role identifier.
+  /// * `account_id` - The account identifier.
+  /// 
+  /// # Returns
+  /// 
+  /// `true` if the account possesses the role.
+  query HasRole : (role_id: [u8, 32], account_id: actor_id) -> bool;
+
+  events {
+    /// Emitted when `target_account` is granted `role_id`.
+    RoleGranted: struct {
+      role_id: [u8, 32],
+      target_account: actor_id,
+      sender: actor_id,
+    };
+    /// Emitted when `role_id` is revoked from `target_account`.
+    RoleRevoked: struct {
+      role_id: [u8, 32],
+      target_account: actor_id,
+      sender: actor_id,
+    };
+    /// Emitted when `new_admin_role_id` is set as the admin role for `role_id`.
+    RoleAdminChanged: struct {
+      role_id: [u8, 32],
+      previous_admin_role_id: [u8, 32],
+      new_admin_role_id: [u8, 32],
+      sender: actor_id,
+    };
+  }
+};
+
+service VftAdmin {
+  /// Appends a new shard to the allowances storage map.
+  /// 
+  /// # Requirements
+  /// * Caller must have `DEFAULT_ADMIN_ROLE`.
+  /// 
+  /// # Arguments
+  /// * `capacity` - The capacity of the new shard.
+  AppendAllowancesShard : (capacity: u32) -> null;
+  /// Appends a new shard to the balances storage map.
+  /// 
+  /// # Requirements
+  /// * Caller must have `DEFAULT_ADMIN_ROLE`.
+  /// 
+  /// # Arguments
+  /// * `capacity` - The capacity of the new shard.
+  AppendBalancesShard : (capacity: u32) -> null;
+  /// Approves `spender` to spend `value` from `owner`'s account.
+  /// 
+  /// This is an admin function allowing the admin to set approvals arbitrarily.
+  /// 
+  /// # Requirements
+  /// * Caller must have `DEFAULT_ADMIN_ROLE`.
+  /// 
+  /// # Arguments
+  /// * `owner` - The account owning the tokens.
+  /// * `spender` - The account to be approved.
+  /// * `value` - The amount to approve.
+  ApproveFrom : (owner: actor_id, spender: actor_id, value: u256) -> bool;
+  /// Burns `value` tokens from `from` account.
+  /// 
+  /// # Requirements
+  /// * Caller must have `BURNER_ROLE`.
+  /// 
+  /// # Arguments
+  /// * `from` - The account to burn tokens from.
+  /// * `value` - The amount to burn.
+  Burn : (from: actor_id, value: u256) -> null;
+  /// Terminates the program and sends value to `inheritor`.
+  /// 
+  /// # Requirements
+  /// * Caller must have `DEFAULT_ADMIN_ROLE`.
+  /// * Program must be paused.
+  Exit : (inheritor: actor_id) -> null;
+  /// Mints `value` tokens to `to` account.
+  /// 
+  /// # Requirements
+  /// * Caller must have `MINTER_ROLE`.
+  /// 
+  /// # Arguments
+  /// * `to` - The recipient of the minted tokens.
+  /// * `value` - The amount to mint.
+  Mint : (to: actor_id, value: u256) -> null;
+  /// Pauses the contract.
+  /// 
+  /// # Requirements
+  /// * Caller must have `PAUSER_ROLE`.
+  Pause : () -> null;
+  /// Resumes the contract.
+  /// 
+  /// # Requirements
+  /// * Caller must have `PAUSER_ROLE`.
+  Resume : () -> null;
+  /// Sets the expiry period for allowances.
+  /// 
+  /// # Requirements
+  /// * Caller must have `DEFAULT_ADMIN_ROLE`.
+  /// 
+  /// # Arguments
+  /// * `period` - The new expiry period in blocks.
+  SetExpiryPeriod : (period: u32) -> null;
+  /// Returns `true` if the contract is paused.
+  query IsPaused : () -> bool;
+
+  events {
+    /// Emitted when a burn operation occurs.
+    BurnerTookPlace;
+    /// Emitted when a mint operation occurs.
+    MinterTookPlace;
+    /// Emitted when the allowance expiry period is changed.
+    ExpiryPeriodChanged: u32;
+    /// Emitted when the program exits.
+    Exited: actor_id;
+    /// Emitted when the contract is paused.
+    Paused;
+    /// Emitted when the contract is resumed.
+    Resumed;
+  }
+};
+
+service Metadata {
+  /// Returns the number of decimals used by the VFT.
+  /// 
+  /// # Returns
+  /// 
+  /// The decimals as a `u8`.
+  query Decimals : () -> u8;
+  /// Returns the name of the VFT.
+  /// 
+  /// # Returns
+  /// 
+  /// The name as a `String`.
+  query Name : () -> str;
+  /// Returns the symbol of the VFT.
+  /// 
+  /// # Returns
+  /// 
+  /// The symbol as a `String`.
+  query Symbol : () -> str;
+};
+

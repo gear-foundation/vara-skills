@@ -57,6 +57,16 @@ The repo is intended to be self-contained: use local `references/` handbook file
 - Look up bridge contract addresses or bridged token program IDs: `references/vara-eth-bridge-contracts.md`
 - Understand Vara-Ethereum bridge flows, fee model, or integration patterns: `references/vara-eth-bridge-flows.md`
 
+## PolyBaskets — Prediction Market Interaction
+
+- Understand PolyBaskets protocol, baskets, index, payout: `skills/polybaskets-overview/SKILL.md`
+- Claim CHIP tokens and bet on prediction baskets: `skills/polybaskets-basket-bet/SKILL.md`
+- Browse baskets, check positions and settlements: `skills/polybaskets-basket-query/SKILL.md`
+- Claim payout from settled baskets: `skills/polybaskets-basket-claim/SKILL.md`
+- Create a new prediction basket: `skills/polybaskets-basket-create/SKILL.md`
+- Propose and finalize basket settlement (settler role): `skills/polybaskets-basket-settle/SKILL.md`
+- Look up PolyBaskets program IDs, contract interfaces, error codes: `references/polybaskets-program-ids.md`
+
 ## Guardrails
 
 - This catalog is still provisional and is expected to change as `vara-skills-evals` measures uplift.

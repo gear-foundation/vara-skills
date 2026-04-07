@@ -1,5 +1,7 @@
 # Sails Indexer Patterns
 
+> **Usage note**: This is a comprehensive reference handbook, not a document to load in full on every task. The `sails-indexer` skill cross-references specific sections by name for each workflow step. Consult the relevant section for the step at hand rather than reading top to bottom.
+
 ## Decide Whether The Project Needs An Indexer First
 
 Add an indexer only when the project needs a persistent read model that direct chain queries cannot provide cheaply or cleanly. Typical signals are historical views, activity feeds, pagination, filtering, joins across multiple programs, rolling aggregates, charts, rankings, or a read API that must stay fast even when the chain or RPC is slow.
@@ -60,7 +62,7 @@ export const config = {
 };
 ```
 
-`rpcUrl` should point to a normal live Vara node endpoint, not to an archive endpoint. Keep archive ingestion and live RPC responsibilities separate in configuration.
+`rpcUrl` should point to a Vara archive node endpoint. Subsquid performs historical queries during indexing and a live non-archive node is not sufficient. Keep the Subsquid gateway URL (`archiveUrl`) and the Vara archive RPC URL (`rpcUrl`) as separate config entries — they serve different ingestion roles but both require archive-capable backing.
 
 Why this shape matters:
 
@@ -763,6 +765,8 @@ Why this shape matters:
 
 ### 11. Initialize missing primary entities from on-chain queries
 
+Apply this pattern only when the discovery event does not carry enough information to construct the primary entity — for example, when the event contains only a program address but the entity also requires fields like `title`, `owner`, or `status` that must come from a direct chain read. If the event payload is sufficient, build the entity from it directly and skip the on-chain query.
+
 If the tracked program exists in memory but the primary projected entity is missing, initialize it from chain.
 
 ```ts
@@ -915,9 +919,11 @@ Why this shape matters:
 
 ---
 
-### 14. Decode only after confirming that the message is a Sails event
+### 14. Decode only after confirming that the message is a Sails event or message
 
 The handler should first reject non-Sails messages, then decode once, then dispatch by service and method.
+
+For `UserMessageSent` events (outbound from a program), use `isSailsEvent` to guard before decoding:
 
 ```ts
 private async handleUserMessageSentEvent(
@@ -937,11 +943,13 @@ private async handleUserMessageSentEvent(
 }
 ```
 
+If the indexer needs to track inbound messages (command inputs) or replies, use the corresponding `MessageQueued` events and a matching decoder path. The dispatch pattern is the same — guard first, decode once, route by service and method — but use `this.decoder.decodeInput` for inbound command payloads and `this.decoder.decodeOutput` for outbound reply payloads rather than `decodeEvent`.
+
 Why this shape matters:
 
 - transport-level filtering happens before domain dispatch
 - handlers consume structured payloads, not raw SCALE hex
-- service routing is explicit
+- service routing is explicit and the same pattern applies to events, messages, and replies
 
 ---
 
@@ -1008,38 +1016,15 @@ private async handleDomainService(
     case "ActionStarted": {
       const p = payload as ActionStartedPayload;
       const activity = this.createActivityRecord(
-        state,
-        event,
-        common,
-        "ACTION_STARTED",
-        {
-          user: p.user_id,
-          resourceId: p.resource_id,
-          amount: BigInt(p.amount),
-        }
+        state, event, common, "ACTION_STARTED",
+        { user: p.user_id, resourceId: p.resource_id, amount: BigInt(p.amount) }
       );
-
       await this.processActivity(state, activity, common);
       break;
     }
 
-    case "ActionCompleted": {
-      const p = payload as ActionCompletedPayload;
-      const activity = this.createActivityRecord(
-        state,
-        event,
-        common,
-        "ACTION_COMPLETED",
-        {
-          user: p.user_id,
-          outputId: p.output_id,
-          total: BigInt(p.total),
-        }
-      );
-
-      await this.processActivity(state, activity, common);
-      break;
-    }
+    // Additional cases follow the same shape:
+    // cast payload, create activity record, process it.
 
     default:
       this._ctx.log.debug({ method }, "Unhandled domain event");
@@ -1453,7 +1438,7 @@ assets/
   program.idl
 ```
 
-This is the default shape unless the repository already has an equivalent organization.
+This layout fits projects with multiple event types, separate handlers, and enrichment services. For programs with few events or simple business logic, a flatter structure (e.g., one or two handler files, no `services/` subdirectory) is equally valid. Adapt the layout to what the business logic actually requires rather than applying the full tree mechanically.
 
 ---
 

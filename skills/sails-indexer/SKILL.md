@@ -41,7 +41,7 @@ Treat the indexer as a projection pipeline:
 - Model restart, replay, backfill, and duplicate safety as first-class requirements, not as later hardening.
 - Prefer deterministic entity IDs derived from chain facts such as program ID, message ID, block number, extrinsic position, or explicit domain keys.
 - If the repo already has an indexer stack, extend it instead of replacing it with a new framework casually.
-- Pin PostGraphile to the v4 line for this skill pack. The reference code and templates target `postgraphile@4.14.1` and `postgraphile-plugin-connection-filter@2.3.0`. Do not install or document v5 against the current snippets until the API layer is rewritten intentionally.
+- Pin PostGraphile to the v4 line for this skill pack. The reference code and templates target `postgraphile@4.14.1` and `postgraphile-plugin-connection-filter@2.3.0`. v5 uses a completely different plugin and middleware API that is incompatible with the current reference snippets. Do not install or document v5 until the API layer is intentionally rewritten against the v5 contract.
 - Follow the canonical runtime order from `../../references/sails-indexer-patterns.md`, especially `Start with configuration, not hardcoded endpoints`, `Build one shared batch processor and export its derived types`, `Centralize all IDL decoding behind one decoder`, `Wire the runtime in main.ts, but do not place projection logic there`, `Give every handler the same lifecycle contract`, `Process a batch in a stable order`, `Save in groups and only write what changed`, and `Expose a thin API layer on top of PostgreSQL`.
 
 ## Route Here When
@@ -49,7 +49,7 @@ Treat the indexer as a projection pipeline:
 - the builder needs historical views, activity feeds, portfolio pages, or timelines
 - the frontend needs pagination, filtering, sorting, or joins that are awkward or expensive through direct chain queries
 - the project needs aggregated metrics, snapshots, counters, rankings, charts, or search
-- the app has dynamic child programs or factory-created programs that must be discovered and indexed
+- the app has many dynamic child programs that cannot be enumerated upfront and whose events must be indexed
 - the builder needs a query API backed by projected data rather than live state reads only
 - the work requires event decoding from `.idl` and mapping those events into off-chain entities
 
@@ -96,18 +96,17 @@ Templates live in `skills/sails-indexer/assets/`:
 Cold-start defaults:
 
 - Node.js 20+
-- Docker or Docker Desktop available locally
-- PostgreSQL started through `docker compose up -d`
+- PostgreSQL available locally (prefer a local service install; Docker is an alternative if a local service is not available)
 - `reflect-metadata` imported once at the top of each runtime entrypoint before TypeORM entities or data source code is loaded
 - `experimentalDecorators: true` and `emitDecoratorMetadata: true` enabled in `tsconfig.json`
-- separate archive and live RPC endpoints; do not point both variables at the same endpoint just to make the scaffold boot
+- separate Subsquid gateway URL (`VARA_ARCHIVE_URL`) and Vara archive RPC URL (`VARA_RPC_URL`); Subsquid performs historical queries that require an archive node on the RPC side, so do not point `VARA_RPC_URL` at a live non-archive endpoint
 
 Suggested first-run order:
 
 1. Copy the files from `assets/` into the new indexer repo.
 2. Fill `.env` from `.env.example`.
 3. Install dependencies with `npm install`.
-4. Start PostgreSQL with `docker compose up -d`.
+4. Start PostgreSQL (local service, or `docker compose up -d` if using Docker).
 5. Generate TypeORM entities from `schema.graphql` with `npm run codegen`.
 6. Build once with `npm run build`.
 7. Generate a migration with `npm run db:generate`.
@@ -125,7 +124,7 @@ For schema updates, use this order:
 5. `npm run db:apply`
 
 For fixed-program projects, `.env` can stay minimal with one `VARA_PROGRAM_ID` and one `VARA_IDL_PATH`.
-For discovery-driven projects, replace that pair with explicit root IDs such as `REGISTRY_PROGRAM_ID`, `FACTORY_PROGRAM_ID`, or other domain-specific sources and keep discovery logic separate from projection logic.
+For discovery-driven projects, replace that pair with the explicit root IDs that serve as discovery sources — `REGISTRY_PROGRAM_ID`, `FACTORY_PROGRAM_ID`, or other domain-specific anchors — and keep discovery logic separate from projection logic. If the set of programs is small and known upfront, list them directly in config rather than building a discovery pipeline.
 
 ## Required Sequence
 
@@ -282,7 +281,7 @@ Reference checkpoints:
 - Do not model the SQL schema as a blind mirror of contract storage.
 - Do not skip the event inventory and jump straight into handlers.
 - Do not trust event payloads as full canonical state unless the architecture names that choice explicitly.
-- Do not add live on-chain queries after every event unless the source-of-truth reasoning is written down.
+- Avoid live on-chain queries in hot event-processing paths. Frequent on-chain calls after each event are a design smell and indicate poor architecture. Reserve on-chain queries for initial entity bootstrap or deliberate source-of-truth confirmation, and document the reason explicitly each time.
 - Do not treat replay, reorg tolerance, restart recovery, or duplicate handling as optional polish.
 - Do not listen to the entire chain without explaining why broad filtering is necessary and acceptable.
 - Do not hardcode domain-specific entities, metrics, or pricing assumptions into this skill.

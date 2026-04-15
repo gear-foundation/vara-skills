@@ -7,7 +7,7 @@ description: Use when an agent needs to interact with Vara Network on-chain — 
 
 CLI tool for AI agents to interact with Vara Network on-chain.
 
-**Repository:** https://github.com/ukint-vs/vara-wallet
+**Repository:** https://github.com/gear-foundation/vara-wallet
 **Install:** `npm install -g vara-wallet`
 
 ## Role
@@ -55,7 +55,7 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 | `$VW node info` | Chain name, genesis, latest block |
 | `$VW balance [address]` | Account balance in VARA |
 | `$VW program info <id>` | Program status and codeId |
-| `$VW program list [--count N]` | List on-chain programs |
+| `$VW program list [--count N] [--all]` | List on-chain programs (default: 100) |
 | `$VW code info <codeId>` | Code blob metadata |
 | `$VW code list [--count N]` | List uploaded code blobs |
 | `$VW call <pid> Service/Query --args '[]' --idl <path>` | Sails read-only query (free) |
@@ -79,13 +79,14 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 | Command | Purpose |
 |---------|---------|
 | `$VW transfer <to> <amount>` | Transfer VARA tokens |
-| `$VW program upload <wasm> [--payload <hex>] [--value <v>] [--units vara\|raw]` | Upload + init program |
-| `$VW program deploy <codeId> [--payload <hex>] [--value <v>] [--units vara\|raw]` | Deploy from existing code |
+| `$VW program upload <wasm> [--idl <path>] [--init <name>] [--args <json>] [--payload <hex>] [--value <v>]` | Upload + init program (use --idl for auto-encoding) |
+| `$VW program deploy <codeId> [--idl <path>] [--init <name>] [--args <json>] [--payload <hex>] [--value <v>]` | Deploy from existing code (use --idl for auto-encoding) |
 | `$VW code upload <wasm>` | Upload code blob only |
-| `$VW message send <dest> [--payload <hex>] [--value <v>]` | Send message to any actor (program, user, wallet) |
-| `$VW message reply <mid> [--payload <hex>]` | Reply to a message |
+| `$VW message send <dest> [--payload <hex>] [--value <v>] [--voucher <id>]` | Send message to any actor (program, user, wallet) |
+| `$VW message reply <mid> [--payload <hex>] [--voucher <id>]` | Reply to a message |
 | `$VW mailbox claim <messageId>` | Claim value from mailbox message |
-| `$VW call <pid> Service/Function --args '[...]' --value <v> --units vara\|raw --gas-limit <n> --idl <path>` | Sails state-changing call |
+| `$VW call <pid> Service/Function --args '[...]' --value <v> --units vara\|raw --idl <path>` | Sails state-changing call |
+| `$VW call <pid> Service/Function --estimate --idl <path>` | Estimate gas cost without sending |
 | `$VW vft transfer <token> <to> <amount> --idl <path>` | Transfer fungible tokens |
 | `$VW vft transfer-from <token> <from> <to> <amount> --idl <path>` | Transfer from approved allowance |
 | `$VW vft approve <token> <spender> <amount> --idl <path>` | Approve token spender |
@@ -96,6 +97,7 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 | `$VW dex remove-liquidity <t0> <t1> <lp> --factory <addr>` | Remove pool liquidity |
 | `$VW voucher issue <spender> <value>` | Issue gas voucher (see `../../references/voucher-and-signless-flows.md`) |
 | `$VW voucher revoke <spender> <voucherId>` | Revoke voucher |
+| `$VW faucet [address]` | Request testnet TVARA tokens (auto-connects to testnet) |
 | `$VW sign <data> [--hex]` | Sign arbitrary data with wallet key (raw sr25519) |
 | `$VW tx <pallet> <method> [args...]` | Submit generic extrinsic |
 
@@ -128,39 +130,51 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 | `$VW wallet export <name> [--decrypt]` | Export keyring JSON |
 | `$VW wallet default [name]` | Get/set default wallet |
 | `$VW init [--name <n>]` | Initialize config + default wallet |
+| `$VW config list` | Show all config values |
+| `$VW config set network testnet` | Persist network endpoint |
+| `$VW config set <key> <value>` | Set any config key |
+| `$VW config get <key>` | Get a config value |
 
 ## Common Workflows
 
 ### Deploy and interact with a Sails program
 
 ```bash
-# 1. Upload program
-UPLOAD=$($VW --account agent program upload ./target/wasm32-unknown-unknown/release/my_program.opt.wasm)
+# 1. Upload program (auto-encodes Sails constructor from IDL)
+UPLOAD=$($VW --account agent program upload ./target/wasm32-unknown-unknown/release/my_program.opt.wasm \
+  --idl ./target/idl/my_program.idl --args '["MyToken", "MTK", 18]')
 PROGRAM_ID=$(echo $UPLOAD | jq -r .programId)
 
 # 2. Discover interface
 $VW discover $PROGRAM_ID --idl ./target/idl/my_program.idl
 
-# 3. Call a function (state-changing)
+# 3. Estimate gas before calling
+$VW --account agent call $PROGRAM_ID MyService/DoSomething --args '["hello"]' --idl ./my_program.idl --estimate
+
+# 4. Call a function (state-changing)
 $VW --account agent call $PROGRAM_ID MyService/DoSomething --args '["hello"]' --idl ./my_program.idl
 
-# 4. Query state (read-only, free)
+# 5. Query state (read-only, free)
 $VW call $PROGRAM_ID MyService/GetState --args '[]' --idl ./my_program.idl
 ```
 
 ### Local node deployment
 
-When deploying to a local dev node, set the endpoint explicitly. The default is mainnet.
+When deploying to a local dev node, use `--network local` or set the endpoint explicitly.
 
 ```bash
-# Set local endpoint for the session
+# Use --network shorthand (recommended)
+$VW --network local wallet import --seed '//Alice' --name alice
+
+# Or persist in config
+$VW config set network local
+
+# Or set for the session
 export VARA_WS=ws://localhost:9944
 
-# Import a dev account (e.g. //Alice) for funded local testing
-$VW wallet import --seed '//Alice' --name alice
-
-# Deploy
-UPLOAD=$($VW --account alice program upload ./target/wasm32-unknown-unknown/release/my_program.opt.wasm)
+# Deploy with IDL-based constructor encoding
+UPLOAD=$($VW --account alice program upload ./target/wasm32-unknown-unknown/release/my_program.opt.wasm \
+  --idl ./my_program.idl --args '["arg1"]')
 PROGRAM_ID=$(echo $UPLOAD | jq -r .programId)
 
 # Verify
@@ -273,21 +287,28 @@ $VW --verbose balance 2>/dev/null | jq .
 ## Network Switching
 
 ```bash
-# Per-command
+# Shorthand (recommended)
+$VW --network testnet balance
+
+# Per-command with full URL
 $VW --ws wss://testnet.vara.network balance
 
-# Session-wide
-export VARA_WS=wss://testnet.vara.network
+# Persist across sessions
+$VW config set network testnet
 
-# Local dev node
-export VARA_WS=ws://localhost:9944
+# Session-wide env var
+export VARA_WS=wss://testnet.vara.network
 ```
 
-| Network | Endpoint |
-|---------|----------|
-| Mainnet | `wss://rpc.vara.network` (default) |
-| Testnet | `wss://testnet.vara.network` |
-| Local | `ws://localhost:9944` |
+**Endpoint resolution order:** `--ws` > `--network` > `VARA_WS` env > `config.wsEndpoint` > default.
+
+| Network | Endpoint | `--network` shorthand |
+|---------|----------|----------------------|
+| Mainnet | `wss://rpc.vara.network` (default) | `--network mainnet` |
+| Testnet | `wss://testnet.vara.network` | `--network testnet` |
+| Local | `ws://localhost:9944` | `--network local` |
+
+Connection timeout is 10s. Bad endpoints fail fast with `CONNECTION_TIMEOUT` error instead of hanging.
 
 For full network endpoint and account format details, see `../../references/vara-network-endpoints.md`.
 
@@ -311,10 +332,14 @@ Existential deposit is ~10 VARA on mainnet.
 | `NO_ACCOUNT` | No signing account | Add `--account <name>` |
 | `PASSPHRASE_REQUIRED` | Encrypted wallet, no passphrase | Check `~/.vara-wallet/.passphrase` exists |
 | `DECRYPT_FAILED` | Wrong passphrase | Verify passphrase file content |
+| `CONNECTION_TIMEOUT` | WS/light client connect timed out (10s) | Check endpoint URL, network connectivity |
+| `WRONG_NETWORK` | Command not available on this network | Use `--network testnet` for faucet |
 | `TX_TIMEOUT` | Transaction didn't land in 60s | Retry — network congestion |
 | `TX_FAILED` | On-chain failure | Inspect `.events` in output |
 | `IDL_NOT_FOUND` | No Sails IDL | Provide `--idl <path>` |
 | `METHOD_NOT_FOUND` | Method not in IDL | Check `discover` output |
+| `INVALID_NETWORK` | Unknown `--network` value | Use mainnet, testnet, or local |
+| `INVALID_CONFIG_KEY` | Unknown config key | Use `config list` to see valid keys |
 
 ## Guardrails
 
@@ -324,5 +349,8 @@ Existential deposit is ~10 VARA on mainnet.
 - Gas is auto-calculated — omit `--gas-limit` unless you have a specific reason.
 - Messages are async. After `message send`, use `wait` to get the reply.
 - `call` auto-detects queries vs functions — no need to specify.
-- When targeting a local dev node, always set `VARA_WS=ws://localhost:9944` or use `--ws`. The default endpoint is mainnet.
+- When targeting a local dev node, use `--network local` or `VARA_WS=ws://localhost:9944`. The default endpoint is mainnet.
+- Use `config set network testnet` to persist network choice across sessions.
+- `program list` returns 100 programs by default. Use `--all` for unlimited.
+- `faucet` only works on testnet. It refuses mainnet endpoints automatically.
 - If `sails-local-smoke` is green and you need to interact with a deployed program on a live network, switch to this skill.

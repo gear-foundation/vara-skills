@@ -86,7 +86,8 @@ Use this as the first stop for the provisional Sails-builder pack. Route the bui
 - Need to author or debug `gtest`: `../sails-gtest/SKILL.md`
 - `gtest` is green and the next step is a typed live-node smoke run: `../sails-local-smoke/SKILL.md`
 - Need to add a fungible token or token-backed accounting layer with awesome-sails: `../awesome-sails-vft/SKILL.md`
-- Need to build or repair the React or TypeScript frontend for a Sails app: `../sails-frontend/SKILL.md`
+- Need a frontend for a Sails app (new or existing project without one): `npx create-vara-app <name> --idl <idl-path>`, then `../sails-frontend/SKILL.md` for customization
+- Need to extend or repair an existing React or TypeScript frontend: `../sails-frontend/SKILL.md`
 - Raw hex, reply-byte ambiguity, event decoding confusion, or metadata-vs-IDL uncertainty: `../gear-message-execution/SKILL.md`
 
 ## Required Artifact Chain

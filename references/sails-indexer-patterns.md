@@ -1321,7 +1321,7 @@ Why this shape matters:
 
 A good default is to keep business logic in the processor and let the API expose already projected data.
 
-This section intentionally targets the PostGraphile v4 library API. Pin `postgraphile@4.14.1` and `postgraphile-plugin-connection-filter@2.3.0` when following the snippet below. Do not mix these examples with PostGraphile v5 setup until the API bootstrap is rewritten as a separate migration.
+This section intentionally targets the PostGraphile v4 bootstrap/config API (`postgraphile(...)`, `PostGraphileOptions`, `appendPlugins`). Treat the v4 dependency line as a compatibility constraint for this snippet and the bundled templates, not as a product requirement for every indexer. Keep `postgraphile` on the 4.x line and `postgraphile-plugin-connection-filter` on the 2.x line when following this template. Do not switch to v5 by changing package versions alone; update the API bootstrap and template config together.
 
 ```ts
 // src/api.ts

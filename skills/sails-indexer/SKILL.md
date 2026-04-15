@@ -36,12 +36,12 @@ Treat the indexer as a projection pipeline:
 - Mount a real GraphQL endpoint such as `/graphql` and make it reachable from local frontend development without browser CORS failures.
 - Prefer one of two frontend-safe API exposure strategies and name the choice explicitly: enable CORS on the indexer API, or serve GraphQL through the frontend dev proxy or same-origin gateway.
 - Use a real ingestion adapter wired to chain or archive sources. Do not leave placeholder, null, or demo adapters in the runtime.
-- Prefer event-driven projections first. Use live on-chain queries only for explicit enrichment or source-of-truth confirmation.
+- Prefer event-driven projections first. Use direct on-chain queries only for initial entity bootstrap or explicit source-of-truth confirmation, and keep them out of hot event-processing paths unless the design justifies the cost.
 - Keep projection logic in processor or handler services. Keep the API layer thin.
 - Model restart, replay, backfill, and duplicate safety as first-class requirements, not as later hardening.
 - Prefer deterministic entity IDs derived from chain facts such as program ID, message ID, block number, extrinsic position, or explicit domain keys.
 - If the repo already has an indexer stack, extend it instead of replacing it with a new framework casually.
-- Pin PostGraphile to the v4 line for this skill pack. The reference code and templates target `postgraphile@4.14.1` and `postgraphile-plugin-connection-filter@2.3.0`. v5 uses a completely different plugin and middleware API that is incompatible with the current reference snippets. Do not install or document v5 until the API layer is intentionally rewritten against the v5 contract.
+- Treat PostGraphile as a v4-compatible template constraint, not as a product requirement for every indexer. The bundled API template uses the v4 bootstrap/config API (`postgraphile(...)`, `PostGraphileOptions`, `appendPlugins`), so keep `postgraphile` on the 4.x line and `postgraphile-plugin-connection-filter` on the 2.x line when copying these assets. Do not switch to v5 by changing package versions alone; update the API bootstrap and template config together.
 - Follow the canonical runtime order from `../../references/sails-indexer-patterns.md`, especially `Start with configuration, not hardcoded endpoints`, `Build one shared batch processor and export its derived types`, `Centralize all IDL decoding behind one decoder`, `Wire the runtime in main.ts, but do not place projection logic there`, `Give every handler the same lifecycle contract`, `Process a batch in a stable order`, `Save in groups and only write what changed`, and `Expose a thin API layer on top of PostgreSQL`.
 
 ## Route Here When

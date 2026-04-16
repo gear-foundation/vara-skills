@@ -39,6 +39,8 @@ If the request targets a released contract, a new deployed contract version, or 
 - `../../references/sails-gtest-and-local-validation.md`
 - `../../references/contract-interface-evolution.md`
 - `../../references/voucher-and-signless-flows.md`
+- `../../references/sails-idl-v2-syntax.md` — IDL v2 annotations for `.idl` files
+- `../../references/sails-header-wire-format.md` — interface ID stability for change classification
 
 ## Guardrails
 

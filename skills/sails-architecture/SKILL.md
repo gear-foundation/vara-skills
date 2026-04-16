@@ -22,6 +22,7 @@ If the work changes a released contract or introduces a new deployed contract ve
 - `../../references/gear-gas-reservations-and-waitlist.md`
 - `../../references/awesome-sails-token-patterns.md`
 - `../../references/contract-interface-evolution.md`
+- `../../references/sails-header-wire-format.md` — interface ID stability, entry ID derivation, route index
 
 Write the result to `docs/plans/YYYY-MM-DD-<topic>-architecture.md`.
 
@@ -51,7 +52,8 @@ Write the result to `docs/plans/YYYY-MM-DD-<topic>-architecture.md`.
 - Are routes, replies, and events stable enough for generated clients?
 - If a delayed or self-call hits a Sails route, does the design keep generated clients or equivalent route-prefixed encoding in the contract?
 - Does the design account for async Gear message flow and failure paths?
-- If this changes a released contract, has the design classified the change as additive or breaking?
+- If this changes a released contract, has the design classified the change as additive or breaking, and as interface-ID-preserving or interface-ID-breaking? (See `../../references/sails-header-wire-format.md` for how interface IDs are derived.)
+- Are all public methods annotated with `#[export]`?
 - Are existing public routes, replies, and events preserved unless the architecture explicitly versions them?
 - Does the note define contract version and status surface such as `Active` and `ReadOnly` when relevant?
 - Does the design explain frontend and indexer impact for a new deployed contract version?

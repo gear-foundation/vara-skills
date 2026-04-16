@@ -28,7 +28,7 @@ ActorId  = blake2_256((SEED, builtin_id).encode())
 
 Source: `gear/pallets/gear-builtin/src/lib.rs:165,212`.
 
-The `builtin_id` is a `u64` — the constant in the runtime's `BuiltinActors` tuple. Because the `ActorId` is a hash of the tuple position, re-registering actors in a different order changes their `ActorId`. **Treat hardcoded `ActorId` constants as runtime-version-bound.**
+The `builtin_id` is a `u64` assigned explicitly to each actor via `ActorWithId<N, Actor>` in the runtime's `BuiltinActors` tuple. The `ActorId` is a hash of that explicit `N`, not of the tuple position — reordering the tuple while keeping every `N` constant does not change any `ActorId`. What does change an `ActorId`: changing the numeric `N` for an actor, or switching to a runtime that assigns a different `N`. **Treat hardcoded `ActorId` constants as bound to the `N` in the target runtime.**
 
 ## Vara runtime registry
 
@@ -48,7 +48,7 @@ ETH bridge note: the Vara runtime computes the bridge `ActorId` at startup via `
 A builtin call is a normal `send_for_reply` against a non-program `ActorId`:
 
 ```rust
-use gbuiltins::staking::{Request, RewardAccount};
+use gbuiltin_staking::{Request, RewardAccount};
 use gstd::{msg, ActorId};
 use hex_literal::hex;
 use parity_scale_codec::Encode;
@@ -71,7 +71,7 @@ async fn main() {
         .await
         .expect("builtin returned error reply");
 
-    // `reply` is empty for Bond; for ActiveEra decode as gbuiltins::staking::Response.
+    // `reply` is empty for Bond; for ActiveEra decode as gbuiltin_staking::Response.
 }
 ```
 

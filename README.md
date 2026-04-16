@@ -33,7 +33,7 @@ The pack is being narrowed toward standard Gear/Vara Sails app builders:
 npx skills add gear-foundation/vara-skills
 ```
 
-Works with Claude Code, Codex, and any agent that supports the `skills` CLI. Installs all 20 skills and the reference handbook in one command.
+Works with Claude Code, Codex, and any agent that supports the `skills` CLI. Installs all 21 skills and the reference handbook in one command.
 
 ### Codex
 
@@ -109,6 +109,7 @@ Use `openclaw-skill/SKILL.md` as the wrapper entrypoint for the same pack.
 - `sails-rust-implementer`: implements approved Rust or Sails tasks while preserving routing, IDL, and async contract behavior.
 - `sails-idl-client`: fixes or wires the IDL and generated client pipeline in app, client, or test crates.
 - `sails-frontend`: builds or extends a React/TypeScript frontend for a Sails app using Sails-JS, generated clients, and Gear-JS.
+- `sails-indexer`: builds or extends a read-side indexer and thin query API for a Sails app using IDL-driven event decoding, projected PostgreSQL read models, and optional on-chain query enrichment.
 - `awesome-sails-vft`: adds a fungible token to a Sails app using awesome-sails building blocks, covering VFT crates, roles, events, and tests.
 - `sails-program-evolution`: guides V1-to-V2 contract migration, interface evolution, and cutover planning for released Sails programs.
 - `vara-wallet`: interacts with Vara Network on-chain — deploy programs, call Sails methods, manage wallets, transfer tokens, issue vouchers.

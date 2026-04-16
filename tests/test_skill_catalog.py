@@ -74,6 +74,12 @@ STARTER_SKILLS = {
         "references",
         "scripts",
     ],
+    "sails-indexer": [
+        "SKILL.md",
+        "assets",
+        "references",
+        "scripts",
+    ],
 }
 
 
@@ -183,6 +189,18 @@ def main() -> int:
     assert "@gear-js/api" in frontend
     assert "../../references/sails-frontend-and-gear-js.md" in frontend
     assert "../../references/scale-binary-decoding-guide.md" in frontend
+
+    indexer = read("skills/sails-indexer/SKILL.md")
+    indexer_ref = read("references/sails-indexer-patterns.md")
+    indexer_env = read("skills/sails-indexer/assets/.env.example")
+    indexer_package = read("skills/sails-indexer/assets/package.json")
+    assert "v4 bootstrap/config API" in indexer
+    assert "v4 bootstrap/config API" in indexer_ref
+    assert "Do not switch to v5 by changing package versions alone" in indexer
+    assert "VARA_RPC_URL=wss://testnet.vara.network" not in indexer_env
+    assert "archive RPC endpoint" in indexer_env
+    assert '"postgraphile": "^4.' in indexer_package
+    assert '"postgraphile-plugin-connection-filter": "^2.' in indexer_package
 
     gtest_loop = read("skills/sails-gtest/SKILL.md")
     assert "../../references/sails-gtest-and-local-validation.md" in gtest_loop

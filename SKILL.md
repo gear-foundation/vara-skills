@@ -46,6 +46,7 @@ The repo is intended to be self-contained: use local `references/` handbook file
 - Add or change a feature in an existing Sails repo: `skills/sails-feature-workflow/SKILL.md`
 - Rework service or program boundaries: `skills/sails-architecture/SKILL.md`
 - Debug message flow, replies, delays, or reservations: `skills/gear-message-execution/SKILL.md`
+- Design or debug calls into runtime builtin actors (staking, proxy, BLS12-381, ETH bridge): `skills/gear-builtin-actors/SKILL.md`
 - Fix `build.rs`, IDL, or generated clients: `skills/sails-idl-client/SKILL.md`
 - Write or debug `gtest`: `skills/sails-gtest/SKILL.md`
 - Run typed local-node smoke after green `gtest`: `skills/sails-local-smoke/SKILL.md`

@@ -22,6 +22,7 @@ Keep design work API-first: start from `gstd`, then drop to `gcore` or `gsys` on
 - a builder is choosing between typed payloads, raw bytes, staged push-plus-commit, or input-forwarding APIs
 - a design depends on `#[gstd::async_main]`, `_for_reply` flows, delayed work, `ReservationId`, or `prog::*`
 - a debugging pass needs to confirm which `gr_*` syscall family a high-level API actually reaches
+- a `send_for_reply` targets a hardcoded non-program `ActorId` (staking, proxy, BLS12-381, ETH bridge); route to `gear-builtin-actors` for the per-actor request shape and reply decoding
 
 ## Working Model
 

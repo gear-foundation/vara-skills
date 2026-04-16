@@ -152,11 +152,11 @@ When debugging a builtin reply:
 2. Identify the matching helper crate by source `ActorId` ↔ builtin id.
 3. Classify: empty success, typed `Response`, or error reply.
 4. Decode as `gbuiltin_*::Response` using `parity_scale_codec::Decode` — not a Sails generated client, not `ProgramMetadata`. There is no Sails route prefix on a builtin reply.
-5. On error replies, inspect the payload as `BuiltinActorError` (pallet-gear-builtin) or the actor-specific error (e.g. `BuiltinActorError::InsufficientGas`, weight overruns).
+5. On error replies, inspect the payload as `BuiltinActorError` (defined in `utils/builtins-common`, re-exported from `pallet-gear-builtin` via `builtins_common::BuiltinActorError`). Common variants: `InsufficientGas` when the caller-supplied `gas_limit` is below the call's weight; `GasAllowanceExceeded` when the block-level allowance is exhausted; `InsufficientValue`; `DecodingError`; and `Custom(LimitedStr)` for actor-specific errors.
 
 ## Gas and ED
 
-- Each builtin declares a `max_gas()` covering the worst-case underlying extrinsic. The pallet upfront-charges this against the current block allowance; an overrun produces a `BuiltinActorError` reply, not a panic.
+- Each builtin declares a `max_gas()` covering the worst-case underlying extrinsic. The pallet upfront-charges this against the caller's message gas_limit (→ `InsufficientGas` if the caller supplied too little) and against the current block allowance (→ `GasAllowanceExceeded` if the block is saturated). Both cases surface as `BuiltinActorError` replies, not panics.
 - Value-bearing requests (staking `Bond`, proxy ops with a deposit, etc.) follow the pallet's ED rules. First-time calls to a new builtin address require ED to be minted — runtime migrations do this for shipped builtins (`runtime/vara/src/migrations.rs` → `LockEdForBuiltin`), so application code only needs to worry about ED on brand-new chains or newly-registered actors.
 - Keep reservations out of the critical path unless the calling flow already relies on them; a builtin reply typically arrives within the same message-queue pass.
 

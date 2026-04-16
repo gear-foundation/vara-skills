@@ -24,6 +24,7 @@ Provide a focused local path for reasoning about message flow and execution beha
 - reservations or waitlist behavior affect the design
 - a builder is mixing raw payload handling into an otherwise standard Sails flow
 - raw hex, reply bytes, event bytes, or metadata-vs-IDL decoding path is unclear
+- a reply from a hardcoded non-program `ActorId` does not decode as a Sails route; route to `gear-builtin-actors` for the matching `gbuiltin_*::Response` type
 
 ## Working Model
 

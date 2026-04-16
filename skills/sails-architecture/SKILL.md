@@ -37,6 +37,7 @@ Write the result to `docs/plans/YYYY-MM-DD-<topic>-architecture.md`.
 - If the architecture question is whether Gear or Sails exposes the right API family, review `../gear-gstd-api-map/SKILL.md` first.
 - If the architecture risk is mostly around replies, timeouts, delayed work, or reservations, review `../gear-message-execution/SKILL.md`.
 - If the architecture introduces a fungible token, token-backed accounting, or token-manager split, review `../../references/awesome-sails-token-patterns.md`.
+- If a service wraps a runtime builtin actor (staking broker, proxy broker, BLS helper, ETH bridge sender), review `../gear-builtin-actors/SKILL.md` — state ownership, idempotency, and reply routing differ from program-to-program calls because the builtin has no memory or code.
 
 ## Review Checklist
 

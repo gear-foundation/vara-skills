@@ -14,7 +14,7 @@ If a released contract evolves or a new deployed contract version is introduced,
 ## Default JS Or TS Path
 
 - Treat the program `.idl` as the source of truth for the interface.
-- Generate the normal client with `sails-js` or `sails-js-cli` so the workspace gets `lib.ts` and typed program or service classes instead of hand-written payload code.
+- Generate the normal client with `sails-js` or `sails-cli` so the workspace gets `lib.ts` and typed program or service classes instead of hand-written payload code.
 - Pair the generated client with `GearApi` from `@gear-js/api` for node connectivity.
 - Use `parseIdl` from the `sails-js` and `sails-js-parser` path only when you explicitly need dynamic runtime control rather than pre-generated files.
 
@@ -24,7 +24,7 @@ If a released contract evolves or a new deployed contract version is introduced,
 - For a dedicated Rust client crate, prefer the standard Sails build-helper path:
   - `[build-dependencies] sails-rs = { version = "...", features = ["build"] }`
   - `fn main() { sails_rs::build_client::<Program>(); }`
-- Treat direct `sails-idl-gen` plus `sails-client-gen` wiring as a manual fallback for non-standard layouts or explicitly custom generation needs.
+- Treat direct `sails-idl-gen` plus `sails-client-gen-v2` wiring as a manual fallback for non-standard layouts or explicitly custom generation needs.
 - Do not assume a single fixed output location. Depending on the repo, generated `.idl` and Rust client artifacts may land in `OUT_DIR`, the client crate output path, or another repo-defined location.
 
 ## Generated Client Pitfalls
@@ -50,6 +50,8 @@ See `../../references/sails-idl-client-pipeline.md` for the canonical frontend e
 
 ## Inputs
 
+- `../../references/sails-idl-v2-syntax.md` — IDL v2 grammar, annotations, types, service/program declarations
+- `../../references/sails-header-wire-format.md` — Sails Header layout, interface/entry ID derivation, wire examples
 - `../../references/sails-cheatsheet.md`
 - `../../references/sails-idl-client-pipeline.md`
 - `../../assets/task-plan-template.md`
@@ -70,4 +72,4 @@ See `../../references/sails-idl-client-pipeline.md` for the canonical frontend e
 - Do not treat `sails-js` as a runtime target; it is the JavaScript client library used by generated and dynamic IDL-driven flows.
 - Do not replace the standard path with raw ABI, ethers-style bindings, or hand-written SCALE payloads for a standard Vara Sails app.
 - Do not treat missing codegen as a reason to bypass the Sails pipeline.
-- Do not document `sails-idl-gen` + `sails-client-gen` as the default dedicated-client path when the repo can use `sails-rs` build helpers.
+- Do not document `sails-idl-gen` + `sails-client-gen-v2` as the default dedicated-client path when the repo can use `sails-rs` build helpers.

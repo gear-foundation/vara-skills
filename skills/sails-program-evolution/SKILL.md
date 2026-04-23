@@ -13,7 +13,7 @@ Use this skill when the work is no longer just “implement a feature”, but in
 
 ## Start Here
 
-Read `../../references/contract-interface-evolution.md`, `../../references/gear-sails-production-patterns.md`, `../../references/sails-idl-client-pipeline.md`, and `../../references/sails-program-and-service-architecture.md`.
+Read `../../references/contract-interface-evolution.md`, `../../references/gear-sails-production-patterns.md`, `../../references/sails-idl-client-pipeline.md`, `../../references/sails-program-and-service-architecture.md`, and `../../references/sails-header-wire-format.md`.
 
 Use `../../assets/architecture-template.md` for the architecture note and `../../assets/task-plan-template.md` for the ordered task plan.
 
@@ -59,3 +59,4 @@ The resulting architecture and task artifacts should make these points explicit 
 - Do not change released public routes or event payloads casually.
 - Do not treat IDL regeneration alone as proof of safe rollout.
 - Do not merge `V1`, `V2`, and migrator responsibilities into one vague implementation step.
+- Classify each change as interface-ID-preserving or interface-ID-breaking. Adding or removing methods changes the interface ID; renaming does not.

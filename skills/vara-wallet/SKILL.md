@@ -61,6 +61,9 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 | `$VW call <pid> Service/Query --args '[]' [--idl <path>]` | Sails read-only query (free; v2 IDL auto-resolved from on-chain WASM) |
 | `$VW discover <pid> [--idl <path>]` | Introspect Sails services, methods, events (v2 auto-resolved) |
 | `$VW idl import <path.idl> (--code-id <hex> \| --program <hex\|ss58>)` | Seed local IDL cache (v1 programs or out-of-band IDLs) |
+| `$VW idl list` | List cached IDL entries (codeId, version, source, importedAt, idlSizeBytes) |
+| `$VW idl remove <code-id>` | Remove one cache entry (idempotent) |
+| `$VW idl clear [--yes]` | Wipe entire cache (terraform-style: bare invocation previews; `--yes` commits) |
 | `$VW state read <pid>` | Read raw program state |
 | `$VW mailbox read [address]` | Read mailbox messages |
 | `$VW inbox list [--since <duration>] [--limit <n>]` | Query captured mailbox messages from event store |
@@ -86,9 +89,10 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 | `$VW message send <dest> [--payload <hex>] [--value <v>] [--voucher <id>]` | Send message to any actor (program, user, wallet) |
 | `$VW message reply <mid> [--payload <hex>] [--voucher <id>]` | Reply to a message |
 | `$VW mailbox claim <messageId>` | Claim value from mailbox message |
-| `$VW call <pid> Service/Function --args '[...]' --value <v> --units vara\|raw [--idl <path>]` | Sails state-changing call (response includes decoded `events: [...]`) |
+| `$VW call <pid> Service/Function --args '[...]' --value <v> --units human\|raw [--idl <path>]` | Sails state-changing call (response includes decoded `events: [...]`) |
 | `$VW call <pid> Service/Function --estimate [--idl <path>]` | Estimate gas cost without sending |
-| `$VW call <pid> Service/Function --dry-run [--idl <path>]` | Encode SCALE payload only — no signing, no submit, no wallet required |
+| `$VW call <pid> Service/Function --dry-run [--idl <path>]` | Encode SCALE payload + return `destination` — no signing, no submit, no wallet |
+| `$VW call <pid> Service/Function --dry-run --estimate [--idl <path>]` | Encode AND estimate gas (compose, account required since 0.15.0) |
 | `$VW call <pid> Service/Function --args-file <path> [--idl <path>]` | Read `--args` JSON from file (use `-` for stdin) — avoids shell-escape on nested JSON |
 | `$VW vft transfer <token> <to> <amount> --idl <path>` | Transfer fungible tokens |
 | `$VW vft transfer-from <token> <from> <to> <amount> --idl <path>` | Transfer from approved allowance |
@@ -115,9 +119,9 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 | Command | Purpose |
 |---------|---------|
 | `$VW wait <messageId> [--timeout <s>]` | Wait for message reply |
-| `$VW watch <pid> [--event Service/Event] [--idl <path>] [--no-decode]` | Stream program events (NDJSON; IDL adds decoded `sails:` block) |
+| `$VW watch <pid> [--event Service/Event\|pallet:Name] [--idl <path>] [--no-decode]` | Stream program events (NDJSON; IDL adds `decoded.kind === 'sails'` block) |
 | `$VW subscribe blocks [--finalized]` | Stream new/finalized blocks (NDJSON + SQLite) |
-| `$VW subscribe messages <pid> [--event Service/Event] [--idl <path>] [--pallet-event] [--no-decode]` | Stream program messages/events (IDL-aware decoding) |
+| `$VW subscribe messages <pid> [--event Service/Event\|pallet:Name] [--idl <path>] [--no-decode]` | Stream program messages/events (IDL-aware decoding; `--type` was renamed to `--event` in 0.15) |
 | `$VW subscribe mailbox <address>` | Capture mailbox messages (survives between runs) |
 | `$VW subscribe balance <address>` | Stream balance changes |
 | `$VW subscribe transfers [--from <a>] [--to <a>]` | Stream transfer events |
@@ -202,15 +206,18 @@ $VW watch $PROGRAM_ID | while read -r line; do
   echo "$line" | jq .
 done
 
-# IDL-aware: each UserMessageSent gets a decoded `sails: {service, event, data}` block
-$VW watch $PROGRAM_ID --idl ./my-program.idl | jq '.sails // .'
+# IDL-aware: each UserMessageSent gets a `decoded: { kind: 'sails', service, event, data }` block
+$VW watch $PROGRAM_ID --idl ./my-program.idl | jq '.decoded // .'
 
 # Filter by Sails event (qualified or bare when unambiguous)
 $VW watch $PROGRAM_ID --idl ./my-program.idl --event MyService/Transferred
 $VW subscribe messages $PROGRAM_ID --idl ./my-program.idl --event Transferred --count 1 --timeout 30
+
+# Force pallet vocab even with IDL loaded — replaces the dropped --pallet-event flag
+$VW watch $PROGRAM_ID --idl ./my-program.idl --event pallet:UserMessageSent
 ```
 
-Bare event names that resolve to multiple services hard-fail with `AMBIGUOUS_EVENT` listing the alternatives — qualify as `Service/Event`. Use `--pallet-event` to force the pallet vocabulary (`UserMessageSent`, `MessageQueued`, ...) even with an IDL loaded; `--no-decode` disables the opportunistic IDL auto-load entirely.
+Bare event names that resolve to multiple services hard-fail with `AMBIGUOUS_EVENT` listing the alternatives — qualify as `Service/Event` or use `pallet:Name` to force pallet vocabulary. `--no-decode` disables the opportunistic IDL auto-load entirely. The `decoded.kind` discriminator (renamed from the 0.14.x `sails: {...}` field) future-proofs the surface for additional decoder types.
 
 ### Preview a call without signing
 
@@ -367,7 +374,10 @@ $VW transfer $TO 1.5                        # 1.5 VARA
 $VW transfer $TO 1500000000000 --units raw   # same in raw units
 ```
 
-VFT commands support `--units raw|token` for human-readable token amounts using the token's own decimals.
+All `--units` flags use a unified `human|raw` vocabulary (since vara-wallet 0.15):
+- **Native commands** (`balance`, `transfer`, `message`, `call`, `voucher`, `program`): `human` (default) = VARA decimals (12). `raw` = minimal units passthrough.
+- **VFT** and **DEX** commands: `raw` (default) = minimal units passthrough. `human` = use the token's declared decimals (queried at runtime).
+- The legacy literals `vara` and `token` (from 0.10–0.14) are **rejected** with `INVALID_UNITS`. Update any committed agent scripts.
 
 Existential deposit is ~10 VARA on mainnet.
 
@@ -384,11 +394,13 @@ Existential deposit is ~10 VARA on mainnet.
 | `TX_FAILED` | On-chain failure | Inspect `.events` in output |
 | `IDL_NOT_FOUND` | No Sails IDL | Provide `--idl <path>` (v1) or run against a v2 program (auto-resolved) |
 | `METHOD_NOT_FOUND` | Method not in IDL | Check `discover` output; cross-service hint is suggested in the error |
-| `AMBIGUOUS_EVENT` | Bare Sails event name maps to multiple services | Qualify as `--event Service/Event` |
+| `AMBIGUOUS_EVENT` | Bare Sails event name maps to multiple services | Qualify as `--event Service/Event` or use `pallet:Name` |
 | `INVALID_ARGS_SOURCE` | `--args` and `--args-file` used together | Pick one |
 | `STDIN_IS_TTY` | `--args-file -` used with no pipe attached | Pipe JSON in or pass a real path |
-| `CONFLICTING_OPTIONS` | Mutually exclusive options (e.g. `--estimate` + `--dry-run`) | Pick one |
+| `CONFLICTING_OPTIONS` | Mutually exclusive options (e.g. `--network` + `--ws`) | Pick one. Note: `--dry-run` + `--estimate` *compose* on `call` since 0.15 |
+| `INVALID_UNITS` | `--units` value isn't `human` or `raw` | Use the unified vocabulary; legacy `vara` / `token` literals were retired in 0.15 |
 | `PROGRAM_ERROR` | Sails program execution failed (panic/error) | Inspect `.reason` subcode in error JSON |
+| `PERMISSION_DENIED` | OS-level permission error (e.g. `idl clear --yes` on a read-only dir) | Check filesystem permissions on `~/.vara-wallet/` |
 | `INVALID_NETWORK` | Unknown `--network` value | Use mainnet, testnet, or local |
 | `INVALID_CONFIG_KEY` | Unknown config key | Use `config list` to see valid keys (note: `metaStorageUrl` removed in 0.13.0) |
 

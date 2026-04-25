@@ -58,8 +58,9 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 | `$VW program list [--count N] [--all]` | List on-chain programs (default: 100) |
 | `$VW code info <codeId>` | Code blob metadata |
 | `$VW code list [--count N]` | List uploaded code blobs |
-| `$VW call <pid> Service/Query --args '[]' --idl <path>` | Sails read-only query (free) |
-| `$VW discover <pid> --idl <path>` | Introspect Sails services, methods, events |
+| `$VW call <pid> Service/Query --args '[]' [--idl <path>]` | Sails read-only query (free; v2 IDL auto-resolved from on-chain WASM) |
+| `$VW discover <pid> [--idl <path>]` | Introspect Sails services, methods, events (v2 auto-resolved) |
+| `$VW idl import <path.idl> (--code-id <hex> \| --program <hex\|ss58>)` | Seed local IDL cache (v1 programs or out-of-band IDLs) |
 | `$VW state read <pid>` | Read raw program state |
 | `$VW mailbox read [address]` | Read mailbox messages |
 | `$VW inbox list [--since <duration>] [--limit <n>]` | Query captured mailbox messages from event store |
@@ -85,8 +86,10 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 | `$VW message send <dest> [--payload <hex>] [--value <v>] [--voucher <id>]` | Send message to any actor (program, user, wallet) |
 | `$VW message reply <mid> [--payload <hex>] [--voucher <id>]` | Reply to a message |
 | `$VW mailbox claim <messageId>` | Claim value from mailbox message |
-| `$VW call <pid> Service/Function --args '[...]' --value <v> --units vara\|raw --idl <path>` | Sails state-changing call |
-| `$VW call <pid> Service/Function --estimate --idl <path>` | Estimate gas cost without sending |
+| `$VW call <pid> Service/Function --args '[...]' --value <v> --units vara\|raw [--idl <path>]` | Sails state-changing call (response includes decoded `events: [...]`) |
+| `$VW call <pid> Service/Function --estimate [--idl <path>]` | Estimate gas cost without sending |
+| `$VW call <pid> Service/Function --dry-run [--idl <path>]` | Encode SCALE payload only — no signing, no submit, no wallet required |
+| `$VW call <pid> Service/Function --args-file <path> [--idl <path>]` | Read `--args` JSON from file (use `-` for stdin) — avoids shell-escape on nested JSON |
 | `$VW vft transfer <token> <to> <amount> --idl <path>` | Transfer fungible tokens |
 | `$VW vft transfer-from <token> <from> <to> <amount> --idl <path>` | Transfer from approved allowance |
 | `$VW vft approve <token> <spender> <amount> --idl <path>` | Approve token spender |
@@ -112,9 +115,9 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 | Command | Purpose |
 |---------|---------|
 | `$VW wait <messageId> [--timeout <s>]` | Wait for message reply |
-| `$VW watch <pid>` | Stream program events (NDJSON) |
+| `$VW watch <pid> [--event Service/Event] [--idl <path>] [--no-decode]` | Stream program events (NDJSON; IDL adds decoded `sails:` block) |
 | `$VW subscribe blocks [--finalized]` | Stream new/finalized blocks (NDJSON + SQLite) |
-| `$VW subscribe messages <pid> [--type <event>]` | Stream program messages/events |
+| `$VW subscribe messages <pid> [--event Service/Event] [--idl <path>] [--pallet-event] [--no-decode]` | Stream program messages/events (IDL-aware decoding) |
 | `$VW subscribe mailbox <address>` | Capture mailbox messages (survives between runs) |
 | `$VW subscribe balance <address>` | Stream balance changes |
 | `$VW subscribe transfers [--from <a>] [--to <a>]` | Stream transfer events |
@@ -194,10 +197,42 @@ echo $REPLY | jq .payload
 ### Monitor program events
 
 ```bash
+# Raw NDJSON
 $VW watch $PROGRAM_ID | while read -r line; do
   echo "$line" | jq .
 done
+
+# IDL-aware: each UserMessageSent gets a decoded `sails: {service, event, data}` block
+$VW watch $PROGRAM_ID --idl ./my-program.idl | jq '.sails // .'
+
+# Filter by Sails event (qualified or bare when unambiguous)
+$VW watch $PROGRAM_ID --idl ./my-program.idl --event MyService/Transferred
+$VW subscribe messages $PROGRAM_ID --idl ./my-program.idl --event Transferred --count 1 --timeout 30
 ```
+
+Bare event names that resolve to multiple services hard-fail with `AMBIGUOUS_EVENT` listing the alternatives — qualify as `Service/Event`. Use `--pallet-event` to force the pallet vocabulary (`UserMessageSent`, `MessageQueued`, ...) even with an IDL loaded; `--no-decode` disables the opportunistic IDL auto-load entirely.
+
+### Preview a call without signing
+
+`--dry-run` encodes the SCALE payload and exits with `willSubmit: false`. Works on machines with no wallet configured — useful for previewing payloads in CI, code review, or read-only environments.
+
+```bash
+# call dry-run — no account needed
+$VW call $PROGRAM_ID MyService/DoSomething --args '["hello"]' --idl ./my-program.idl --dry-run
+
+# program upload dry-run — reports resolved constructor + encoded init payload
+$VW program upload ./my-program.opt.wasm --idl ./my-program.idl --args '["MyToken", "MTK", 18]' --dry-run
+```
+
+### Pass nested JSON via stdin (avoids shell-escape footguns)
+
+`--args-file <path>` (or `-` for stdin) eliminates double-escape failures when the JSON contains hex actor IDs, 64-byte `vec u8` signatures, or other punctuation-heavy payloads.
+
+```bash
+echo '[["0xabcd...", 1000]]' | $VW --account agent call $PROGRAM_ID MyService/BatchTransfer --args-file - --idl ./my-program.idl
+```
+
+`--args` and `--args-file` are mutually exclusive (`INVALID_ARGS_SOURCE`). Stdin without a pipe attached fails fast with `STDIN_IS_TTY` instead of hanging on EOF.
 
 ### Subscribe to events (with persistence)
 
@@ -260,13 +295,24 @@ $VW verify "hello world" $SIG $ADDRESS
 
 ## IDL Resolution
 
-Sails commands (`call`, `discover`, `vft`) require an IDL. Resolution order:
+Sails commands (`call`, `discover`, `vft`, `dex`) need an IDL. Resolution order (since vara-wallet 0.13):
 
-1. **Bundled IDLs** — standard VFT IDLs are bundled and auto-detected for `vft` commands
-2. **`--idl <path>`** — local file, always works
-3. **`VARA_META_STORAGE`** — remote fetch by program codeId (no public registry yet)
+1. **`--idl <path>`** — local file, always works, takes precedence
+2. **Local cache** — `~/.vara-wallet/idl-cache/<codeId>.cache.json`, populated automatically by previous fetches or by `idl import`
+3. **On-chain WASM** — for v2 programs (sails ≥ 1.0.0-beta.1), IDL is extracted from the `sails:idl` custom section of the program's original WASM via `gearProgram.originalCodeStorage(codeId)` and cached
+4. **Bundled IDLs** — standard VFT and Rivr DEX IDLs are bundled and validator-gated for `vft` / `dex` commands
 
-For non-VFT programs, always provide `--idl <path>`.
+For v2 programs the agent never needs `--idl` after the first call against the program — the cache handles subsequent calls for free. For v1 programs (no embedded IDL section), seed the cache once with `idl import`:
+
+```bash
+# Resolves codeId via RPC
+$VW idl import ./my-program.idl --program <programId>
+
+# Fully offline if you already know the codeId
+$VW idl import ./my-program.idl --code-id 0x<hex>
+```
+
+The previous `metaStorageUrl` config key and `VARA_META_STORAGE` env var were **removed in 0.13.0** — the meta-storage endpoint had near-zero usable IDL coverage in practice. Stale entries in existing config files are silently ignored.
 
 ## Output Parsing
 
@@ -336,10 +382,15 @@ Existential deposit is ~10 VARA on mainnet.
 | `WRONG_NETWORK` | Command not available on this network | Use `--network testnet` for faucet |
 | `TX_TIMEOUT` | Transaction didn't land in 60s | Retry — network congestion |
 | `TX_FAILED` | On-chain failure | Inspect `.events` in output |
-| `IDL_NOT_FOUND` | No Sails IDL | Provide `--idl <path>` |
-| `METHOD_NOT_FOUND` | Method not in IDL | Check `discover` output |
+| `IDL_NOT_FOUND` | No Sails IDL | Provide `--idl <path>` (v1) or run against a v2 program (auto-resolved) |
+| `METHOD_NOT_FOUND` | Method not in IDL | Check `discover` output; cross-service hint is suggested in the error |
+| `AMBIGUOUS_EVENT` | Bare Sails event name maps to multiple services | Qualify as `--event Service/Event` |
+| `INVALID_ARGS_SOURCE` | `--args` and `--args-file` used together | Pick one |
+| `STDIN_IS_TTY` | `--args-file -` used with no pipe attached | Pipe JSON in or pass a real path |
+| `CONFLICTING_OPTIONS` | Mutually exclusive options (e.g. `--estimate` + `--dry-run`) | Pick one |
+| `PROGRAM_ERROR` | Sails program execution failed (panic/error) | Inspect `.reason` subcode in error JSON |
 | `INVALID_NETWORK` | Unknown `--network` value | Use mainnet, testnet, or local |
-| `INVALID_CONFIG_KEY` | Unknown config key | Use `config list` to see valid keys |
+| `INVALID_CONFIG_KEY` | Unknown config key | Use `config list` to see valid keys (note: `metaStorageUrl` removed in 0.13.0) |
 
 ## Guardrails
 

@@ -31,6 +31,8 @@ else
 fi
 ```
 
+**Minimum version: 0.16.0** — required for structured `PROGRAM_ERROR`, `INVALID_ARGS_FORMAT`, sharper v1 `IDL_NOT_FOUND`, and the `Result::unwrap` strip the case-switches below depend on. Pre-0.16 emits only `{error, code}`. See *Structured Errors (0.16+)*.
+
 ## Zero-Setup Wallet
 
 On first use, create a wallet. Encryption and passphrase are automatic — no human setup required.
@@ -319,6 +321,8 @@ $VW idl import ./my-program.idl --program <programId>
 $VW idl import ./my-program.idl --code-id 0x<hex>
 ```
 
+> **v1 is the expected path for stable Sails builders.** This pack's stable baseline is `sails-rs 0.10.x`, which produces v1 WASM with no `sails:idl` custom section. vara-wallet 0.16+ surfaces this as `IDL_NOT_FOUND` with the explicit message "This is a v1 contract" and the `idl import` command pre-filled. Treat it as routine: pass `--idl <path>` for one-off use or run `idl import` once per machine. Pre-0.16 hedged "may be v1 or sails < 1.0.0-beta.1" with no clear next step.
+
 The previous `metaStorageUrl` config key and `VARA_META_STORAGE` env var were **removed in 0.15.0** — the meta-storage endpoint had near-zero usable IDL coverage in practice. Stale entries in pre-0.15 config files are silently ignored.
 
 ## Output Parsing
@@ -336,6 +340,27 @@ echo $RESULT | jq '.events[] | select(.section == "balances")'
 # Verbose debug (stderr, won't break JSON parsing)
 $VW --verbose balance 2>/dev/null | jq .
 ```
+
+## Structured Errors (0.16+)
+
+Program-execution failures surface as flat JSON on stderr — `reason` and `programMessage` are top-level keys, not nested under `meta`:
+
+```json
+{"code":"PROGRAM_ERROR","reason":"panic","programMessage":"<BareVariant>","error":"<full text>"}
+```
+
+`reason` ∈ `panic` | `unreachable` | `inactive` | `not_found`. `programMessage` is the bare Sails error variant — 0.16 strips the `called \`Result::unwrap()\` on an \`Err\` value:` wrapper that `#[export(unwrap_result)]` adds, so agents can switch on it directly:
+
+```bash
+ERR=$(vara-wallet --account agent call $PID Service/Method --args '[...]' --idl ./my.idl 2>&1 1>/dev/null)
+case "$(echo "$ERR" | jq -r '.programMessage // ""')" in
+  InsufficientBalance) refill ;;
+  Unauthorized)        switch_account ;;
+  *)                   echo "unhandled: $ERR" ;;
+esac
+```
+
+`jq -r '.programMessage // ""'` returns empty string on pre-0.16 builds, so the case-switch degrades safely to the default branch. Pre-0.16 emitted only `{error, code}`.
 
 ## Network Switching
 
@@ -392,14 +417,16 @@ Existential deposit is ~10 VARA on mainnet.
 | `WRONG_NETWORK` | Command not available on this network | Use `--network testnet` for faucet |
 | `TX_TIMEOUT` | Transaction didn't land in 60s | Retry — network congestion |
 | `TX_FAILED` | On-chain failure | Inspect `.events` in output |
-| `IDL_NOT_FOUND` | No Sails IDL | Provide `--idl <path>` (v1) or run against a v2 program (auto-resolved) |
+| `IDL_NOT_FOUND` | No Sails IDL | v1 contracts (stable Sails 0.10.x baseline): error says "This is a v1 contract" and prints the `idl import` command in 0.16+. Pass `--idl <path>` for one-off use or `idl import` once per machine. v2 programs auto-resolve from on-chain WASM |
 | `METHOD_NOT_FOUND` | Method not in IDL | Check `discover` output; cross-service hint is suggested in the error |
 | `AMBIGUOUS_EVENT` | Bare Sails event name maps to multiple services | Qualify as `--event Service/Event` or use `pallet:Name` |
+| `INVALID_ARGS_FORMAT` | `--args` shape mismatch (0.16+) | Sails methods take POSITIONAL args. Pass as a JSON array: `'[arg1, arg2]'`. Single-struct-arg methods also accept the bare object form: `'{"field": ...}'`. Multi-arg methods reject named-arg objects |
+| `INVALID_ADDRESS` | Typed `actor_id` field got the wrong shape (0.16+) | Read the field name from the error (`Invalid ActorId for "<field>": ...`) and fix that field — use hex (`0x` + 64 chars), SS58, or 32-byte array. Don't rewrite the whole payload |
 | `INVALID_ARGS_SOURCE` | `--args` and `--args-file` used together | Pick one |
 | `STDIN_IS_TTY` | `--args-file -` used with no pipe attached | Pipe JSON in or pass a real path |
 | `CONFLICTING_OPTIONS` | Mutually exclusive options (e.g. `--network` + `--ws`) | Pick one. Note: `--dry-run` + `--estimate` *compose* on `call` since 0.15 |
 | `INVALID_UNITS` | `--units` value isn't `human` or `raw` | Use the unified vocabulary; legacy `vara` / `token` literals were retired in 0.15 |
-| `PROGRAM_ERROR` | Sails program execution failed (panic/error) | Inspect `.reason` subcode in error JSON |
+| `PROGRAM_ERROR` | Sails program execution failed | Inspect top-level `reason` and `programMessage`. State problem — do NOT bump `--gas-limit`. See *Structured Errors (0.16+)* for the JSON shape, `reason` enum, and case-switch pattern |
 | `PERMISSION_DENIED` | OS-level permission error (e.g. `idl clear --yes` on a read-only dir) | Check filesystem permissions on `~/.vara-wallet/` |
 | `INVALID_NETWORK` | Unknown `--network` value | Use mainnet, testnet, or local |
 | `INVALID_CONFIG_KEY` | Unknown config key | Use `config list` to see valid keys (note: `metaStorageUrl` removed in 0.15.0) |
@@ -409,7 +436,7 @@ Existential deposit is ~10 VARA on mainnet.
 - Never pass secrets (seeds, mnemonics, passphrases) as CLI arguments in committed scripts. Use wallet files.
 - Never use `--show-secret` in automated flows. Secrets should stay in encrypted wallet files.
 - Always use `--account <name>` for signing, not `--seed`.
-- Gas is auto-calculated — omit `--gas-limit` unless you have a specific reason.
+- Gas is auto-calculated — omit `--gas-limit` unless you have a specific reason. `calculateGas` failures (program panic during dry-run) surface as classified `PROGRAM_ERROR` in 0.16+, not opaque gas errors — see Error Recovery.
 - Messages are async. After `message send`, use `wait` to get the reply.
 - `call` auto-detects queries vs functions — no need to specify.
 - When targeting a local dev node, use `--network local` or `VARA_WS=ws://localhost:9944`. The default endpoint is mainnet.

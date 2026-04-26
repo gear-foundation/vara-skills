@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.0] - 2026-04-27
+
+vara-wallet 0.15.0 was the first npm publish since 0.10.0; 0.16.0 followed five days later with the agent-UX hardening pass. This release captures both surfaces in one cut. Skipping a separate 2.1.x for the 0.13-0.15 work because none of those versions reached npm.
+
+### Updated — vara-wallet skill, 0.13/0.14 surface
+- IDL Resolution: documented the on-chain WASM extraction path for v2 programs (`gearProgram.originalCodeStorage`), local cache at `~/.vara-wallet/idl-cache/`, and bundled VFT/Rivr DEX IDLs. v2 programs no longer need `--idl` after first call.
+- Quick Reference: added `discover` introspection, `--dry-run` payload encoding (no signing/submit), `--args-file` (with stdin support), `idl import` for seeding the cache, `subscribe messages` IDL-aware decoding, and `watch` event streaming.
+- Workflow examples: dry-run preview, stdin args-file for nested JSON, IDL-aware event monitoring.
+- Error Recovery: added `AMBIGUOUS_EVENT`, `INVALID_ARGS_SOURCE`, `STDIN_IS_TTY`, `CONFLICTING_OPTIONS`, `PROGRAM_ERROR` (then refreshed in the 0.16 pass below).
+
+### Updated — vara-wallet skill, 0.15.0 surface
+- Units vocabulary unified to `human` / `raw` across `transfer`, `vft`, and `dex`. Legacy `vara` / `token` literals retired and now error with `INVALID_UNITS`.
+- `--dry-run` and `--estimate` compose on `call` (account required); previously mutually exclusive.
+- `subscribe messages --type` renamed to `--event` for consistency with `watch`.
+- `metaStorageUrl` config key and `VARA_META_STORAGE` env var removed; meta-storage IDL fallback dropped.
+
+### Updated — vara-wallet skill, 0.16.0 surface
+- New **"Structured Errors (0.16+)"** section: `reason` + `programMessage` JSON shape, `Result::unwrap` strip, jq case-switch with pre-0.16 fallback.
+- Error Recovery: added `INVALID_ARGS_FORMAT` and `INVALID_ADDRESS` rows; refreshed `PROGRAM_ERROR` and `IDL_NOT_FOUND` rows for the new structured fields and the "This is a v1 contract" diagnostic.
+- IDL Resolution: framed v1 path as the expected route for stable Sails 0.10.x builders, not as a v2 fallback.
+- Setup: minimum vara-wallet version pinned to 0.16.0.
+- Guardrails: `calculateGas` failures now classified as `PROGRAM_ERROR` instead of opaque gas errors.
+
 ## [2.1.0] - 2026-04-02
 
 ### Updated

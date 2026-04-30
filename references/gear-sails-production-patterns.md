@@ -331,7 +331,7 @@ impl AdminService<'_> {
     }
 
     fn ensure_is_admin(&self) {
-        assert!(self.storage().admins.contains(&msg::source()), "Not admin");
+        assert!(self.storage().admins.contains(&Syscall::message_source()), "Not admin");
     }
 }
 ```
@@ -357,9 +357,8 @@ This matches the framework model: events are declared per service, each enum var
 
 ```rust
 #[sails_rs::event]
-#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
-#[codec(crate = sails_rs::scale_codec)]
-#[scale_info(crate = sails_rs::scale_info)]
+#[sails_rs::sails_type]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Events {
     Created(ActorId),
     Removed(u64),
@@ -543,7 +542,7 @@ fn send_timeout_from_reservation(
 
     msg::send_bytes_delayed_from_reservation(
         reservation_id,
-        exec::program_id(),
+        Syscall::program_id(),
         request,
         0,
         delay,
@@ -561,7 +560,7 @@ fn send_cleanup(player: ActorId, gas: u64, delay: u32) {
     ]
     .concat();
 
-    msg::send_bytes_with_gas_delayed(exec::program_id(), payload, gas, 0, delay)
+    msg::send_bytes_with_gas_delayed(Syscall::program_id(), payload, gas, 0, delay)
         .expect("Error in sending message");
 }
 ```
@@ -572,7 +571,7 @@ Production rules:
 - persist enough state to make the delayed handler idempotent or safely repeatable
 - use `ReservationId` only when later execution budget must survive across executions
 - unreserve or remove reservations when the lifecycle ends
-- derive gas budgets from `exec::gas_available()`, not hard-coded values. When a handler both does work AND schedules its own next invocation via delayed self-message, a fixed gas amount will fail if execution consumed most of the budget. Use `let gas_for_next = exec::gas_available() * 9 / 10;` or similar dynamic calculation.
+- derive gas budgets from `Syscall::gas_available()`, not hard-coded values. When a handler both does work AND schedules its own next invocation via delayed self-message, a fixed gas amount will fail if execution consumed most of the budget. Use `let gas_for_next = Syscall::gas_available() * 9 / 10;` or similar dynamic calculation.
 - on-chain, a program must hold sufficient VARA balance to cover gas for delayed messages. Transfer VARA to the program address after deployment. In `gtest`, delayed messages succeed without explicit program funding — this asymmetry is a common source of "works in test, fails on chain" bugs.
 
 If delayed work is essential, the architecture should name:

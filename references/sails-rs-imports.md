@@ -80,14 +80,13 @@ Key constraints:
 ## Common Imports
 
 ```rust
-use sails_rs::{cell::RefCell, prelude::*};
+use core::cell::RefCell;
 use sails_rs::collections::BTreeMap;
-use sails_rs::gstd::{exec, msg};
+use sails_rs::prelude::*;
 ```
 
 - Reach for `RefCell` when the program owns mutable state and services borrow it.
 - Use `sails_rs::collections::*` when you want `no_std`-friendly collections through the framework path. Note that `sails_rs::collections::BTreeMap` is a `no_std` re-export and may lack some `std` methods. In particular, `drain()` is not available. Use `keys().cloned().collect::<Vec<_>>()` then iterate and remove as a workaround.
-- Import `exec` and `msg` from `sails_rs::gstd` for standard Gear or Vara Sails programs. The `prelude::*` does not re-export `msg` or `exec`; guards like `msg::source()` and delayed-message helpers like `exec::program_id()` require the explicit import.
 - `gstd::prog` (program creation via `create_program_bytes`) is not re-exported through `sails_rs::gstd`. If a Sails program needs to create child programs, add `gstd` as a direct dependency: `gstd = "1.10.0"`.
 
 ## Builder Defaults
@@ -96,10 +95,7 @@ use sails_rs::gstd::{exec, msg};
   ```rust
   fn main() {
       if let Some((_, wasm_path)) = sails_rs::build_wasm() {
-          sails_rs::ClientBuilder::<app::Program>::from_wasm_path(
-              wasm_path.with_extension(""),
-          )
-          .build_idl();
+          sails_rs::ClientBuilder::<app::Program>::from_wasm_path(wasm_path).build_idl();
       }
   }
   ```
@@ -118,9 +114,7 @@ use sails_rs::gstd::{exec, msg};
 
 ```rust
 #[sails_rs::event]
-#[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = sails_rs::scale_codec)]
-#[scale_info(crate = sails_rs::scale_info)]
+#[sails_rs::sails_type]
 pub enum Event {
     Updated(u64),
 }
@@ -140,6 +134,7 @@ impl CounterService<'_> {
 
 Note: In 1.0.0-beta+, types also require `ReflectHash` derive, and messages use a 16-byte binary header protocol instead of string-based routing. See the `sails-beta` branch for those patterns.
 
+- `#[sails_rs::sails_type]` handles standard Sails derives (`Encode`, `Decode`, `TypeInfo`, `ReflectHash`)
 - When shared DTOs or events derive SCALE traits in a `no_std` Sails crate, prefer:
   - `#[codec(crate = sails_rs::scale_codec)]`
   - `#[scale_info(crate = sails_rs::scale_info)]`

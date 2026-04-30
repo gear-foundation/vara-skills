@@ -16,7 +16,7 @@ Move a greenfield request from scope to an approved Sails workspace path without
 3. Write the feature or app goal to `docs/plans/YYYY-MM-DD-<topic>-spec.md` using `../../assets/spec-template.md`.
 4. Route architecture decisions through `../sails-architecture/SKILL.md`.
 5. Keep the standard template workspace shape created by `cargo sails new <project-name>` intact: `app`, `client`, `src`, `tests`, top-level `build.rs`, Wasm output, and generated-client path.
-6. Keep the standard build-script pipeline intact. In a standard Sails workspace, use the repo-generated build path for `.idl` and Rust client artifacts. For a dedicated client crate, prefer `sails-rs` with `features = ["build"]` and `sails_rs::build_client::<Program>()` before introducing manual `sails-idl-gen` / `sails-client-gen` wiring.
+6. Keep the standard build-script pipeline intact. In a standard Sails workspace, use the repo-generated build path for `.idl` and Rust client artifacts. For a dedicated client crate, prefer `sails-rs` with `features = ["build"]` and `sails_rs::build_client::<Program>()` before introducing manual `sails-idl-gen` / `sails-client-gen-v2` wiring.
 7. Validate before moving to later phases by finishing with `../sails-gtest/SKILL.md`, then `../sails-local-smoke/SKILL.md`.
 8. When the builder needs a frontend, use `create-vara-app` to scaffold it from the program's `.idl`: `npx create-vara-app <name> --idl path/to/service.idl`. Then route to `../sails-frontend/SKILL.md` for customization.
 
@@ -26,6 +26,7 @@ Move a greenfield request from scope to an approved Sails workspace path without
 - `../../references/sails-cheatsheet.md`
 - `../../references/sails-program-and-service-architecture.md`
 - `../../references/sails-idl-client-pipeline.md`
+- `../../references/sails-idl-v2-syntax.md` — IDL v2 annotations, `!@include`, service-scoped types
 
 ## Guardrails
 
@@ -34,3 +35,4 @@ Move a greenfield request from scope to an approved Sails workspace path without
 - Do not jump into raw Gear primitives when a Sails path already exists.
 - Do not skip the planning docs just because the repo is greenfield.
 - Always use `cargo sails new <project-name>` for greenfield Sails/Vara work. Hand-assembled workspaces are a known source of errors: shared top-level workspaces cause Cargo feature unification to enable both `gstd` and `gtest` on `sails-rs` simultaneously, breaking the build. See `../../references/sails-rs-imports.md` for the canonical layout.
+- Use `#[sails_type]` for all custom types (structs, enums) used in service interfaces. This replaces the verbose `#[derive(Encode, Decode, TypeInfo)] #[codec(crate = ...)]` pattern from 0.x.

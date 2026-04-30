@@ -18,6 +18,7 @@ Run the Sails-first test loop with generated clients and explicit `gtest` eviden
 - `../../references/sails-gtest-and-local-validation.md` — full gtest and validation guide
 - `../../references/gear-gas-reservations-and-waitlist.md` — gas reasoning for tests
 - `../../references/scale-binary-decoding-guide.md` — decoding raw reply bytes
+- `../../references/sails-syscall-mapping.md` — `Syscall::*` API for gas, message, and execution context
 
 Write the result to `docs/plans/YYYY-MM-DD-<topic>-gtest.md`.
 
@@ -33,13 +34,6 @@ Write the result to `docs/plans/YYYY-MM-DD-<topic>-gtest.md`.
 8. Route to `../sails-local-smoke/SKILL.md` only after the suite is green.
 
 ## Common Pitfalls
-
-- **Rust 2024 listener lifetime**: Under edition 2024 capture rules, chained calls like `program.service().listener().listen().await` fail with "temporary value dropped while borrowed". Bind each intermediate to a longer-lived variable:
-  ```rust
-  let mut service = program.service_name();
-  let mut listener = service.listener();
-  let event = listener.listen().await.unwrap();
-  ```
 
 - **Program balance accounting in gtest**: The deployed program account has an existential deposit. Absolute balance assertions like `== wager` or `== 0` will fail even when the contract accounting logic is correct. Capture the initial balance after deploy and assert deltas relative to that baseline:
   ```rust
@@ -57,3 +51,4 @@ Write the result to `docs/plans/YYYY-MM-DD-<topic>-gtest.md`.
 - Do not start local-node smoke while `gtest` is still red.
 - Do not skip gas or value reasoning when tests depend on it.
 - Do not decode raw reply or event bytes as a bare business DTO until you have checked whether Sails routing framing is present.
+- Use `#[sails_type]` for test-only types that mirror service types, ensuring encoding/decoding matches on-chain behavior exactly.

@@ -35,13 +35,6 @@ Write the result to `docs/plans/YYYY-MM-DD-<topic>-gtest.md`.
 
 ## Common Pitfalls
 
-- **Rust 2024 listener lifetime**: Under edition 2024 capture rules, chained calls like `program.service().listener().listen().await` fail with "temporary value dropped while borrowed". Bind each intermediate to a longer-lived variable:
-  ```rust
-  let mut service = program.service_name();
-  let mut listener = service.listener();
-  let event = listener.listen().await.unwrap();
-  ```
-
 - **Program balance accounting in gtest**: The deployed program account has an existential deposit. Absolute balance assertions like `== wager` or `== 0` will fail even when the contract accounting logic is correct. Capture the initial balance after deploy and assert deltas relative to that baseline:
   ```rust
   let initial_balance = env.balance_of(program_id);

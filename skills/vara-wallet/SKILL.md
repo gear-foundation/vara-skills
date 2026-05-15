@@ -31,7 +31,7 @@ else
 fi
 ```
 
-**Minimum version: 0.18.0.** The case-switch recipes below assume the structured `PROGRAM_ERROR` / `TRANSPORT_ERROR` surfaces and the enveloped `sails:idl` extractor this version provides.
+**Minimum version: 0.19.0.** The recipes below assume the structured `PROGRAM_ERROR` / `TRANSPORT_ERROR` surfaces, the enveloped `sails:idl` extractor, and 0.19's transparent auto-retry on transient transport reasons (`timeout`, `ws_close_abnormal`) — so most retryable failures are absorbed inside the wallet before your case-switch sees them.
 
 ## Zero-Setup Wallet
 

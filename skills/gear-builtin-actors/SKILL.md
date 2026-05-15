@@ -27,7 +27,7 @@ Treat builtin actors as a distinct call target: runtime-provided pseudo-programs
 
 ## Working Model
 
-1. Confirm the actor is registered in the target runtime. For Vara, the authoritative tuple is `BuiltinActors` in `runtime/vara/src/lib.rs` (IDs 1 = BLS12-381, 2 = staking, 3 = ETH bridge, 4 = proxy). IDs are runtime-version-bound.
+1. Confirm the actor is registered in the target runtime. For Vara, the authoritative tuple is `BuiltinActors` in `gear/vara/runtime/vara/src/lib.rs` (IDs 1 = BLS12-381, 2 = staking, 3 = ETH bridge, 4 = proxy). IDs are runtime-version-bound.
 2. Pick the correct `gbuiltin-*` helper crate: `gbuiltin-staking`, `gbuiltin-proxy`, `gbuiltin-bls381`, `gbuiltin-eth-bridge`. Import its `Request` (and `Response` where defined).
 3. Derive the `ActorId` from the builtin ID via `hash((b"built/in", id).encode())`, or take the stable hex from the reference. Store as a `const ActorId` in the module that owns the call.
 4. Call from an async handler: `msg::send_bytes_for_reply(ACTOR_ID, &payload[..], value, reply_deposit)?.await`. Value and reply deposit follow Substrate ED rules for the builtin's underlying pallet.

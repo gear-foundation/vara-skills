@@ -31,7 +31,7 @@ else
 fi
 ```
 
-**Minimum version: 0.16.0** — required for structured `PROGRAM_ERROR`, `INVALID_ARGS_FORMAT`, sharper v1 `IDL_NOT_FOUND`, and the `Result::unwrap` strip the case-switches below depend on. Pre-0.16 emits only `{error, code}`. See *Structured Errors (0.16+)*.
+**Minimum version: 0.19.0.** The recipes below assume the structured `PROGRAM_ERROR` / `TRANSPORT_ERROR` surfaces, the enveloped `sails:idl` extractor, and 0.19's transparent auto-retry on transient transport reasons (`timeout`, `ws_close_abnormal`) — so most retryable failures are absorbed inside the wallet before your case-switch sees them.
 
 ## Zero-Setup Wallet
 
@@ -60,12 +60,14 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 | `$VW program list [--count N] [--all]` | List on-chain programs (default: 100) |
 | `$VW code info <codeId>` | Code blob metadata |
 | `$VW code list [--count N]` | List uploaded code blobs |
-| `$VW call <pid> Service/Query --args '[]' [--idl <path>]` | Sails read-only query (free; v2 IDL auto-resolved from on-chain WASM) |
-| `$VW discover <pid> [--idl <path>]` | Introspect Sails services, methods, events (v2 auto-resolved) |
-| `$VW idl import <path.idl> (--code-id <hex> \| --program <hex\|ss58>)` | Seed local IDL cache (v1 programs or out-of-band IDLs) |
+| `$VW call <pid> Service/Query --args '[]' [--idl <path>]` | Sails read-only query (free; IDL auto-resolved from on-chain WASM for any program with an embedded `sails:idl` section) |
+| `$VW discover <pid> [--idl <path>]` | Introspect Sails services, methods, events (IDL auto-resolved from on-chain WASM) |
+| `$VW idl import <path.idl> (--code-id <hex> \| --program <hex\|ss58>)` | Seed local IDL cache for contracts without an embedded IDL |
 | `$VW idl list` | List cached IDL entries (codeId, version, source, importedAt, idlSizeBytes) |
 | `$VW idl remove <code-id>` | Remove one cache entry (idempotent) |
-| `$VW idl clear [--yes]` | Wipe entire cache (terraform-style: bare invocation previews; `--yes` commits) |
+| `$VW idl clear [--yes]` | Wipe IDL cache (terraform-style: bare invocation previews; `--yes` commits) |
+| `$VW metadata list` | List cached runtime-metadata entries (`genesisHash-specVersion`, saves ~750ms per warm connect) |
+| `$VW metadata clear [--yes]` | Wipe runtime-metadata cache (terraform-style: bare previews; `--yes` commits) |
 | `$VW state read <pid>` | Read raw program state |
 | `$VW mailbox read [address]` | Read mailbox messages |
 | `$VW inbox list [--since <duration>] [--limit <n>]` | Query captured mailbox messages from event store |
@@ -94,7 +96,7 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 | `$VW call <pid> Service/Function --args '[...]' --value <v> --units human\|raw [--idl <path>]` | Sails state-changing call (response includes decoded `events: [...]`) |
 | `$VW call <pid> Service/Function --estimate [--idl <path>]` | Estimate gas cost without sending |
 | `$VW call <pid> Service/Function --dry-run [--idl <path>]` | Encode SCALE payload + return `destination` — no signing, no submit, no wallet |
-| `$VW call <pid> Service/Function --dry-run --estimate [--idl <path>]` | Encode AND estimate gas (compose, account required since 0.15.0) |
+| `$VW call <pid> Service/Function --dry-run --estimate [--idl <path>]` | Encode AND estimate gas (compose; account required for the estimate half) |
 | `$VW call <pid> Service/Function --args-file <path> [--idl <path>]` | Read `--args` JSON from file (use `-` for stdin) — avoids shell-escape on nested JSON |
 | `$VW vft transfer <token> <to> <amount> --idl <path>` | Transfer fungible tokens |
 | `$VW vft transfer-from <token> <from> <to> <amount> --idl <path>` | Transfer from approved allowance |
@@ -123,7 +125,7 @@ The passphrase is stored at `~/.vara-wallet/.passphrase` (0600). The agent never
 | `$VW wait <messageId> [--timeout <s>]` | Wait for message reply |
 | `$VW watch <pid> [--event Service/Event\|pallet:Name] [--idl <path>] [--no-decode]` | Stream program events (NDJSON; IDL adds `decoded.kind === 'sails'` block) |
 | `$VW subscribe blocks [--finalized]` | Stream new/finalized blocks (NDJSON + SQLite) |
-| `$VW subscribe messages <pid> [--event Service/Event\|pallet:Name] [--idl <path>] [--no-decode]` | Stream program messages/events (IDL-aware decoding; `--type` was renamed to `--event` in 0.15) |
+| `$VW subscribe messages <pid> [--event Service/Event\|pallet:Name] [--idl <path>] [--no-decode]` | Stream program messages/events (IDL-aware decoding) |
 | `$VW subscribe mailbox <address>` | Capture mailbox messages (survives between runs) |
 | `$VW subscribe balance <address>` | Stream balance changes |
 | `$VW subscribe transfers [--from <a>] [--to <a>]` | Stream transfer events |
@@ -304,14 +306,14 @@ $VW verify "hello world" $SIG $ADDRESS
 
 ## IDL Resolution
 
-Sails commands (`call`, `discover`, `vft`, `dex`) need an IDL. Resolution order (since vara-wallet 0.13):
+Sails commands (`call`, `discover`, `vft`, `dex`) need an IDL. Resolution order:
 
 1. **`--idl <path>`** — local file, always works, takes precedence
 2. **Local cache** — `~/.vara-wallet/idl-cache/<codeId>.cache.json`, populated automatically by previous fetches or by `idl import`
-3. **On-chain WASM** — for v2 programs (sails ≥ 1.0.0-beta.1), IDL is extracted from the `sails:idl` custom section of the program's original WASM via `gearProgram.originalCodeStorage(codeId)` and cached
-4. **Bundled IDLs** — standard VFT and Rivr DEX IDLs are bundled and validator-gated for `vft` / `dex` commands
+3. **Embedded `sails:idl` section** — auto-extracted from the program's on-chain WASM and cached. Since 0.18.0 the extractor reads the enveloped section format (1-byte version, 1-byte flags with deflate bit, payload) emitted by current sails-rs, with a raw UTF-8 fallback for older beta.1-era programs.
+4. **Bundled IDLs** — standard VFT and Rivr DEX IDLs ship in the binary for `vft` / `dex` commands.
 
-For v2 programs the agent never needs `--idl` after the first call against the program — the cache handles subsequent calls for free. For v1 programs (no embedded IDL section), seed the cache once with `idl import`:
+**Embedded IDL is the default.** Any contract built with current sails-rs ships its IDL inside the WASM, so `call` / `discover` / `vft` / `dex` work without `--idl`; the first invocation populates the cache and subsequent calls hit it for free. `idl import` is only for contracts that don't have an embedded `sails:idl` section — seed the cache once:
 
 ```bash
 # Resolves codeId via RPC
@@ -320,10 +322,6 @@ $VW idl import ./my-program.idl --program <programId>
 # Fully offline if you already know the codeId
 $VW idl import ./my-program.idl --code-id 0x<hex>
 ```
-
-> **v1 is the expected path for stable Sails builders.** This pack's stable baseline is `sails-rs 0.10.x`, which produces v1 WASM with no `sails:idl` custom section. vara-wallet 0.16+ surfaces this as `IDL_NOT_FOUND` with the explicit message "This is a v1 contract" and the `idl import` command pre-filled. Treat it as routine: pass `--idl <path>` for one-off use or run `idl import` once per machine. Pre-0.16 hedged "may be v1 or sails < 1.0.0-beta.1" with no clear next step.
-
-The previous `metaStorageUrl` config key and `VARA_META_STORAGE` env var were **removed in 0.15.0** — the meta-storage endpoint had near-zero usable IDL coverage in practice. Stale entries in pre-0.15 config files are silently ignored.
 
 ## Output Parsing
 
@@ -341,7 +339,7 @@ echo $RESULT | jq '.events[] | select(.section == "balances")'
 $VW --verbose balance 2>/dev/null | jq .
 ```
 
-## Structured Errors (0.16+)
+## Structured Errors
 
 Program-execution failures surface as flat JSON on stderr — `reason` and `programMessage` are top-level keys, not nested under `meta`:
 
@@ -349,7 +347,7 @@ Program-execution failures surface as flat JSON on stderr — `reason` and `prog
 {"code":"PROGRAM_ERROR","reason":"panic","programMessage":"<BareVariant>","error":"<full text>"}
 ```
 
-`reason` ∈ `panic` | `unreachable` | `inactive` | `not_found`. `programMessage` is the bare Sails error variant — 0.16 strips the `called \`Result::unwrap()\` on an \`Err\` value:` wrapper that `#[export(unwrap_result)]` adds, so agents can switch on it directly:
+`reason` ∈ `panic` | `unreachable` | `inactive` | `not_found`. `programMessage` is the bare Sails error variant — the `called \`Result::unwrap()\` on an \`Err\` value:` wrapper that `#[export(unwrap_result)]` adds is stripped, so agents can switch on it directly:
 
 ```bash
 ERR=$(vara-wallet --account agent call $PID Service/Method --args '[...]' --idl ./my.idl 2>&1 1>/dev/null)
@@ -360,7 +358,26 @@ case "$(echo "$ERR" | jq -r '.programMessage // ""')" in
 esac
 ```
 
-`jq -r '.programMessage // ""'` returns empty string on pre-0.16 builds, so the case-switch degrades safely to the default branch. Pre-0.16 emitted only `{error, code}`.
+## Transport Errors
+
+**Migration:** scripts that grepped `"code":"CONNECTION_TIMEOUT"` (WS connect) or `"code":"TIMEOUT"` / `"code":"CONNECTION_FAILED"` (program/dex/vft/message paths) must switch to `"code":"TRANSPORT_ERROR"` + the matching `reason`. Faucet HTTP `CONNECTION_FAILED` is unchanged — different consumer surface. `--light` failures route through the same taxonomy.
+
+Transport-layer failures (DNS, WS handshake, RPC disconnect, TLS, timeout) surface as structured `TRANSPORT_ERROR` with a `reason` subcode instead of the legacy opaque `{"error":"{}","code":"UNKNOWN_ERROR"}`. The error carries `endpoint`, `host` (DNS path), and `meta.cause` (raw underlying message):
+
+```json
+{"code":"TRANSPORT_ERROR","reason":"dns_failure","error":"Cannot resolve host nonexistent-host","endpoint":"wss://nonexistent-host","host":"nonexistent-host","meta":{"cause":"<raw>"}}
+```
+
+`reason` taxonomy: `dns_failure` | `connection_refused` | `timeout` | `ws_close_abnormal` | `protocol_mismatch` | `unreachable` | `tls_failure` | `unknown`. Switch on it to decide retry vs. fail:
+
+```bash
+case "$(echo "$ERR" | jq -r '.reason // ""')" in
+  timeout|connection_refused|unreachable|ws_close_abnormal) retry_with_backoff ;;
+  dns_failure|tls_failure|protocol_mismatch)                fail_fast ;;
+esac
+```
+
+`--verbose` writes a `[verbose] cause: code=<x>, message=<y>` line to stderr immediately before the structured JSON (EPIPE-safe), making cause-chain triage cheap without changing the machine-readable surface.
 
 ## Network Switching
 
@@ -386,7 +403,7 @@ export VARA_WS=wss://testnet.vara.network
 | Testnet | `wss://testnet.vara.network` | `--network testnet` |
 | Local | `ws://localhost:9944` | `--network local` |
 
-Connection timeout is 10s. Bad endpoints fail fast with `CONNECTION_TIMEOUT` error instead of hanging.
+Connection timeout is 10s. Bad endpoints fail fast with `TRANSPORT_ERROR` instead of hanging — see *Transport Errors*.
 
 For full network endpoint and account format details, see `../../references/vara-network-endpoints.md`.
 
@@ -399,10 +416,10 @@ $VW transfer $TO 1.5                        # 1.5 VARA
 $VW transfer $TO 1500000000000 --units raw   # same in raw units
 ```
 
-All `--units` flags use a unified `human|raw` vocabulary (since vara-wallet 0.15):
+All `--units` flags use a unified `human|raw` vocabulary:
 - **Native commands** (`balance`, `transfer`, `message`, `call`, `voucher`, `program`): `human` (default) = VARA decimals (12). `raw` = minimal units passthrough.
 - **VFT** and **DEX** commands: `raw` (default) = minimal units passthrough. `human` = use the token's declared decimals (queried at runtime).
-- The legacy literals `vara` (native commands) and `token` (VFT/DEX) used pre-0.15 are **rejected** with `INVALID_UNITS`. Update any committed agent scripts written against vara-wallet@0.10.x.
+- The literals `vara` and `token` are **rejected** with `INVALID_UNITS` — pulled from old tutorials, they no longer work.
 
 Existential deposit is ~10 VARA on mainnet.
 
@@ -413,30 +430,30 @@ Existential deposit is ~10 VARA on mainnet.
 | `NO_ACCOUNT` | No signing account | Add `--account <name>` |
 | `PASSPHRASE_REQUIRED` | Encrypted wallet, no passphrase | Check `~/.vara-wallet/.passphrase` exists |
 | `DECRYPT_FAILED` | Wrong passphrase | Verify passphrase file content |
-| `CONNECTION_TIMEOUT` | WS/light client connect timed out (10s) | Check endpoint URL, network connectivity |
+| `TRANSPORT_ERROR` | Transport-layer failure | Switch on `.reason` to decide retry vs. fail. See *Transport Errors* |
 | `WRONG_NETWORK` | Command not available on this network | Use `--network testnet` for faucet |
 | `TX_TIMEOUT` | Transaction didn't land in 60s | Retry — network congestion |
 | `TX_FAILED` | On-chain failure | Inspect `.events` in output |
-| `IDL_NOT_FOUND` | No Sails IDL | v1 contracts (stable Sails 0.10.x baseline): error says "This is a v1 contract" and prints the `idl import` command in 0.16+. Pass `--idl <path>` for one-off use or `idl import` once per machine. v2 programs auto-resolve from on-chain WASM |
+| `IDL_NOT_FOUND` | No embedded `sails:idl` and no cache/bundled match | Run `idl import` (the error pre-fills the command) or pass `--idl <path>`. See *IDL Resolution* |
 | `METHOD_NOT_FOUND` | Method not in IDL | Check `discover` output; cross-service hint is suggested in the error |
 | `AMBIGUOUS_EVENT` | Bare Sails event name maps to multiple services | Qualify as `--event Service/Event` or use `pallet:Name` |
-| `INVALID_ARGS_FORMAT` | `--args` shape mismatch (0.16+) | Sails methods take POSITIONAL args. Pass as a JSON array: `'[arg1, arg2]'`. Single-struct-arg methods also accept the bare object form: `'{"field": ...}'`. Multi-arg methods reject named-arg objects |
-| `INVALID_ADDRESS` | Typed `actor_id` field got the wrong shape (0.16+) | Read the field name from the error (`Invalid ActorId for "<field>": ...`) and fix that field — use hex (`0x` + 64 chars), SS58, or 32-byte array. Don't rewrite the whole payload |
+| `INVALID_ARGS_FORMAT` | `--args` shape mismatch | Sails methods take POSITIONAL args. Pass as a JSON array: `'[arg1, arg2]'`. Single-struct-arg methods also accept the bare object form: `'{"field": ...}'`. Multi-arg methods reject named-arg objects |
+| `INVALID_ADDRESS` | Typed `actor_id` field got the wrong shape | Read the field name from the error (`Invalid ActorId for "<field>": ...`) and fix that field — use hex (`0x` + 64 chars), SS58, or 32-byte array. Don't rewrite the whole payload |
 | `INVALID_ARGS_SOURCE` | `--args` and `--args-file` used together | Pick one |
 | `STDIN_IS_TTY` | `--args-file -` used with no pipe attached | Pipe JSON in or pass a real path |
-| `CONFLICTING_OPTIONS` | Mutually exclusive options (e.g. `--network` + `--ws`) | Pick one. Note: `--dry-run` + `--estimate` *compose* on `call` since 0.15 |
-| `INVALID_UNITS` | `--units` value isn't `human` or `raw` | Use the unified vocabulary; legacy `vara` / `token` literals were retired in 0.15 |
-| `PROGRAM_ERROR` | Sails program execution failed | Inspect top-level `reason` and `programMessage`. State problem — do NOT bump `--gas-limit`. See *Structured Errors (0.16+)* for the JSON shape, `reason` enum, and case-switch pattern |
+| `CONFLICTING_OPTIONS` | Mutually exclusive options (e.g. `--network` + `--ws`) | Pick one. Note: `--dry-run` + `--estimate` *compose* on `call` |
+| `INVALID_UNITS` | `--units` value isn't `human` or `raw` | Use the unified vocabulary; the literals `vara` / `token` are rejected |
+| `PROGRAM_ERROR` | Sails program execution failed | Inspect top-level `reason` and `programMessage`. State problem — do NOT bump `--gas-limit`. See *Structured Errors* for the JSON shape, `reason` enum, and case-switch pattern |
 | `PERMISSION_DENIED` | OS-level permission error (e.g. `idl clear --yes` on a read-only dir) | Check filesystem permissions on `~/.vara-wallet/` |
 | `INVALID_NETWORK` | Unknown `--network` value | Use mainnet, testnet, or local |
-| `INVALID_CONFIG_KEY` | Unknown config key | Use `config list` to see valid keys (note: `metaStorageUrl` removed in 0.15.0) |
+| `INVALID_CONFIG_KEY` | Unknown config key | Use `config list` to see valid keys |
 
 ## Guardrails
 
 - Never pass secrets (seeds, mnemonics, passphrases) as CLI arguments in committed scripts. Use wallet files.
 - Never use `--show-secret` in automated flows. Secrets should stay in encrypted wallet files.
 - Always use `--account <name>` for signing, not `--seed`.
-- Gas is auto-calculated — omit `--gas-limit` unless you have a specific reason. `calculateGas` failures (program panic during dry-run) surface as classified `PROGRAM_ERROR` in 0.16+, not opaque gas errors — see Error Recovery.
+- Gas is auto-calculated — omit `--gas-limit` unless you have a specific reason. `calculateGas` failures (program panic during dry-run) surface as classified `PROGRAM_ERROR`, not opaque gas errors — see Error Recovery.
 - Messages are async. After `message send`, use `wait` to get the reply.
 - `call` auto-detects queries vs functions — no need to specify.
 - When targeting a local dev node, use `--network local` or `VARA_WS=ws://localhost:9944`. The default endpoint is mainnet.

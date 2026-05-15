@@ -80,6 +80,12 @@ STARTER_SKILLS = {
         "references",
         "scripts",
     ],
+    "gear-builtin-actors": [
+        "SKILL.md",
+        "assets",
+        "references",
+        "scripts",
+    ],
 }
 
 
@@ -357,6 +363,31 @@ def main() -> int:
     assert "gr_reply" in gstd_reference
     assert "gr_reserve_gas" in gstd_reference
     assert "gr_wait" in gstd_reference
+
+    builtin_actors = read("skills/gear-builtin-actors/SKILL.md")
+    builtin_actors_lower = builtin_actors.lower()
+    assert "../../references/gear-builtin-actors.md" in builtin_actors
+    assert "../../references/gear-messaging-and-replies.md" in builtin_actors
+    assert "../../references/gear-gas-reservations-and-waitlist.md" in builtin_actors
+    assert "../../references/gear-gstd-api-and-syscalls.md" in builtin_actors
+    assert "send_for_reply" in builtin_actors_lower
+    assert "staking" in builtin_actors_lower and "proxy" in builtin_actors_lower
+    assert "bls" in builtin_actors_lower
+    assert "eth bridge" in builtin_actors_lower or "eth-bridge" in builtin_actors_lower
+
+    builtin_ref = read("references/gear-builtin-actors.md")
+    builtin_ref_lower = builtin_ref.lower()
+    assert "send_for_reply" in builtin_ref or "send_bytes_for_reply" in builtin_ref
+    assert "ActorId" in builtin_ref
+    assert "gbuiltin" in builtin_ref_lower
+    assert "Bond" in builtin_ref and "AddProxy" in builtin_ref
+    assert "MultiMillerLoop" in builtin_ref
+    assert "pallet-gear-builtin" in builtin_ref_lower or "pallet_gear_builtin" in builtin_ref_lower
+    assert "built/in" in builtin_ref
+    assert "runtime/vara/src/lib.rs" in builtin_ref
+
+    router = read("SKILL.md")
+    assert "gear-builtin-actors" in router
 
     implementer = read("skills/sails-rust-implementer/SKILL.md")
     implementer_lower = implementer.lower()

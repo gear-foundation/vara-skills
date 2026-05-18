@@ -29,7 +29,7 @@ Keep design work API-first: start from `gstd`, then drop to `gcore` or `gsys` on
 1. Start from builder intent, not from raw syscalls.
 2. Choose the `gstd` family: `msg`, `exec`, `prog`, reservations, or async helpers.
 3. Prefer the highest-level API that preserves the contract: typed send and reply first, bytes only for intentional raw payload paths or codec debugging.
-4. Check design constraints: block-delayed execution, reply deposit, reservation lifetime, waitlist exposure, gas budget, and route-prefix stability for Sails clients.
+4. Check design constraints: block-delayed execution, reply deposit, reservation lifetime, waitlist exposure, gas budget, and Sails Header routing stability for Sails clients.
 5. Drop to `gcore` to confirm wrapper behavior and to `gsys` only when you need exact syscall names, fallibility, or control-vs-get distinctions.
 
 ## API Quick Reference

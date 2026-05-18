@@ -1,6 +1,6 @@
 ---
 name: vara-skills
-description: Use when a builder needs the top-level router for the provisional standard Gear/Vara Sails skill pack across Codex, Claude, or OpenClaw. Do not use for Vara.eth or ethexe work, non-Sails programs, or broad protocol research.
+description: Use when a builder needs the top-level router for the provisional standard Gear/Vara Sails skill pack across Codex, Claude, or OpenClaw. Covers standard Sails apps and ethexe-specific work via dedicated skills. Do not use for non-Sails programs or broad protocol research.
 ---
 
 ## Preamble (run first)
@@ -55,6 +55,8 @@ The repo is intended to be self-contained: use local `references/` handbook file
 - Build or extend a React frontend for a Sails app: `skills/sails-frontend/SKILL.md`
 - Build or extend a read-side indexer and query API for a Sails app: `skills/sails-indexer/SKILL.md`
 - Evolve a released Sails contract, prepare a new deployed version, plan cutover, or design V1->V2 migration: `skills/sails-program-evolution/SKILL.md`
+- Plan or scope an ethexe (EVM-compatible Gear) program: `skills/sails-ethexe-architecture/SKILL.md`
+- Implement Rust code for an ethexe program (Syscall gating, `#[export(ethabi|payable)]`, `emit_eth_event`): `skills/sails-ethexe-implementer/SKILL.md`
 - Look up network endpoints, testnet/mainnet RPC, account format, or program lifecycle: `references/vara-network-endpoints.md`
 - Look up where to buy VARA on centralized exchanges (Coinbase, Gate, Crypto.com): `references/vara-token-exchanges.md`
 - Look up bridge contract addresses or bridged token program IDs: `references/vara-eth-bridge-contracts.md`
@@ -64,5 +66,5 @@ The repo is intended to be self-contained: use local `references/` handbook file
 
 - This catalog is still provisional and is expected to change as `vara-skills-evals` measures uplift.
 - Stay on the standard Gear/Vara Sails path for v1.
-- If the task is Vara.eth or ethexe-specific, stop and use a dedicated ethexe skill instead of this pack.
+- For ethexe-specific work, use `skills/sails-ethexe-architecture/SKILL.md` or `skills/sails-ethexe-implementer/SKILL.md`; do not blend ethexe and standard Sails patterns in the same skill invocation.
 - Bridge reference knowledge (addresses, flows, fees) is in scope as a lookup resource. Full Vara.eth workflow routing is still deferred to dedicated ethexe skills.

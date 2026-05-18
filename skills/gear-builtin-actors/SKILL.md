@@ -39,7 +39,7 @@ Treat builtin actors as a distinct call target: runtime-provided pseudo-programs
 ## Guardrails
 
 - Do not hardcode `ActorId` literals without citing the runtime file or using `hash((b"built/in", id).encode())` — IDs are runtime-version-bound and change with registration changes.
-- Do not expect a Sails route prefix on builtin replies. Decode with `Response::decode(&mut &bytes[..])` from the matching `gbuiltin-*` crate, not with a generated Sails client.
+- Do not expect Sails Header framing on builtin replies. Decode with `Response::decode(&mut &bytes[..])` from the matching `gbuiltin-*` crate, not with a generated Sails client.
 - Do not call builtins from a sync handler that cannot await; use `#[gstd::async_main]` or an async service method.
 - Do not treat builtin calls as free. Gas is charged against the sender's block allowance, and ED rules apply to any `value` transferred.
 - Do not confuse builtin IDs with actor IDs in broker examples; the ID is a `u64` registration key, the `ActorId` is its hashed account.

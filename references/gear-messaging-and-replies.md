@@ -7,7 +7,7 @@
 - Use delayed variants when execution must happen in a future block.
 - Use reservation-backed variants when later execution needs preserved gas.
 - Use staged payload flows only when the payload must be built incrementally.
-- When a Sails program calls a Sails constructor or service, prefer generated clients or equivalent route-prefixed encoding rather than an ad hoc raw struct payload.
+- When a Sails program calls a Sails constructor or service, prefer generated clients or equivalent Sails Header-aware encoding rather than an ad hoc raw struct payload.
 
 ## Message Lifecycle Checklist
 
@@ -37,9 +37,9 @@
 
 ## Sails Routing Notes
 
-- Generated Sails clients encode the correct service and method route prefixes for you.
-- The Sails wire format is route-prefixed encoded data, so a bare raw struct is not a normal constructor or service payload.
-- If a payload uses the wrong route prefix, decode fails even when the payload body type is otherwise correct.
+- Generated Sails clients encode the Sails Header and SCALE body for you.
+- The Sails 1.0 wire format is Sails Header v1 plus encoded data, so a bare raw struct is not a normal constructor or service payload.
+- If a payload uses the wrong interface ID, entry ID, or route index, decode fails even when the payload body type is otherwise correct.
 - Treat generated clients as the default path and use low-level byte encoding only to isolate transport or codec bugs.
 
 ## Guardrails
@@ -47,4 +47,4 @@
 - Outbound send and reply effects appear only after successful execution.
 - Handle timeout, transport failure, and error reply as different branches.
 - Always close staged payload paths with the correct commit call.
-- Use `exec::gas_available()` for available-gas checks; `msg::gas_available()` is not the standard Gear API.
+- Use `Syscall::gas_available()` for service-code available-gas checks; `msg::gas_available()` is not the standard Gear API.

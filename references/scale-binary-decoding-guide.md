@@ -21,7 +21,7 @@ Before decoding, identify all of the following:
   - state function output
   - raw mailbox or system message
 - framing:
-  - Sails route-framed
+  - Sails Header v1 plus SCALE body
   - plain SCALE
   - metadata-driven state output
 - artifact:
@@ -57,11 +57,11 @@ Use this order unless the task explicitly requires a lower-level path:
 6. Plain `Decode::<T>`
    - Use only when the bytes are known to be a bare SCALE payload with no Sails routing layer and no metadata-driven transformation layer.
 
-## Sails-Routed Bytes
+## Sails Header Bytes
 
 For a standard Sails app, do not assume constructor, service, reply, or event bytes are just a bare business DTO.
 
-Sails uses route-prefixed SCALE encoding for service and method routing. The generated client handles this transparently. When debugging raw bytes, the leading bytes are SCALE-encoded service and method name strings, not the bare business DTO.
+Sails 1.0 uses a 16-byte Sails Header for service and method routing, followed by the SCALE-encoded params or body. Generated clients handle this transparently. When debugging raw bytes, inspect the leading header bytes (`GM`, version `0x01`, header length `0x10`) before decoding the business DTO.
 
 If the path involves a Sails route, decode with the generated client or another Sails-aware IDL path first.
 
@@ -87,7 +87,7 @@ Do not use `.idl` to decode full raw program state unless the task explicitly pr
 
 When a test drops below generated clients:
 
-- identify whether the payload or reply is Sails-routed or plain SCALE
+- identify whether the payload or reply is Sails Header framed or plain SCALE
 - inspect the source of the bytes before decoding logs
 - prefer Sails-aware helpers when the test is not intentionally validating raw framing
 - use plain SCALE decode only when the test is explicitly about a non-routed payload body

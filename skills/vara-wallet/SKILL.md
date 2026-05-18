@@ -1,6 +1,6 @@
 ---
 name: vara-wallet
-description: Use when an agent needs to interact with Vara Network on-chain — deploy programs, call Sails methods, manage wallets, transfer tokens, monitor events. Not for building Sails programs (use vara-skills for that).
+description: Use when an agent needs to interact with Vara Network on-chain — deploy programs, call Sails methods, manage wallets, transfer tokens, monitor events. Do not use for building Sails programs.
 ---
 
 # Vara Wallet

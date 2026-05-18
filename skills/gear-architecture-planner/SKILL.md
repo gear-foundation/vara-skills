@@ -31,7 +31,7 @@ Write the result to `docs/plans/YYYY-MM-DD-<topic>-architecture.md`.
 
 - Keep `#[program]` thin and push business logic into services.
 - Make the constructor shape and storage pattern explicit instead of leaving them to implementation guesswork.
-- Treat generated clients or equivalent route-prefixed encoding as the default Sails message contract.
+- Treat generated clients or equivalent Sails Header-aware encoding as the default Sails message contract.
 - Treat actor boundaries and async flow as design constraints.
 - Call out remote-call failure policy instead of leaving it implicit.
 - Do not collapse architecture into a file-by-file coding checklist.

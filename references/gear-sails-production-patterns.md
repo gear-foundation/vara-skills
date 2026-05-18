@@ -331,7 +331,7 @@ impl AdminService<'_> {
     }
 
     fn ensure_is_admin(&self) {
-        assert!(self.storage().admins.contains(&msg::source()), "Not admin");
+        assert!(self.storage().admins.contains(&Syscall::message_source()), "Not admin");
     }
 }
 ```
@@ -357,9 +357,8 @@ This matches the framework model: events are declared per service, each enum var
 
 ```rust
 #[sails_rs::event]
-#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
-#[codec(crate = sails_rs::scale_codec)]
-#[scale_info(crate = sails_rs::scale_info)]
+#[sails_rs::sails_type]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Events {
     Created(ActorId),
     Removed(u64),
@@ -517,7 +516,7 @@ let reply = DemoProgram::client(program_id)
 
 Use generated clients by default because they preserve:
 
-- route-prefix correctness
+- Sails Header routing correctness
 - reply decoding
 - test mocks
 - consistency between Rust and TS consumers
@@ -534,16 +533,14 @@ fn send_timeout_from_reservation(
     player_id: ActorId,
     delay: u32,
 ) {
-    let request = [
-        "Battle".encode(),
-        "AutomaticMove".to_string().encode(),
-        player_id.encode(),
-    ]
-    .concat();
+    let request = battle_client::battle::io::AutomaticMove::encode_call(
+        battle_client::BattleClientProgram::ROUTE_ID_BATTLE,
+        player_id,
+    );
 
     msg::send_bytes_delayed_from_reservation(
         reservation_id,
-        exec::program_id(),
+        Syscall::program_id(),
         request,
         0,
         delay,
@@ -554,14 +551,12 @@ fn send_timeout_from_reservation(
 
 ```rust
 fn send_cleanup(player: ActorId, gas: u64, delay: u32) {
-    let payload = [
-        "Game".encode(),
-        "RemoveInstance".encode(),
-        player.encode(),
-    ]
-    .concat();
+    let payload = game_client::game::io::RemoveInstance::encode_call(
+        game_client::GameClientProgram::ROUTE_ID_GAME,
+        player,
+    );
 
-    msg::send_bytes_with_gas_delayed(exec::program_id(), payload, gas, 0, delay)
+    msg::send_bytes_with_gas_delayed(Syscall::program_id(), payload, gas, 0, delay)
         .expect("Error in sending message");
 }
 ```
@@ -572,7 +567,7 @@ Production rules:
 - persist enough state to make the delayed handler idempotent or safely repeatable
 - use `ReservationId` only when later execution budget must survive across executions
 - unreserve or remove reservations when the lifecycle ends
-- derive gas budgets from `exec::gas_available()`, not hard-coded values. When a handler both does work AND schedules its own next invocation via delayed self-message, a fixed gas amount will fail if execution consumed most of the budget. Use `let gas_for_next = exec::gas_available() * 9 / 10;` or similar dynamic calculation.
+- derive gas budgets from `Syscall::gas_available()`, not hard-coded values. When a handler both does work AND schedules its own next invocation via delayed self-message, a fixed gas amount will fail if execution consumed most of the budget. Use `let gas_for_next = Syscall::gas_available() * 9 / 10;` or similar dynamic calculation.
 - on-chain, a program must hold sufficient VARA balance to cover gas for delayed messages. Transfer VARA to the program address after deployment. In `gtest`, delayed messages succeed without explicit program funding — this asymmetry is a common source of "works in test, fails on chain" bugs.
 
 If delayed work is essential, the architecture should name:

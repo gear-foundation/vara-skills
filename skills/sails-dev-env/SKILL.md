@@ -93,5 +93,5 @@ gear --version
 - Keep this skill self-contained. Do not depend on a sibling `gear` checkout or machine-local scripts outside this skill directory. The `gear` binary is downloaded directly from `https://get.gear.rs/` official releases. The `scripts/install-gear.sh` and `scripts/install-gear.ps1` helpers in this skill directory are available as an alternative when a more flexible install is needed (e.g., custom tags or targets).
 - Prefer the latest official `gear` release binary over building the node from source unless the user asks for a specific tag or source build.
 - Treat base package-manager bootstrap as outside scope. If host tools such as `curl`, `tar`, `xz`, or `winget` are missing, install them with the platform package manager, then continue.
-- Do not assume `Node.js`, `npm`, or `sails-js-cli` are part of this skill. Install JS tooling separately only when the active workflow actually needs it.
+- Do not assume `Node.js`, `npm`, or `sails-cli` are part of this skill. Install JS tooling separately only when the active workflow actually needs it.
 - Do not pin an arbitrary nightly date unless the target repository already requires one through a toolchain file or a failing build.

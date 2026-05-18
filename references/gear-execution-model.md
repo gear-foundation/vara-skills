@@ -28,7 +28,7 @@
 - Name actors, commands, queries, replies, events, and failure paths in specs before implementation starts.
 - Use delayed messages for future block work when the program really must revisit state later.
 - Use gas reservation only when future work needs a preserved execution budget across blocks.
-- Prefer generated Sails clients for normal app paths so route prefixes and reply decoding stay aligned with the program contract.
+- Prefer generated Sails clients for normal app paths so Sails Header routing and reply decoding stay aligned with the program contract.
 
 ## Validation Implications
 

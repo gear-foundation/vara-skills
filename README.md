@@ -33,7 +33,7 @@ The pack is being narrowed toward standard Gear/Vara Sails app builders:
 npx skills add gear-foundation/vara-skills
 ```
 
-Works with Claude Code, Codex, and any agent that supports the `skills` CLI. Installs all 21 skills and the reference handbook in one command.
+Works with Claude Code, Codex, and any agent that supports the `skills` CLI. Installs all 24 skills and the reference handbook in one command.
 
 ### Codex
 

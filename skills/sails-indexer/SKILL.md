@@ -26,6 +26,7 @@ Treat the indexer as a projection pipeline:
 - `../../references/scale-binary-decoding-guide.md`
 - `../../references/contract-interface-evolution.md`
 - `../../references/sails-indexer-patterns.md`
+- `../../references/sails-idl-v2-syntax.md` — IDL v2 event syntax (`throws`, `@query`, service-scoped types)
 
 ## Standard Defaults
 

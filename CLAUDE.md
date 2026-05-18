@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A portable, self-contained skill pack for Gear/Vara Sails smart contract builders. It ships as markdown skills, shared reference docs, and validation tooling — packaged for Claude Code (plugin), Codex, and OpenClaw.
 
-Current version: **2.0.0** (stable, sails-rs 0.10.x). For 1.0.0-beta.2 content, see the `sails-beta` branch. The skill catalog is provisional until the sibling `vara-skills-evals` repo proves uplift.
+Current version: **3.0.0** (sails-rs 1.0.0-beta.5). The skill catalog is provisional until the sibling `vara-skills-evals` repo proves uplift.
 
 ## Commands
 
@@ -27,7 +27,7 @@ All tests are Python 3 (`python3 tests/<file>.py`). No pip dependencies required
 ### Content layers
 
 - **`SKILL.md`** (root) — top-level router that dispatches by builder intent to specific skills
-- **`skills/<name>/SKILL.md`** — individual workflow or topic skills (21 total), each may contain `assets/` subdirs
+- **`skills/<name>/SKILL.md`** — individual workflow or topic skills (24 total), each may contain `assets/` subdirs
 - **`references/`** — self-contained handbook covering Gear execution, Sails architecture, IDL/client pipeline, gtest patterns, and more. Skills reference these via relative paths.
 - **`assets/`** — canonical output templates (spec, architecture, task-plan, gtest report)
 - **`VERSION`** — single-line version file, kept in sync with `marketplace.json`

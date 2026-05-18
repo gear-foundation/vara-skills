@@ -152,7 +152,7 @@ When debugging a builtin reply:
 1. Confirm the sender targeted a builtin `ActorId`, not a program. If it was a program, this skill does not apply — go to `gear-message-execution`.
 2. Identify the matching helper crate by source `ActorId` ↔ builtin id.
 3. Classify: empty success, typed `Response`, or error reply.
-4. Decode as `gbuiltin_*::Response` using `parity_scale_codec::Decode` — not a Sails generated client, not `ProgramMetadata`. There is no Sails route prefix on a builtin reply.
+4. Decode as `gbuiltin_*::Response` using `parity_scale_codec::Decode` — not a Sails generated client, not `ProgramMetadata`. There is no Sails Header framing on a builtin reply.
 5. On error replies, inspect the payload as `BuiltinActorError` (defined in the `builtins-common` crate at `vara/sdk/builtins/common/src/lib.rs`; import as `use builtins_common::BuiltinActorError;`). Common variants: `InsufficientGas` when the caller-supplied `gas_limit` is below the call's weight; `GasAllowanceExceeded` when the block-level allowance is exhausted; `InsufficientValue`; `DecodingError`; and `Custom(LimitedStr<'static>)` for actor-specific errors.
 
 ## Gas and ED
@@ -164,7 +164,7 @@ When debugging a builtin reply:
 ## Guardrails
 
 - **Do not hardcode an `ActorId` without citing a runtime file.** Re-derive with `hash((b"built/in", id).encode())` or copy from `vara/runtime/vara/src/lib.rs`, and note the source.
-- **Do not decode builtin replies with a Sails client.** There is no route prefix; use the helper crate's `Response` type.
+- **Do not decode builtin replies with a Sails client.** There is no Sails Header framing; use the helper crate's `Response` type.
 - **Do not call a builtin from a sync handler.** The call is `_for_reply`; the handler must be async.
 - **Do not assume a reply shape across runtime versions.** Helper crates evolve — pin to a workspace version that matches the target runtime.
 - **Do not wrap a builtin behind a service handler that loses idempotency.** Broker services should carry their own retry and reconciliation state; the builtin has no memory.

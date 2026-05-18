@@ -39,7 +39,7 @@ For extending or repairing an existing frontend, skip to the Default Decision be
 For a standard Vara Sails frontend, use this order:
 
 1. The Sails `.idl` is the interface source of truth.
-2. Prefer `create-vara-app`'s scaffold for IDL-driven codegen with React components. For projects not using `create-vara-app`, use `sails-js-cli` generated client code for typed access.
+2. Prefer `create-vara-app`'s scaffold for IDL-driven codegen with React components. For projects not using `create-vara-app`, use `cargo sails client-js` generated client code for typed access.
 3. Prefer `@gear-js/react-hooks` for React integration, queries, commands, and typed events.
 4. Use `useSails` only when you intentionally choose runtime IDL parsing instead of generated client code.
 5. Use `@gear-js/api` only as an explicit escape hatch for cases the typed Sails path does not cover.
@@ -185,7 +185,7 @@ Disabled actions should explain why they are disabled.
 Generate the client from the program IDL:
 
 ```bash
-npx sails-js-cli generate path/to/program.idl -o src/lib --no-project
+cargo sails client-js path/to/program.idl src/lib.ts
 ```
 
 Then wire the generated `Program` class:

@@ -1,6 +1,6 @@
 ---
 name: ship-sails-app
-description: Use when a builder needs the top-level router for a standard Gear/Vara Sails app workflow from spec through gtest and local smoke. Do not use for Vara.eth or ethexe work, raw gstd-only programs, or non-Sails tasks.
+description: Use when a builder needs the top-level router for a standard Gear/Vara Sails app workflow from spec through gtest and local smoke. Routes ethexe-specific work to dedicated ethexe skills. Do not use for raw gstd-only programs or non-Sails tasks.
 ---
 
 ## Preamble (run first)
@@ -46,20 +46,20 @@ Use this as the first stop for the provisional Sails-builder pack. Route the bui
 
 ## Standard Defaults
 
-- Start with Sails for standard Vara work, not raw low-level `gstd`. Use `sails-rs 0.10.3` as the current baseline unless the target repo already pins a different version. If the repo uses `1.0.0-beta+`, see the `sails-beta` branch of this pack.
+- Start with Sails for standard Vara work, not raw low-level `gstd`. Use `sails-rs 1.0.0-beta.5` as the current baseline unless the target repo already pins a different version.
 - In standard Sails repos, `cargo build` runs `build.rs`: program or wasm crates usually call `sails_rs::build_wasm()`, while the repo may also emit `.idl` and typed client outputs from that same build flow.
 - For dedicated Rust client crates, prefer `sails-rs = { version = "...", features = ["build"] }`
   with `sails_rs::build_client::<Program>()`.
-- Treat direct `sails-client-gen` and `sails-idl-gen` wiring as a manual pipeline for explicitly non-standard repo layouts.
+- Treat direct `sails-client-gen-v2` and `sails-idl-gen` wiring as a manual pipeline for explicitly non-standard repo layouts.
 - In `#[program]`, public constructors return `Self`; name that constructor shape and the chosen state ownership pattern explicitly in planning artifacts.
 - In `#[service]`, only methods tagged with `#[export]` are public Sails routes. Event-producing paths should use `emit_event`.
 - Standard Vara account addresses are Substrate `SS58` addresses, not Ethereum `0x` addresses. Local tooling commonly uses Vara prefix `137`.
-- Treat the program `.idl` as the source of truth. The normal JS or TS path is `sails-js` or `sails-js-cli` plus `GearApi`, generating outputs such as `lib.ts` and typed program or service classes. Use `parseIdl` only for an explicitly dynamic runtime path.
-- For normal Sails constructor or service calls, generated clients or equivalent route-prefixed encoding are the default path; do not model the payload as a bare raw struct.
+- Treat the program `.idl` as the source of truth. The normal JS or TS path is `sails-js` or `sails-cli` plus `GearApi`, generating outputs such as `lib.ts` and typed program or service classes. Use `parseIdl` only for an explicitly dynamic runtime path.
+- For normal Sails constructor or service calls, generated clients or equivalent Sails Header-aware encoding are the default path; do not model the payload as a bare raw struct.
 - If shared DTO derives or event derives start failing in a standard Sails crate, check the `#[codec(crate = sails_rs::scale_codec)]` and `#[scale_info(crate = sails_rs::scale_info)]` pattern before deeper debugging.
 - Deferred work uses delayed messages measured in blocks. A program can send a delayed message to itself or another actor. If the flow needs gas to survive across blocks, use reserved gas or `ReservationId`; reservation duration is bounded and is not a value top-up.
 - For delayed self-messages, use the named payload-plus-guard recipe in `../../references/delayed-message-pattern.md` instead of inventing a one-off byte layout.
-- If the flow checks remaining execution budget, use `exec::gas_available()`.
+- If the flow checks remaining execution budget, use `Syscall::gas_available()`.
 - For gasless and signless UX patterns (vouchers, sessions, EZ-transactions), see `../../references/voucher-and-signless-flows.md`.
 - For local validation, use dev accounts or user-provided `SS58` addresses, keep seed phrases and private keys out of commit-ready examples, and do not invent program IDs, voucher IDs, or account addresses.
 - Check the repo's `build.rs` before inventing manual generation commands.
@@ -89,6 +89,7 @@ Use this as the first stop for the provisional Sails-builder pack. Route the bui
 - Need a frontend for a Sails app (new or existing project without one): `npx create-vara-app <name> --idl <idl-path>`, then `../sails-frontend/SKILL.md` for customization
 - Need to extend or repair an existing React or TypeScript frontend: `../sails-frontend/SKILL.md`
 - Raw hex, reply-byte ambiguity, event decoding confusion, or metadata-vs-IDL uncertainty: `../gear-message-execution/SKILL.md`
+- Building for the ethexe feature (EVM-compatible Gear programs): `../sails-ethexe-architecture/SKILL.md` (planning) or `../sails-ethexe-implementer/SKILL.md` (implementation)
 
 ## Required Artifact Chain
 

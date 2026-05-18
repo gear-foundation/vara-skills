@@ -28,6 +28,7 @@ Validate the generated client path against a local node after `gtest` is already
 - `../vara-wallet/SKILL.md`
 - `../../references/sails-cheatsheet.md`
 - `../../references/voucher-and-signless-flows.md`
+- `../../references/sails-header-wire-format.md` — Sails Header layout for debugging wire payloads
 
 ## Sequence — Primary Path (vara-wallet + sails-js)
 

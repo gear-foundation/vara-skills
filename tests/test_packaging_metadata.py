@@ -28,6 +28,9 @@ def main() -> int:
     marketplace_path = ROOT / ".claude-plugin" / "marketplace.json"
     openclaw_skill_path = ROOT / "openclaw-skill" / "SKILL.md"
     openclaw_readme_path = ROOT / "openclaw-skill" / "README.md"
+    readme_path = ROOT / "README.md"
+    claude_path = ROOT / "CLAUDE.md"
+    skill_count = len(list((ROOT / "skills").glob("*/SKILL.md")))
 
     require(plugin_path)
     require(marketplace_path)
@@ -52,6 +55,7 @@ def main() -> int:
     keywords = plugin.get("keywords", [])
     assert isinstance(keywords, list), "plugin keywords must be an array"
     assert "vara" in keywords and "sails" in keywords, "plugin keywords should expose Vara and Sails"
+    assert f"{skill_count} skills" in plugin["description"], "plugin description should match installable skill count"
 
     marketplace = load_json(marketplace_path)
     assert marketplace.get("name") == "vara-skills", "marketplace should publish a public vara-skills name"
@@ -73,6 +77,9 @@ def main() -> int:
     assert re.match(r"^\d+\.\d+\.\d+$", str(first_plugin.get("version", ""))), "marketplace plugin version must use semver"
     assert first_plugin.get("version") == metadata.get("version"), "marketplace plugin version should match metadata version"
     assert first_plugin.get("description") == plugin["description"], "marketplace plugin description should match plugin.json"
+    assert f"{skill_count} skills" in first_plugin.get("description", ""), (
+        "marketplace description should match installable skill count"
+    )
     assert_nonempty_string(first_plugin.get("license"), "marketplace plugin entry should include an SPDX license identifier")
     author = first_plugin.get("author")
     assert isinstance(author, dict), "marketplace plugin author should use object form"
@@ -92,6 +99,11 @@ def main() -> int:
     openclaw_readme = openclaw_readme_path.read_text(encoding="utf-8")
     assert "OpenClaw" in openclaw_readme
     assert "SKILL.md" in openclaw_readme
+
+    readme = readme_path.read_text(encoding="utf-8")
+    claude = claude_path.read_text(encoding="utf-8")
+    assert f"{skill_count} skills" in readme, "README should match installable skill count"
+    assert f"({skill_count} total)" in claude, "CLAUDE.md should match installable skill count"
 
     print("packaging metadata ok")
     return 0

@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.0] - 2026-05-18
+
+Verified against `sails @ 1.0.0-beta.5`. Promotes the pack baseline from `sails-rs 0.10.3` to `sails-rs 1.0.0-beta.5` and adds two new ethexe skills.
+
+### Added
+- `sails-ethexe-architecture` — ethexe feature planning and boundary isolation skill
+- `sails-ethexe-implementer` — ethexe-specific Rust implementation skill (Syscall gating, `#[export(ethabi|payable)]`, `emit_eth_event`)
+
+### Updated
+- Skill pack baseline bumped to `sails-rs 1.0.0-beta.5` throughout (`sails-rs-imports.md`, `sails-cheatsheet.md`, `ship-sails-app/SKILL.md`)
+- New references: `sails-syscall-mapping.md`, `sails-idl-v2-syntax.md`, `sails-header-wire-format.md`, `sails-ethexe-patterns.md`
+- `sails-gtest-and-local-validation.md` Event Listener Pattern updated: service client now implements `Listener` directly
+- `sails-rust-implementer`: mandates `Syscall::*` for all runtime accessors; adds `#[sails_type]` guidance; adds ethexe hand-off guardrail
+- `gear-sails-production-patterns.md`: converted to `Syscall::*` throughout
+
+### Fixed
+- `@entry-id` annotation (hyphen) corrected to `@entry_id` (underscore) in `sails-idl-v2-syntax.md` and `sails-header-wire-format.md` — parser only accepts underscore form
+- `Syscall::*` inconsistency in Sails service code: `sails-cheatsheet.md`, `awesome-sails-token-patterns.md`, `ship-sails-app/SKILL.md` all updated (gstd-level references kept on `exec::*`/`msg::*`)
+- Five broken `../../docs/` relative links across four files replaced with upstream GitHub URLs (or local reference paths)
+- Skill count updated to 23 in `plugin.json`, `marketplace.json`, and `CLAUDE.md`
+
 ## [2.2.0] - 2026-04-27
 
 vara-wallet 0.15.0 was the first npm publish since 0.10.0; 0.16.0 followed five days later with the agent-UX hardening pass. This release captures both surfaces in one cut. Skipping a separate 2.1.x for the 0.13-0.15 work because none of those versions reached npm.
@@ -55,7 +76,7 @@ vara-wallet 0.15.0 was the first npm publish since 0.10.0; 0.16.0 followed five 
 - Sails 1.0.0-beta baseline: ReflectHash derive pattern, Sails Header Protocol reference, IDL V2 format guide, new `#[export]` options (`overrides`, `entry_id`, `throws`)
 - `sails-new-app`: Troubleshooting section for broken scaffold recovery with fallback manual bootstrap sequence
 - `sails-idl-client`: Generated Client Pitfalls section covering `no_std` double-injection in hand-assembled workspaces and custom `BTreeMap` key type decoding issues
-- `sails-gtest`: Common Pitfalls section covering Rust 2024 listener lifetime bindings and program balance accounting with existential deposit
+- `sails-gtest`: Common Pitfalls section covering program balance accounting with existential deposit
 - IDL V2 Format section in `sails-idl-client-pipeline.md` with syntax overview (version header, Rust-like types, service-scoped types, `@query`, `throws`, `@partial`)
 - `cargo sails client-js` CLI and `cargo sails idl -n` flag documented
 - 0.10.x legacy notes in reference files where patterns differ from 1.0.0-beta (build.rs, ReflectHash, header protocol)

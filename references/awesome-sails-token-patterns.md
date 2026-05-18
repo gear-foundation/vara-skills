@@ -216,7 +216,7 @@ Minimal pattern:
 impl TokenService<'_> {
     #[export(unwrap_result)]
     pub fn transfer(&mut self, to: ActorId, value: U256) -> Result<bool, Error> {
-        let from = msg::source();
+        let from = Syscall::message_source();
 
         // mutate balances here
 
@@ -228,7 +228,7 @@ impl TokenService<'_> {
 
     #[export(unwrap_result)]
     pub fn approve(&mut self, spender: ActorId, value: U256) -> Result<bool, Error> {
-        let owner = msg::source();
+        let owner = Syscall::message_source();
 
         // mutate allowances here
 

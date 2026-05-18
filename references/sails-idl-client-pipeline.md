@@ -65,7 +65,7 @@ Add a script or Makefile target to automate the copy-and-regenerate step.
 
 Cross-reference: `sails-frontend` and `sails-idl-client` skills both expect this handoff to be explicit.
 
-Note: In 1.0.0-beta+, the IDL uses V2 syntax with Rust-like types, service blocks, and binary header protocol. See the `sails-beta` branch for V2 format details.
+The IDL uses V2 syntax with Rust-like types and service blocks (see `../../references/sails-idl-v2-syntax.md`). Messages use a binary header protocol (see `../../references/sails-header-wire-format.md`).
 
 ## Pipeline Debugging Checklist
 

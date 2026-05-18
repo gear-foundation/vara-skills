@@ -1,6 +1,6 @@
 # IDL v2 Syntax Reference
 
-Source of truth: [docs/idl-v2-spec.md](../../docs/idl-v2-spec.md).
+Source of truth: [docs/idl-v2-spec.md](https://github.com/gear-tech/sails/blob/master/docs/idl-v2-spec.md).
 
 ## Annotations
 
@@ -25,7 +25,7 @@ Annotations placed above the related token:
 
 - `@query` — marks read-only functions
 - `@partial` — partial service subset (requires explicit `interface_id`)
-- `@entry-id: <number>` — override automatic positional index
+- `@entry_id: <number>` — override automatic positional index
 - `@indexed` — marks indexed event fields
 - `@doc: text` (shortcut: `///`) — documentation
 
@@ -87,12 +87,12 @@ service <ident> [@0x<interface_id>] {
 ```
 /// Documentation
 [@query]
-[@entry-id: N]
+[@entry_id: N]
 FuncName(param1: Type1, param2: Type2) [-> ReturnType] [throws ErrorType];
 ```
 
 - `@query` — read-only, no state mutation
-- `@entry-id: N` — override automatic positional index (starts from 0)
+- `@entry_id: N` — override automatic positional index (starts from 0)
 - `throws <Type>` — explicit error type
 
 ### Events
@@ -107,7 +107,7 @@ events {
 }
 ```
 
-- `@entry-id: N` overrides automatic event index
+- `@entry_id: N` overrides automatic event index
 
 ### Partial Services
 
@@ -117,11 +117,11 @@ For generating a client targeting specific methods of a large contract:
 @partial
 service PartialService@0x1234567890abcdef {
     events {
-        @entry-id: 2
+        @entry_id: 2
         SomethingHappened(String);
     }
     functions {
-        @entry-id: 5
+        @entry_id: 5
         SomeMethod() -> bool;
     }
 }

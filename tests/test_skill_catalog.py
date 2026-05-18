@@ -301,13 +301,12 @@ def main() -> int:
     assert "run_to_block" in validation_ref_lower
 
     sails_imports = read("references/sails-rs-imports.md")
-    assert "0.10" in sails_imports
+    assert "1.0.0-beta" in sails_imports
     assert "build.rs" in sails_imports
     assert "#[codec(crate = sails_rs::scale_codec)]" in sails_imports
     assert "#[scale_info(crate = sails_rs::scale_info)]" in sails_imports
     assert "#[export]" in sails_imports
     assert "emit_event" in sails_imports
-    assert "sails-beta" in sails_imports  # points to beta branch for ReflectHash/header protocol
     assert "../sails" not in sails_imports
     assert "../awesome-sails" not in sails_imports
     assert "../dapps" not in sails_imports
@@ -316,7 +315,7 @@ def main() -> int:
     assert "Generated Client Pitfalls" in idl_client
 
     gtest_skill = read("skills/sails-gtest/SKILL.md")
-    assert "listener" in gtest_skill or "Common Pitfalls" in gtest_skill
+    assert "Common Pitfalls" in gtest_skill
 
     gtest_patterns = read("references/gtest-patterns.md")
     gtest_patterns_lower = gtest_patterns.lower()

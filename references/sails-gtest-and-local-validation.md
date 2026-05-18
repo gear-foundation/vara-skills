@@ -34,10 +34,10 @@ Pick `Next` or `Manual` for timing-sensitive flows, delayed work, reply absence,
 ## Event Listener Pattern
 
 - If the service declares `#[service(events = ...)]`, prefer asserting events through the generated listener API.
+- In Sails 1.0, the service client implements `Listener` directly, without creating a separate listener object.
 - A common flow is:
   - obtain the service client
-  - create a listener from that service client
-  - start listening before the command that should emit the event
+  - start listening before the command that should emit the event: `client.listen().await`
   - call the command
   - read the next event from the stream and assert its typed payload
 - Event assertions should be tied to the block that successfully executed the producing command.

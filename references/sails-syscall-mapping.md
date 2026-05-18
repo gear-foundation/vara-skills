@@ -2,8 +2,6 @@
 
 Use `Syscall::*` for all runtime accessors in service code. Do not use raw `gcore::*`, `msg::*`, or `exec::*` calls.
 
-Source of truth: `rs/src/gstd/syscalls.rs` and [docs/syscall-mapping-spec.md](../../docs/syscall-mapping-spec.md).
-
 ## Type Aliases
 
 - `ValueUnit = u128`

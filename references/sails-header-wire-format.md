@@ -1,6 +1,6 @@
 # Sails Header v1 Wire Format
 
-Source of truth: [docs/sails-header-v1-spec.md](../../docs/sails-header-v1-spec.md).
+Source of truth: [docs/sails-header-v1-spec.md](https://github.com/gear-tech/sails/blob/master/docs/sails-header-v1-spec.md).
 
 ## Overview
 
@@ -24,11 +24,11 @@ Byte offset  Field          Size (bytes)  Description
 
 ### Interface ID
 
-Deterministic 64-bit hash derived from the canonical interface structure. Service names never influence `interface_id`. See [docs/reflect-hash-spec.md](../../docs/reflect-hash-spec.md) and [docs/interface-id-spec.md](../../docs/interface-id-spec.md).
+Deterministic 64-bit hash derived from the canonical interface structure. Service names never influence `interface_id`. See [docs/reflect-hash-spec.md](https://github.com/gear-tech/sails/blob/master/docs/reflect-hash-spec.md) and [docs/interface-id-spec.md](https://github.com/gear-tech/sails/blob/master/docs/interface-id-spec.md).
 
 ### Entry ID
 
-Commands, queries, and events are sorted lexicographically by name within their interface. `entry_id` is assigned sequentially starting at 0. Use `@entry-id: N` in IDL to override.
+Commands, queries, and events are sorted lexicographically by name within their interface. `entry_id` is assigned sequentially starting at 0. Use `@entry_id: N` in IDL to override.
 
 ### Route Index
 
@@ -43,14 +43,14 @@ Generated clients encode/decode the header automatically. When debugging wire pa
 
 - Adding or removing methods/types **changes** the interface ID
 - Renaming methods does NOT change the interface ID (hash is structural)
-- `@entry-id` overrides allow pinning specific entry points across versions
+- `@entry_id` overrides allow pinning specific entry points across versions
 - Programs hosting V1 and V2 services simultaneously can use `route_idx` to disambiguate
 
 ## Validation Checklist
 
 1. Magic: first two bytes are `0x47 0x4D`
 2. Version: `0x01`
-3. Header length: `>= 0x10` and `<= payload_length`
+3. Header length: `= 0x10` for v1; `> 0x10` only when extensions are present and must be `<= payload_length`
 4. Reserved byte: must be `0x00` in v1
 5. Route inference (`0x00`): resolve only if exactly one matching instance exists
 

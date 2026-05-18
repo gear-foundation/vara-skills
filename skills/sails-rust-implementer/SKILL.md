@@ -47,7 +47,7 @@ If the target crate explicitly builds an `ethexe` path, stop and hand back to a 
 - If the feature needs a delayed self-message, use the shared payload recipe and the `Syscall::message_source() == Syscall::program_id()` guard pattern instead of ad hoc routing bytes.
 - Preserve fail-fast command behavior; panic on fatal stateful command-path failures instead of introducing partial-commit recovery.
 - Use `Syscall::gas_available()` for remaining-gas checks in execution paths.
-- Use `Syscall::*` for all runtime accessors instead of raw `gcore::*`, `msg::*`, or `exec::*` calls. Full mapping: [docs/syscall-mapping-spec.md](docs/syscall-mapping-spec.md).
+- Use `Syscall::*` for all runtime accessors instead of raw `gcore::*`, `msg::*`, or `exec::*` calls. Full mapping: `../../references/sails-syscall-mapping.md` (listed in Inputs).
 - Treat value flow, replies, and async ordering as first-class behavior.
 - Stop and hand back to planning if implementation uncovers a real architecture gap.
 - Do not change a released public route shape in place unless the approved architecture explicitly allows it.

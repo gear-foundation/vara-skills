@@ -2,8 +2,7 @@
 
 ## Current Baseline
 
-- Use `sails-rs 0.10.3` as the pack baseline unless the target repo already pins a different version.
-- If the target repo uses `sails-rs 1.0.0-beta+`, follow its version. See the `sails-beta` branch of this pack for beta-specific patterns (ReflectHash, binary header protocol, IDL V2, edition 2024).
+- Use `sails-rs 1.0.0-beta.5` as the pack baseline unless the target repo already pins a different version.
 - Prefer teaching the current template defaults instead of older blog posts or copied snippets.
 
 ## Cargo Defaults
@@ -12,13 +11,13 @@
 
 ```toml
 [dependencies]
-sails-rs = "0.10.3"
+sails-rs = "1.0.0-beta.5"
 
 [build-dependencies]
-sails-rs = { version = "0.10.3", features = ["build"] }
+sails-rs = { version = "1.0.0-beta.5", features = ["build"] }
 
 [dev-dependencies]
-sails-rs = { version = "0.10.3", features = ["gtest"] }
+sails-rs = { version = "1.0.0-beta.5", features = ["gtest"] }
 ```
 
 - Add `gclient` features or dependencies only when the crate also runs local-node smoke or off-chain integration tests. For deployment and CLI interaction without a Rust test harness, use `vara-wallet` instead.
@@ -28,10 +27,10 @@ sails-rs = { version = "0.10.3", features = ["gtest"] }
 
 ```toml
 [dependencies]
-sails-rs = "0.10.3"
+sails-rs = "1.0.0-beta.5"
 
 [build-dependencies]
-sails-rs = { version = "0.10.3", features = ["build"] }
+sails-rs = { version = "1.0.0-beta.5", features = ["build"] }
 ```
 
 - In current official examples, dedicated Rust client crates commonly use sails-rs with features = ["build"].
@@ -39,9 +38,7 @@ sails-rs = { version = "0.10.3", features = ["build"] }
 
 ## Workspace Feature Conflict Warning
 
-In `0.10.x`, `sails-rs` compiles `client/gstd_env.rs` even when only the `gtest` feature is enabled. That module references `::gstd` types. When Cargo feature unification enables both `gstd` and `gtest` on `sails-rs` in the same workspace, the build breaks.
-
-On Rust 1.94+ the `dyn` trait object without the `dyn` keyword (`E0782`) is a hard error, triggering additional failures in `gstd_env.rs`.
+`sails-rs` compiles `client/gstd_env.rs` even when only the `gtest` feature is enabled. That module references `::gstd` types. When Cargo feature unification enables both `gstd` and `gtest` on `sails-rs` in the same workspace, the build breaks.
 
 Prevention:
 
@@ -131,8 +128,6 @@ impl CounterService<'_> {
 ```
 
 ## SCALE Derive Boilerplate
-
-Note: In 1.0.0-beta+, types also require `ReflectHash` derive, and messages use a 16-byte binary header protocol instead of string-based routing. See the `sails-beta` branch for those patterns.
 
 - `#[sails_rs::sails_type]` handles standard Sails derives (`Encode`, `Decode`, `TypeInfo`, `ReflectHash`)
 - When shared DTOs or events derive SCALE traits in a `no_std` Sails crate, prefer:

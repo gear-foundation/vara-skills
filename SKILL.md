@@ -46,6 +46,7 @@ The repo is intended to be self-contained: use local `references/` handbook file
 - Add or change a feature in an existing Sails repo: `skills/sails-feature-workflow/SKILL.md`
 - Rework service or program boundaries: `skills/sails-architecture/SKILL.md`
 - Debug message flow, replies, delays, or reservations: `skills/gear-message-execution/SKILL.md`
+- Design or debug calls into runtime builtin actors (staking, proxy, BLS12-381, ETH bridge): `skills/gear-builtin-actors/SKILL.md`
 - Fix `build.rs`, IDL, or generated clients: `skills/sails-idl-client/SKILL.md`
 - Write or debug `gtest`: `skills/sails-gtest/SKILL.md`
 - Run typed local-node smoke after green `gtest`: `skills/sails-local-smoke/SKILL.md`
@@ -57,6 +58,7 @@ The repo is intended to be self-contained: use local `references/` handbook file
 - Plan or scope an ethexe (EVM-compatible Gear) program: `skills/sails-ethexe-architecture/SKILL.md`
 - Implement Rust code for an ethexe program (Syscall gating, `#[export(ethabi|payable)]`, `emit_eth_event`): `skills/sails-ethexe-implementer/SKILL.md`
 - Look up network endpoints, testnet/mainnet RPC, account format, or program lifecycle: `references/vara-network-endpoints.md`
+- Look up where to buy VARA on centralized exchanges (Coinbase, Gate, Crypto.com): `references/vara-token-exchanges.md`
 - Look up bridge contract addresses or bridged token program IDs: `references/vara-eth-bridge-contracts.md`
 - Understand Vara-Ethereum bridge flows, fee model, or integration patterns: `references/vara-eth-bridge-flows.md`
 

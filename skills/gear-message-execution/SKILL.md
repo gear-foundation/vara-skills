@@ -16,6 +16,7 @@ Provide a focused local path for reasoning about message flow and execution beha
 - `../../references/gear-messaging-and-replies.md`
 - `../../references/gear-gas-reservations-and-waitlist.md`
 - `../../references/scale-binary-decoding-guide.md`
+- `../../references/sails-syscall-mapping.md`
 
 ## Route Here When
 
@@ -42,7 +43,7 @@ Provide a focused local path for reasoning about message flow and execution beha
 - Treat reply, timeout, and late hook execution as distinct states.
 - Keep staged payload flows paired with their commit step.
 - Treat reservation duration and waitlist expiry as architecture constraints.
-- Use `exec::gas_available()` when checking available gas during the current execution.
+- Use `Syscall::gas_available()` when checking available gas during the current execution.
 - Prefer generated Sails clients unless debugging the route or codec layer.
 - If a Sails route is involved, expect route-prefixed encoding rather than a raw struct payload.
 - Keep the guidance on the standard Gear/Vara Sails path.

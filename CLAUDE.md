@@ -27,7 +27,7 @@ All tests are Python 3 (`python3 tests/<file>.py`). No pip dependencies required
 ### Content layers
 
 - **`SKILL.md`** (root) — top-level router that dispatches by builder intent to specific skills
-- **`skills/<name>/SKILL.md`** — individual workflow or topic skills (23 total), each may contain `assets/` subdirs
+- **`skills/<name>/SKILL.md`** — individual workflow or topic skills (24 total), each may contain `assets/` subdirs
 - **`references/`** — self-contained handbook covering Gear execution, Sails architecture, IDL/client pipeline, gtest patterns, and more. Skills reference these via relative paths.
 - **`assets/`** — canonical output templates (spec, architecture, task-plan, gtest report)
 - **`VERSION`** — single-line version file, kept in sync with `marketplace.json`

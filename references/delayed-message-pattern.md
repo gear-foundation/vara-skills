@@ -27,24 +27,25 @@ Note: In Sails 1.0, messages use the binary header protocol instead of SCALE-str
 ```rust
 // Dynamic gas: if this handler also does work, a fixed gas_limit will fail
 // when execution already consumed most of the budget.
-let gas_for_next = exec::gas_available() * 9 / 10;
-msg::send_bytes_with_gas_delayed(exec::program_id(), payload, gas_for_next, 0, delay)
+let gas_for_next = Syscall::gas_available() * 9 / 10;
+msg::send_bytes_with_gas_delayed(Syscall::program_id(), payload, gas_for_next, 0, delay)
     .expect("failed to schedule delayed self-message");
 ```
 
-- Use `exec::program_id()` when the program is scheduling work for itself.
-- Use `exec::gas_available()` to compute the gas budget dynamically. Do not use a fixed `gas_limit` for self-scheduling loops — if the handler does work AND schedules the next tick, the remaining gas may be insufficient for the delayed message. A common pattern is `exec::gas_available() * 9 / 10` to reserve 90% of remaining gas for the next invocation.
+- Use `Syscall::program_id()` when the program is scheduling work for itself.
+- Use `Syscall::gas_available()` to compute the gas budget dynamically. Do not use a fixed `gas_limit` for self-scheduling loops — if the handler does work AND schedules the next tick, the remaining gas may be insufficient for the delayed message. A common pattern is `Syscall::gas_available() * 9 / 10` to reserve 90% of remaining gas for the next invocation.
+- Runtime accessors use `Syscall::*`; outbound delayed sends still use the normal `msg::send*` family.
 - Keep transferred value at `0` unless the delayed route truly needs value.
 
 ## Internal-Only Guard
 
-- The internal-only check is `msg::source() == exec::program_id()`.
+- The internal-only check is `Syscall::message_source() == Syscall::program_id()`.
 - Enforce it at the start of the exported handler so outside callers cannot trigger the internal route directly.
 
 ```rust
 #[export]
 pub fn trigger_reminder(&mut self, id: u64) {
-    assert_eq!(msg::source(), exec::program_id(), "internal only");
+    assert_eq!(Syscall::message_source(), Syscall::program_id(), "internal only");
     self.finish_trigger(id);
 }
 ```
@@ -52,7 +53,7 @@ pub fn trigger_reminder(&mut self, id: u64) {
 ## Reservation And Gas Notes
 
 - Use `ReservationId` only when later execution budget must survive across blocks.
-- If a plain delayed send is enough, keep the flow simpler and derive gas from `exec::gas_available()`.
+- If a plain delayed send is enough, keep the flow simpler and derive gas from `Syscall::gas_available()`.
 - Recompute or validate critical state inside the delayed handler instead of trusting stale assumptions from the scheduling block.
 
 ## Gtest vs On-Chain Funding

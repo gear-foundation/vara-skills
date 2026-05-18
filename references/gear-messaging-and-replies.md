@@ -47,4 +47,4 @@
 - Outbound send and reply effects appear only after successful execution.
 - Handle timeout, transport failure, and error reply as different branches.
 - Always close staged payload paths with the correct commit call.
-- Use `exec::gas_available()` for available-gas checks; `msg::gas_available()` is not the standard Gear API.
+- Use `Syscall::gas_available()` for service-code available-gas checks; `msg::gas_available()` is not the standard Gear API.

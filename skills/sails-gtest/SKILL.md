@@ -35,6 +35,12 @@ Write the result to `docs/plans/YYYY-MM-DD-<topic>-gtest.md`.
 
 ## Common Pitfalls
 
+- **Rust 2024 listener lifetime**: Under edition 2024 capture rules, chaining generated-client calls into `listen()` can fail with "temporary value dropped while borrowed". In Sails 1.0 the service client implements `Listener` directly, so bind the service client before listening:
+  ```rust
+  let client = program.service_name();
+  let mut events = client.listen().await.unwrap();
+  ```
+
 - **Program balance accounting in gtest**: The deployed program account has an existential deposit. Absolute balance assertions like `== wager` or `== 0` will fail even when the contract accounting logic is correct. Capture the initial balance after deploy and assert deltas relative to that baseline:
   ```rust
   let initial_balance = env.balance_of(program_id);

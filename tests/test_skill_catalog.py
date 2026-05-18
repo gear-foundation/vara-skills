@@ -322,6 +322,9 @@ def main() -> int:
 
     gtest_skill = read("skills/sails-gtest/SKILL.md")
     assert "Common Pitfalls" in gtest_skill
+    assert "Rust 2024 listener lifetime" in gtest_skill
+    assert "Sails 1.0" in gtest_skill
+    assert "client.listen().await" in gtest_skill
 
     gtest_patterns = read("references/gtest-patterns.md")
     gtest_patterns_lower = gtest_patterns.lower()
@@ -335,9 +338,10 @@ def main() -> int:
     delayed_message = read("references/delayed-message-pattern.md")
     delayed_message_lower = delayed_message.lower()
     assert "send_bytes_with_gas_delayed" in delayed_message
-    assert "exec::program_id()" in delayed_message
+    assert "Syscall::program_id()" in delayed_message
+    assert "Syscall::gas_available()" in delayed_message
     assert ".concat()" in delayed_message
-    assert "msg::source() == exec::program_id()" in delayed_message
+    assert "Syscall::message_source() == Syscall::program_id()" in delayed_message
     assert "idempot" in delayed_message_lower
     assert "../sails" not in delayed_message
     assert "../awesome-sails" not in delayed_message

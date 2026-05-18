@@ -148,7 +148,7 @@ def main() -> int:
     assert "gear-message-execution" in ship
     assert "sails-dev-env" in ship
     assert "cargo sails new" in ship
-    assert "0.10" in ship
+    assert "1.0.0-beta" in ship
     assert "build.rs" in ship
 
 
@@ -274,7 +274,7 @@ def main() -> int:
     assert "route-prefixed" in sails_cheatsheet_lower or "route prefix" in sails_cheatsheet_lower
     assert "#[export]" in sails_cheatsheet
     assert "emit_event" in sails_cheatsheet
-    assert "0.10" in sails_cheatsheet
+    assert "1.0.0-beta" in sails_cheatsheet
     assert "../sails" not in sails_cheatsheet
     assert "Troubleshooting" in sails_cheatsheet
     assert "parity-scale-codec" in sails_cheatsheet

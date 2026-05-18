@@ -43,7 +43,7 @@ If the target crate explicitly builds an `ethexe` path, stop and hand back to a 
 - Do not redesign the feature while coding.
 - Prefer Sails-level interfaces over raw payload work unless the task says otherwise.
 - Keep constructor shape and state ownership consistent with the approved architecture instead of inventing a new storage pattern mid-implementation.
-- Use generated clients or equivalent route-prefixed encoding for normal Sails calls; do not substitute bare raw structs for constructor or service payloads.
+- Use generated clients or equivalent Sails Header-aware encoding for normal Sails calls; do not substitute bare raw structs for constructor or service payloads.
 - If the feature needs a delayed self-message, use the shared payload recipe and the `Syscall::message_source() == Syscall::program_id()` guard pattern instead of ad hoc routing bytes.
 - Preserve fail-fast command behavior; panic on fatal stateful command-path failures instead of introducing partial-commit recovery.
 - Use `Syscall::gas_available()` for remaining-gas checks in execution paths.
@@ -58,4 +58,3 @@ If the target crate explicitly builds an `ethexe` path, stop and hand back to a 
 ## `#[export]` Usage
 
 All public service methods must be annotated with `#[export]`. For standard (non-ethexe) Sails apps, no transport flags are needed — `#[export]` enables SCALE transport by default. Transport flags (`scale`, `ethabi`, `payable`) are ethexe-specific; see the `sails-ethexe-implementer` skill for details.
-

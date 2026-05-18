@@ -1,4 +1,4 @@
-.PHONY: test-layout test-skills test-parser test-install test-packaging test-update verify
+.PHONY: test-layout test-skills test-parser test-install test-packaging test-update verify verify-real verify-all
 
 test-layout:
 	python3 tests/test_repo_layout.py
@@ -21,3 +21,8 @@ test-update:
 	python3 tests/test_update_check.py
 
 verify: test-layout test-skills test-parser test-install test-packaging test-update
+
+verify-real:
+	bash scripts/verify-real-sails-program.sh
+
+verify-all: verify verify-real

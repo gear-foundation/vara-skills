@@ -4,7 +4,7 @@ Source of truth: [docs/sails-header-v1-spec.md](https://github.com/gear-tech/sai
 
 ## Overview
 
-Every Sails message begins with a 16-byte base header (extensions optional) prepended to the SCALE-encoded payload. The header lives entirely within the Gear message payload — no runtime or consensus changes required.
+Every Sails 1.0 message begins with a 16-byte header prepended to the SCALE-encoded payload. The header lives entirely within the Gear message payload — no runtime or consensus changes required.
 
 ## Base Header Layout
 
@@ -12,13 +12,15 @@ Every Sails message begins with a 16-byte base header (extensions optional) prep
 Byte offset  Field          Size (bytes)  Description
 0–1          Magic          2             ASCII "GM" (0x47 0x4D)
 2            Version        1             0x01
-3            Header length  1             Total header size; base = 0x10
+3            Header length  1             Must be 0x10 in v1
 4–11         Interface ID   8             64-bit ID from interface hash
 12–13        Entry ID       2             Little-endian 16-bit entry identifier
 14           Route Index    1             0x00 = infer route if unambiguous
 15           Reserved       1             Must be 0x00 in v1
->15          Extensions     variable      Present only if header length > 0x10
+>15          Payload        variable      SCALE-encoded params or body
 ```
+
+Extension-sized headers are reserved for future versions. A v1 decoder must reject header lengths other than `0x10`.
 
 ## Identifier Derivation
 
@@ -42,15 +44,15 @@ Generated clients encode/decode the header automatically. When debugging wire pa
 ## Interface ID Stability
 
 - Adding or removing methods/types **changes** the interface ID
-- Renaming methods does NOT change the interface ID (hash is structural)
-- `@entry_id` overrides allow pinning specific entry points across versions
+- Renaming public methods **changes** the interface ID because the exported function route name is hashed
+- `@entry_id` overrides allow pinning specific entry points across versions, but they do not preserve the interface ID after a method rename
 - Programs hosting V1 and V2 services simultaneously can use `route_idx` to disambiguate
 
 ## Validation Checklist
 
 1. Magic: first two bytes are `0x47 0x4D`
 2. Version: `0x01`
-3. Header length: `= 0x10` for v1; `> 0x10` only when extensions are present and must be `<= payload_length`
+3. Header length: must equal `0x10` for v1; reject smaller, larger, or extension-sized v1 headers
 4. Reserved byte: must be `0x00` in v1
 5. Route inference (`0x00`): resolve only if exactly one matching instance exists
 

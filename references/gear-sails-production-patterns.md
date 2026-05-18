@@ -516,7 +516,7 @@ let reply = DemoProgram::client(program_id)
 
 Use generated clients by default because they preserve:
 
-- route-prefix correctness
+- Sails Header routing correctness
 - reply decoding
 - test mocks
 - consistency between Rust and TS consumers
@@ -533,12 +533,10 @@ fn send_timeout_from_reservation(
     player_id: ActorId,
     delay: u32,
 ) {
-    let request = [
-        "Battle".encode(),
-        "AutomaticMove".to_string().encode(),
-        player_id.encode(),
-    ]
-    .concat();
+    let request = battle_client::battle::io::AutomaticMove::encode_call(
+        battle_client::BattleClientProgram::ROUTE_ID_BATTLE,
+        player_id,
+    );
 
     msg::send_bytes_delayed_from_reservation(
         reservation_id,
@@ -553,12 +551,10 @@ fn send_timeout_from_reservation(
 
 ```rust
 fn send_cleanup(player: ActorId, gas: u64, delay: u32) {
-    let payload = [
-        "Game".encode(),
-        "RemoveInstance".encode(),
-        player.encode(),
-    ]
-    .concat();
+    let payload = game_client::game::io::RemoveInstance::encode_call(
+        game_client::GameClientProgram::ROUTE_ID_GAME,
+        player,
+    );
 
     msg::send_bytes_with_gas_delayed(Syscall::program_id(), payload, gas, 0, delay)
         .expect("Error in sending message");

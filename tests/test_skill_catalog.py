@@ -86,6 +86,24 @@ STARTER_SKILLS = {
         "references",
         "scripts",
     ],
+    "sails-ethexe-architecture": [
+        "SKILL.md",
+        "assets",
+        "references",
+        "scripts",
+    ],
+    "sails-ethexe-implementer": [
+        "SKILL.md",
+        "assets",
+        "references",
+        "scripts",
+    ],
+    "vara-wallet": [
+        "SKILL.md",
+        "assets",
+        "references",
+        "scripts",
+    ],
 }
 
 
@@ -271,7 +289,8 @@ def main() -> int:
     sails_cheatsheet_lower = sails_cheatsheet.lower()
     assert "constructors" in sails_cheatsheet_lower and "return `self`" in sails_cheatsheet_lower
     assert "generated clients" in sails_cheatsheet_lower
-    assert "route-prefixed" in sails_cheatsheet_lower or "route prefix" in sails_cheatsheet_lower
+    assert "sails header" in sails_cheatsheet_lower
+    assert "binary header" in sails_cheatsheet_lower
     assert "#[export]" in sails_cheatsheet
     assert "emit_event" in sails_cheatsheet
     assert "1.0.0-beta" in sails_cheatsheet
@@ -340,7 +359,9 @@ def main() -> int:
     assert "send_bytes_with_gas_delayed" in delayed_message
     assert "Syscall::program_id()" in delayed_message
     assert "Syscall::gas_available()" in delayed_message
-    assert ".concat()" in delayed_message
+    assert "encode_call" in delayed_message
+    assert "ROUTE_ID" in delayed_message
+    assert "legacy" in delayed_message_lower
     assert "Syscall::message_source() == Syscall::program_id()" in delayed_message
     assert "idempot" in delayed_message_lower
     assert "../sails" not in delayed_message
@@ -348,6 +369,22 @@ def main() -> int:
     assert "../dapps" not in delayed_message
     ship_no_sibling_paths = read("skills/ship-sails-app/SKILL.md")
     assert "../sails`" not in ship_no_sibling_paths
+
+    idl_v2 = read("references/sails-idl-v2-syntax.md")
+    assert "alias map<K,V> = [(K,V)];" in idl_v2
+    assert "alias set<T> = [T];" in idl_v2
+    assert "map<K,V>` and `set<T>` are not built in" in idl_v2
+
+    header_wire = read("references/sails-header-wire-format.md")
+    header_wire_lower = header_wire.lower()
+    assert "renaming public methods **changes** the interface id" in header_wire_lower
+    assert "header length: must equal `0x10` for v1" in header_wire_lower
+    assert "extension-sized headers are reserved for future versions" in header_wire_lower
+
+    scale_decode = read("references/scale-binary-decoding-guide.md")
+    scale_decode_lower = scale_decode.lower()
+    assert "sails header" in scale_decode_lower
+    assert "scale-encoded service and method name strings" not in scale_decode_lower
 
     planner = read("skills/gear-architecture-planner/SKILL.md")
     assert "../../references/sails-program-and-service-architecture.md" in planner
@@ -391,6 +428,18 @@ def main() -> int:
 
     router = read("SKILL.md")
     assert "gear-builtin-actors" in router
+    assert "sails-ethexe-architecture" in router
+    assert "sails-ethexe-implementer" in router
+
+    ethexe_arch = read("skills/sails-ethexe-architecture/SKILL.md")
+    assert "../../references/sails-ethexe-patterns.md" in ethexe_arch
+    assert "emit_eth_event" in ethexe_arch
+    assert "sails-sol-gen" in ethexe_arch
+
+    ethexe_impl = read("skills/sails-ethexe-implementer/SKILL.md")
+    assert "../../references/sails-ethexe-patterns.md" in ethexe_impl
+    assert "#[export(ethabi" in ethexe_impl
+    assert "emit_eth_event" in ethexe_impl
 
     implementer = read("skills/sails-rust-implementer/SKILL.md")
     implementer_lower = implementer.lower()
@@ -419,7 +468,7 @@ def main() -> int:
     assert "state.meta.wasm" in scale_decode
     assert "programmetadata" in scale_decode_lower
     assert "gear-meta" in scale_decode_lower
-    assert "sails-routed" in scale_decode_lower or "sails route" in scale_decode_lower
+    assert "sails header" in scale_decode_lower
 
     endpoints = read("references/vara-network-endpoints.md")
     assert "wss://rpc.vara.network" in endpoints

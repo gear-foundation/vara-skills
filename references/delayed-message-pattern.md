@@ -6,21 +6,24 @@ Use this pattern for future-block work such as reminders, auctions, inactivity c
 
 ## Canonical Self-Message Payload
 
-For a standard Sails self-call by route name, encode service, method, and arguments in order, then concatenate:
+For a Sails 1.0 self-call, build the same Sails Header v1 plus SCALE-encoded params that generated clients use. In generated Rust client code this is the `io::<Call>::encode_call(route_idx, args...)` helper:
 
 ```rust
-let payload = [
-    "ReminderBoard".encode(),
-    "TriggerReminder".encode(),
-    id.encode(),
-]
-.concat();
+use reminder_board_client::{
+    ReminderBoardClientProgram,
+    reminder_board::io::TriggerReminder,
+};
+
+let payload = TriggerReminder::encode_call(
+    ReminderBoardClientProgram::ROUTE_ID_REMINDER_BOARD,
+    id,
+);
 ```
 
-- This is the route-prefixed byte shape to use when a delayed internal message cannot go through a generated client call directly.
-- Keep the service and method names aligned with the exported Sails routes.
-
-Note: In Sails 1.0, messages use the binary header protocol instead of SCALE-string routing for the route prefix. See `../../references/sails-header-wire-format.md` for the encoding.
+- This is the header-routed byte shape to use when a delayed internal message cannot go through a generated client send directly.
+- Keep the route constant and generated `io` type aligned with the exported Sails route.
+- If generated client code is unavailable, manually encode the Sails Header v1 followed by SCALE-encoded params. See `../../references/sails-header-wire-format.md` for the header layout.
+- The legacy SCALE-string route form (`service`, `method`, then args) is not a valid Sails 1.0 delayed self-message payload.
 
 ## Sending The Delayed Message
 
@@ -71,4 +74,4 @@ pub fn trigger_reminder(&mut self, id: u64) {
 
 - Use `run_to_block` for delay-sensitive assertions.
 - Assert both the scheduler-side effect and the eventual handler-side effect.
-- If debugging the raw byte route, test the payload shape directly before blaming gas or timing.
+- If debugging the raw byte route, assert the payload starts with the Sails Header v1 bytes (`GM`, version `0x01`, header length `0x10`) before blaming gas or timing.

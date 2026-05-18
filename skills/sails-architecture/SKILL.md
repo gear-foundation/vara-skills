@@ -51,7 +51,7 @@ Write the result to `docs/plans/YYYY-MM-DD-<topic>-architecture.md`.
 - If messages may sit in the Waitlist, does the design account for rent, expiry, and maximum duration?
 - Are `#[program]` and `#[service]` boundaries explicit?
 - Are routes, replies, and events stable enough for generated clients?
-- If a delayed or self-call hits a Sails route, does the design keep generated clients or equivalent route-prefixed encoding in the contract?
+- If a delayed or self-call hits a Sails route, does the design keep generated clients or equivalent Sails Header-aware encoding in the contract?
 - Does the design account for async Gear message flow and failure paths?
 - If this changes a released contract, has the design classified the change as additive or breaking, and as interface-ID-preserving or interface-ID-breaking? (See `../../references/sails-header-wire-format.md` for how interface IDs are derived.)
 - Are all public methods annotated with `#[export]`?

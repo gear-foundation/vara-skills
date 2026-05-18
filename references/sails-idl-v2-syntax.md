@@ -67,9 +67,18 @@ struct Point<T> { x: T, y: T }
 enum Result<T, E> { Ok(T), Err(E) }
 ```
 
-### Built-in Aliases
+### Built-in Primitives And Common Aliases
 
-`actor` = `ActorId([u8; 32])`, `code` = `CodeId([u8; 32])`, `u256` = `U256([u64; 4])`, `h160` = `H160([u8; 20])`, `h256` = `H256([u8; 32])`, `map<K,V>` = `[(K,V)]`, `set<T>` = `[T]`
+Built-in primitives include `actor` = `ActorId([u8; 32])`, `code` = `CodeId([u8; 32])`, `messageid` = `MessageId([u8; 32])`, `u256` = `U256([u64; 4])`, `h160` = `H160([u8; 20])`, and `h256` = `H256([u8; 32])`.
+
+`map<K,V>` and `set<T>` are not built in. Declare them in a `types` block before use:
+
+```
+types {
+    alias map<K,V> = [(K,V)];
+    alias set<T> = [T];
+}
+```
 
 ## Service
 
@@ -170,6 +179,8 @@ service Canvas {
     }
 
     types {
+        alias map<K,V> = [(K,V)];
+        alias set<T> = [T];
         struct Color { color: [u8; 4], space: ColorSpace }
         enum ColorError { InvalidSource, DeadPoint }
         struct Point<T> { x: T, y: T }

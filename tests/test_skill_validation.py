@@ -52,6 +52,12 @@ def main() -> int:
         result = run_validator(valid)
         assert result.returncode == 0, result.stderr
 
+    skill_dirs = sorted(path for path in (ROOT / "skills").iterdir() if (path / "SKILL.md").exists())
+    assert skill_dirs, "expected at least one installable skill"
+    for skill_dir in skill_dirs:
+        result = run_validator(skill_dir)
+        assert result.returncode == 0, f"{skill_dir.relative_to(ROOT)}: {result.stderr}"
+
     print("skill validation ok")
     return 0
 

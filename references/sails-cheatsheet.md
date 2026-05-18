@@ -58,7 +58,7 @@ These errors appear in order of frequency from builder feedback.
 ## IDL And Clients
 - Sails generates IDL from Rust types at build time.
 - Generated clients are the default typed integration surface for Rust and TypeScript.
-- Generated clients encode the correct payloads for constructor and service calls using route-prefixed SCALE encoding.
+- Generated clients encode the correct payloads for constructor and service calls using the Sails Header plus SCALE body.
 - The IDL uses V2 syntax (see `../../references/sails-idl-v2-syntax.md`) and messages use a binary header protocol (see `../../references/sails-header-wire-format.md`).
 - Architecture decisions must keep exported DTO names distinct from service names.
 - Events are part of the public interface and should map to meaningful state transitions.
@@ -67,7 +67,7 @@ These errors appear in order of frequency from builder feedback.
 - Specs should talk in terms of program constructors, service routes, commands, queries, and events.
 - Specs should name the chosen state ownership pattern instead of leaving storage implicit.
 - Architecture plans should keep `#[program]` thin and push logic into services.
-- Implementation guidance should prefer generated clients or other Sails route-prefixed encoding over raw payload handling.
+- Implementation guidance should prefer generated clients or other Sails Header-aware encoding over raw payload handling.
 
 ## See Also
 - `references/sails-rs-imports.md`

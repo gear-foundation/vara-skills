@@ -55,7 +55,7 @@ Use this as the first stop for the provisional Sails-builder pack. Route the bui
 - In `#[service]`, only methods tagged with `#[export]` are public Sails routes. Event-producing paths should use `emit_event`.
 - Standard Vara account addresses are Substrate `SS58` addresses, not Ethereum `0x` addresses. Local tooling commonly uses Vara prefix `137`.
 - Treat the program `.idl` as the source of truth. The normal JS or TS path is `sails-js` or `sails-cli` plus `GearApi`, generating outputs such as `lib.ts` and typed program or service classes. Use `parseIdl` only for an explicitly dynamic runtime path.
-- For normal Sails constructor or service calls, generated clients or equivalent route-prefixed encoding are the default path; do not model the payload as a bare raw struct.
+- For normal Sails constructor or service calls, generated clients or equivalent Sails Header-aware encoding are the default path; do not model the payload as a bare raw struct.
 - If shared DTO derives or event derives start failing in a standard Sails crate, check the `#[codec(crate = sails_rs::scale_codec)]` and `#[scale_info(crate = sails_rs::scale_info)]` pattern before deeper debugging.
 - Deferred work uses delayed messages measured in blocks. A program can send a delayed message to itself or another actor. If the flow needs gas to survive across blocks, use reserved gas or `ReservationId`; reservation duration is bounded and is not a value top-up.
 - For delayed self-messages, use the named payload-plus-guard recipe in `../../references/delayed-message-pattern.md` instead of inventing a one-off byte layout.

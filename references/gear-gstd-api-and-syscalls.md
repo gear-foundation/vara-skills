@@ -32,7 +32,7 @@ Use `msg` when the design question is about payload handling, outbound messages,
 | Await a reply in async code | `_for_reply` helpers such as `msg::send_bytes_for_reply` | same send wrappers plus async runtime locks | send syscalls plus reply deposit or reply-hook handling |
 | Spend reserved gas on later messaging | reservation-backed send or reply variants | reservation send or reply wrappers | `gr_reservation_send`, `gr_reservation_send_commit`, `gr_reservation_reply`, `gr_reservation_reply_commit` |
 
-Design note: prefer typed APIs for stable app contracts. Use bytes variants when the route is intentionally raw or when isolating codec or route-prefix bugs in Sails.
+Design note: prefer typed APIs for stable app contracts. Use bytes variants when the route is intentionally raw or when isolating codec or Sails Header routing bugs.
 
 ### `gstd::exec`
 
